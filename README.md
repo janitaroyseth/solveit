@@ -72,12 +72,8 @@ Our project assignment is to create a mobile application for a target group of o
 <!-- GETTING STARTED -->
 ## Getting Started
 
-This is an example of how you may give instructions on setting up your project locally.
-To get a local copy up and running follow these simple example steps.
-
 ### Prerequisites
 
-This is an example of how to list things you need to use the software and how to install them.
 * Flutter
 * Dart
 * Android Studio or X-Code
