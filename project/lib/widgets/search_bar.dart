@@ -3,6 +3,9 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 /// Represents a search bar used to filter through a list.
 class SearchBar extends StatefulWidget {
+  /// [placeholderText] - the text showing before user types.
+  final String placeholderText;
+
   /// [textEditingController] - the text editing controller for this input field.
   final TextEditingController textEditingController;
 
@@ -15,6 +18,7 @@ class SearchBar extends StatefulWidget {
   /// Creates an instance of search bar.
   const SearchBar(
       {super.key,
+      required this.placeholderText,
       required this.searchFunction,
       required this.textEditingController,
       required this.filterModal});
@@ -38,11 +42,10 @@ class _SearchBarState extends State<SearchBar> {
               style: const TextStyle(
                 fontSize: 12,
               ),
-              decoration: const InputDecoration(
-                prefixIcon: Icon(PhosphorIcons.magnifyingGlass),
+              decoration: InputDecoration(
+                prefixIcon: const Icon(PhosphorIcons.magnifyingGlass),
                 border: InputBorder.none,
-                hintText: "search for tasks...",
-                focusColor: Colors.amber,
+                hintText: widget.placeholderText.toLowerCase(),
               ),
             ),
           ),
