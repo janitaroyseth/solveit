@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/sign_in/sign_in_button.dart';
 import 'package:project/sign_in/sign_up_button.dart';
 
@@ -56,6 +57,7 @@ Widget _buildContent() {
           ),
           const SizedBox(height: 80.0),
           SignInButton(
+            icon: PhosphorIcons.googleLogo,
             fontFamily: fontFamily,
             fontWeight: fontWeight,
             fontSize: fontSize,
@@ -68,6 +70,7 @@ Widget _buildContent() {
           ),
           const SizedBox(height: 15.0),
           SignInButton(
+            icon: PhosphorIcons.facebookLogo,
             fontFamily: fontFamily,
             fontWeight: fontWeight,
             fontSize: fontSize,
@@ -80,6 +83,7 @@ Widget _buildContent() {
           ),
           const SizedBox(height: 15.0),
           SignInButton(
+            icon: PhosphorIcons.appleLogo,
             fontFamily: fontFamily,
             fontWeight: fontWeight,
             fontSize: fontSize,
@@ -98,15 +102,15 @@ Widget _buildContent() {
           ),
           const SizedBox(height: 15.0),
 
-         SignUpButton(
-           text:"Sign up with email",
-           fontFamily: fontFamily,
-           fontWeight: FontWeight.w300,
-           fontSize: 16,
-           onPressed: () {},
-           color: const Color.fromRGBO(36, 149, 165, 1.0),
-           padding: 50,
-         ),
+          SignUpButton(
+            text: "Sign up with email",
+            fontFamily: fontFamily,
+            fontWeight: FontWeight.w300,
+            fontSize: 16,
+            onPressed: () {},
+            color: const Color.fromRGBO(36, 149, 165, 1.0),
+            padding: 50,
+          ),
 
           // SocialSignInButton(
           //   fontFamily: fontFamily,
@@ -121,13 +125,10 @@ Widget _buildContent() {
           // ),
 
           const SizedBox(height: 25.0),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-            children: const [
-          Text("have an account? "),
-          Text("log in", style: TextStyle(fontWeight: FontWeight.bold))
-
-      ]),
+          Row(mainAxisAlignment: MainAxisAlignment.center, children: const [
+            Text("have an account? "),
+            Text("log in", style: TextStyle(fontWeight: FontWeight.bold))
+          ]),
         ],
       ),
     ),

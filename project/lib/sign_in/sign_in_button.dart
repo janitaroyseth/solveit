@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../widgets/custom_elevated_button.dart';
 
 class SignInButton extends CustomElevatedButton {
   SignInButton({
     super.key,
+    required PhosphorIconData icon,
     required String assetName,
     required String text,
     required VoidCallback onPressed,
@@ -19,7 +21,10 @@ class SignInButton extends CustomElevatedButton {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              Image.asset(assetName, height: logoHeight),
+              Icon(
+                icon,
+              ),
+              // Image.asset(assetName, height: logoHeight),
               Text(
                 text,
                 style: TextStyle(
@@ -29,16 +34,11 @@ class SignInButton extends CustomElevatedButton {
                   fontWeight: fontWeight,
                 ),
               ),
-              Opacity(
-                opacity: 0.0,
-                child: Image.asset(assetName, height: logoHeight),
-              ),
             ],
           ),
           color: color,
           onPressed: onPressed,
           height: 45.0,
           padding: 10.0,
-
         );
 }
