@@ -19,13 +19,13 @@ class AppBarButton extends StatelessWidget {
     return IconButton(
       onPressed: handler,
       visualDensity: const VisualDensity(
-        horizontal: -2.0,
+        horizontal: 0.0,
         vertical: -2.0,
       ),
       tooltip: tooltip,
       icon: Icon(
         icon,
-        size: 28,
+        size: 34,
       ),
     );
   }

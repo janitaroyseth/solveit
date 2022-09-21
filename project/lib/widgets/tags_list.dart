@@ -14,22 +14,8 @@ class TagsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> addPaddingToTagsList() {
-      for (int index = 0; index < tags.length; index++) {
-        if (index % 2 == 0) {
-          tags.insert(
-            index,
-            const SizedBox(
-              width: 4,
-            ),
-          );
-        }
-      }
-      return tags;
-    }
-
     return Row(
-      children: addPaddingToTagsList(),
+      children: tags,
     );
   }
 }
