@@ -25,40 +25,46 @@ class Tag extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return size == Size.small
-        ? ClipRRect(
-            borderRadius: BorderRadius.circular(50.0),
-            child: Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 3.0,
-                vertical: 1.5,
-              ),
-              decoration: BoxDecoration(
-                color: color,
-              ),
-              child: Text(
-                tagText,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 9.5,
+        ? Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 1.2),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(50.0),
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 3.0,
+                  vertical: 1.5,
+                ),
+                decoration: BoxDecoration(
+                  color: color,
+                ),
+                child: Text(
+                  tagText,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 9.5,
+                  ),
                 ),
               ),
             ),
           )
-        : ClipRRect(
-            borderRadius: BorderRadius.circular(50.0),
-            child: Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 5.0,
-                vertical: 3.5,
-              ),
-              decoration: BoxDecoration(
-                color: color,
-              ),
-              child: Text(
-                tagText,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 12,
+        : Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 1.8),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(50.0),
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 5.0,
+                  vertical: 3.5,
+                ),
+                decoration: BoxDecoration(
+                  color: color,
+                ),
+                child: Text(
+                  tagText,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 12,
+                  ),
                 ),
               ),
             ),
