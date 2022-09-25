@@ -120,7 +120,7 @@ class TaskDetailsBody extends StatefulWidget {
       color: Color.fromRGBO(255, 0, 200, 1),
       tagText: "recurring",
     ),
-  ]);
+  ], numberOfColumns: 1);
 
 
   @override
