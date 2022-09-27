@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 
+/// Represents a custom ElevatedButton.
+/// This is used as a template for different buttons in the sign-in page
 class CustomElevatedButton extends StatelessWidget {
   const CustomElevatedButton({
     super.key,
     this.child,
     this.color,
-    this.borderRadius = 7.0,
     this.height,
+    this.borderRadius = 7.0,
     this.padding = 5.0,
     required this.onPressed,
   });
@@ -24,13 +26,13 @@ class CustomElevatedButton extends StatelessWidget {
       padding: EdgeInsets.fromLTRB(padding, 0, padding, 0),
       child: SizedBox(
         height: height,
-
         child: ElevatedButton(
             onPressed: onPressed,
             style: ElevatedButton.styleFrom(
               backgroundColor: color,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(borderRadius),
+                borderRadius: BorderRadius.all(
+                  Radius.circular(borderRadius),
                 ),
               ),
             ),
