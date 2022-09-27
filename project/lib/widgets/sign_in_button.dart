@@ -35,6 +35,6 @@ class SignInButton extends CustomElevatedButton {
           color: Colors.white,
           onPressed: onPressed,
           height: 45.0,
-          padding: 10.0,
+          padding: 20.0,
         );
 }
