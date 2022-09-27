@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:project/sign_in/sign_in_page.dart';
-import 'package:project/widgets/custom_elevated_button.dart';
+import 'package:project/screens/sign_in_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -17,7 +16,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         fontFamily: "Comfortaa",
       ),
-      home: SignInPage(),
+      home: const SignInScreen(),
     );
   }
 }
