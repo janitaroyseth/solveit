@@ -16,31 +16,11 @@ class TagsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (numberOfColumns == 1) {
-      return Column(children: tags);
-    } else if (numberOfColumns > tags.length) {
-      return Row(children: tags);
-    } else if (numberOfColumns > 0) {
-      /// Split the tags into right number of rows.
-      List<Widget> rows = [];
-      for (var index = 0; index < tags.length;) {
-        List<Widget> rowItems = [];
-        for (var i = 0; i < numberOfColumns; i++) {
-          if (index < tags.length) {
-            rowItems.add(tags[index]);
-            index++;
-          } else {
-            break;
-          }
-        }
-
-        /// Convert the row into widget and add it to the final column data.
-        Row row = Row(children: rowItems);
-        rows.add(row);
-      }
-      return Column(children: rows);
-    } else {
-      throw RangeError("Number of columns cannot be lower than 1.");
-    }
+    return Wrap(
+      spacing: 1.0, /// horizontal gap
+      runSpacing: 1.0, /// vertical gap
+      alignment: WrapAlignment.start,
+      children: tags,
+    );
   }
 }
