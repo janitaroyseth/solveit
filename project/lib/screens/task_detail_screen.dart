@@ -106,17 +106,17 @@ class TaskDetailsBody extends StatefulWidget {
 
   static TagsList tags = const TagsList(tags: [
     Tag(
-      size: Size.small,
+      size: Size.large,
       color: Color.fromRGBO(255, 0, 0, 1),
       tagText: "urgent",
     ),
     Tag(
-      size: Size.small,
+      size: Size.large,
       color: Color.fromRGBO(0, 200, 0, 1),
       tagText: "long-term",
     ),
     Tag(
-      size: Size.small,
+      size: Size.large,
       color: Color.fromRGBO(255, 0, 200, 1),
       tagText: "recurring",
     ),
