@@ -1,23 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import '../entities/project.dart';
+import '../entities/task.dart';
 import '../widgets/appbar_button.dart';
 import '../widgets/search_bar.dart';
-import '../widgets/tag.dart';
 import '../widgets/task_list_item.dart';
 
 /// Screen/Scaffold for the overview of tasks in a project
 class TaskOverviewScreen extends StatelessWidget {
-  const TaskOverviewScreen({super.key});
-
+  final Project project;
+  const TaskOverviewScreen({super.key, required this.project});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("project 1"),
+        title: Text(project.title),
         titleSpacing: -4,
         leading: AppBarButton(
-          handler: () {},
+          handler: () {
+            Navigator.pop(context);
+          },
           tooltip: "Go back",
           icon: PhosphorIcons.caretLeftLight,
         ),
@@ -46,7 +49,7 @@ class TaskOverviewScreen extends StatelessWidget {
           onRefresh: () => Future.delayed(
             const Duration(seconds: 2),
           ),
-          child: const TaskOverviewBody(),
+          child: TaskOverviewBody(project: project),
         ),
       ),
     );
@@ -55,42 +58,8 @@ class TaskOverviewScreen extends StatelessWidget {
 
 /// Body for the overview of tasks in the task-overview screen.
 class TaskOverviewBody extends StatefulWidget {
-  const TaskOverviewBody({super.key});
-
-  /// Temp list for displaying tasks.
-  static var tasks = const [
-    {
-      "title": "Clean house",
-      "deadline": "10/10/2022",
-      "description":
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.",
-      "tags": <Tag>[
-        Tag(
-          size: Size.small,
-          color: Color.fromRGBO(255, 0, 0, 1),
-          tagText: "urgent",
-        ),
-      ]
-    },
-    {
-      "title": "Water flowers",
-      "deadline": "15/10/2022",
-      "description":
-          "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.",
-      "tags": <Tag>[
-        Tag(
-          size: Size.small,
-          color: Colors.lightGreen,
-          tagText: "green",
-        ),
-        Tag(
-          size: Size.small,
-          color: Color.fromRGBO(4, 0, 255, 1),
-          tagText: "fun",
-        ),
-      ]
-    },
-  ];
+  final Project project;
+  const TaskOverviewBody({super.key, required this.project});
 
   @override
   State<TaskOverviewBody> createState() => _TaskOverviewBodyState();
@@ -99,11 +68,11 @@ class TaskOverviewBody extends StatefulWidget {
 class _TaskOverviewBodyState extends State<TaskOverviewBody> {
   final TextEditingController _searchController = TextEditingController();
 
-  List<dynamic> items = [];
+  List<Task> items = [];
 
   @override
   void initState() {
-    items.addAll(TaskOverviewBody.tasks);
+    items.addAll(widget.project.tasks);
     super.initState();
   }
 
@@ -111,9 +80,9 @@ class _TaskOverviewBodyState extends State<TaskOverviewBody> {
   /// [query] - the string to filter through the tasklist for.
   void filterSearchResults(String query) {
     if (query.isNotEmpty) {
-      List<Map> searchResult = [];
-      for (var item in TaskOverviewBody.tasks) {
-        if (item.values
+      List<Task> searchResult = [];
+      for (var item in widget.project.tasks) {
+        if (item.values()
             .toString()
             .toLowerCase()
             .contains(query.toLowerCase())) {
@@ -128,7 +97,7 @@ class _TaskOverviewBodyState extends State<TaskOverviewBody> {
     } else {
       setState(() {
         items.clear();
-        items.addAll(TaskOverviewBody.tasks);
+        items.addAll(widget.project.tasks);
       });
     }
   }
@@ -154,7 +123,7 @@ class _TaskOverviewBodyState extends State<TaskOverviewBody> {
 
 /// The list over tasks in the project.
 class TaskList extends StatefulWidget {
-  final List<dynamic> tasks;
+  final List<Task> tasks;
   const TaskList({Key? key, required this.tasks}) : super(key: key);
 
   @override
@@ -167,10 +136,7 @@ class _TaskListState extends State<TaskList> {
     return Expanded(
       child: ListView.builder(
         itemBuilder: ((context, index) => TaskListItem(
-              title: widget.tasks[index]["title"] as String,
-              deadline: widget.tasks[index]["deadline"],
-              description: widget.tasks[index]["description"],
-              tags: widget.tasks[index]["tags"],
+              task: widget.tasks[index],
             )),
         itemCount: widget.tasks.length,
       ),
