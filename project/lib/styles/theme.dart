@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 
+/// Represents the theme the app is displaying.
 class Themes {
   static Color textColor = Colors.black;
 
