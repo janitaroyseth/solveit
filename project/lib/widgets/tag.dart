@@ -23,6 +23,14 @@ class Tag extends StatelessWidget {
   });
 
   @override
+  int get hashCode => color.hashCode + tagText.hashCode;
+
+  @override
+  bool operator ==(Object other) {
+    return hashCode == other.hashCode;
+  }
+
+  @override
   Widget build(BuildContext context) {
     return size == Size.small
         ? Padding(
