@@ -17,7 +17,7 @@ class TaskListItem extends StatelessWidget {
   /// List of [tags] (type Tag) connected to the task.
   final List<Tag> tags;
 
-  /// Creates an instance of task list item where [titile] is the name of the
+  /// Creates an instance of task list item where [title] is the name of the
   /// task, [description] is the description of the task, [deadline] is the
   /// deadline of the task and [tags] is a list containing type Tag connected
   /// to the task.
@@ -53,23 +53,23 @@ class TaskListItem extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Container(
                   alignment: Alignment.topLeft,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      Text(
-                        title.toLowerCase(),
-                        textAlign: TextAlign.start,
-                        style: Theme.of(context).textTheme.headline3,
+                      Expanded(
+                        child: Text(
+                          title.toLowerCase(),
+                          textAlign: TextAlign.start,
+                          style: Theme.of(context).textTheme.displaySmall,
+                        ),
                       ),
                       Text(
                         deadline,
-                        style: const TextStyle(
-                          color: Colors.black54,
-                          fontSize: 12,
-                        ),
+                        style: Theme.of(context).textTheme.labelSmall,
                       )
                     ],
                   ),
@@ -80,7 +80,7 @@ class TaskListItem extends StatelessWidget {
                   child: Text(
                     description,
                     textAlign: TextAlign.start,
-                    style: Theme.of(context).textTheme.caption,
+                    style: Theme.of(context).textTheme.bodySmall,
                   ),
                 ),
                 const SizedBox(

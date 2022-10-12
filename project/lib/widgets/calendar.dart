@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:project/styles/theme.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 /// Calendar spanning from 2021 to 2 years in the future.
 class Calendar extends StatefulWidget {
-  /// the [DateTime] selected in the calendar,
+  /// The [DateTime] selected in the calendar,
   final DateTime? selectedDay;
 
   /// [Function] for what happens when a date is selected.
@@ -31,15 +32,8 @@ class _CalendarState extends State<Calendar> {
   @override
   Widget build(BuildContext context) {
     return TableCalendar(
-      rowHeight: 40.0,
-      headerStyle: const HeaderStyle(
-        formatButtonVisible: false,
-        headerPadding: EdgeInsets.only(
-          top: 10.0,
-          bottom: 10.0,
-        ),
-        titleCentered: true,
-      ),
+      rowHeight: 45.0,
+      headerStyle: Themes.calendarHeaderTheme,
       daysOfWeekStyle: const DaysOfWeekStyle(
         weekdayStyle: TextStyle(
           fontWeight: FontWeight.w700,
@@ -55,28 +49,7 @@ class _CalendarState extends State<Calendar> {
       selectedDayPredicate: (day) => isSameDay(widget.selectedDay, day),
       onDaySelected: widget.onDaySelected,
       eventLoader: widget.eventLoader,
-      calendarStyle: CalendarStyle(
-        markerDecoration: BoxDecoration(
-          color: Colors.blue.shade900,
-          shape: BoxShape.circle,
-        ),
-        selectedDecoration: BoxDecoration(
-          color: Colors.blue.shade400,
-          shape: BoxShape.circle,
-        ),
-        selectedTextStyle: isSameDay(widget.selectedDay, DateTime.now())
-            ? const TextStyle(
-                fontWeight: FontWeight.w900,
-                color: Colors.white,
-              )
-            : const TextStyle(color: Colors.white),
-        todayDecoration: const BoxDecoration(
-          shape: BoxShape.circle,
-        ),
-        todayTextStyle: const TextStyle(
-          fontWeight: FontWeight.w900,
-        ),
-      ),
+      calendarStyle: Themes.calendarTheme,
       onPageChanged: (newFocusedDay) {
         _focusedDay = newFocusedDay;
       },
