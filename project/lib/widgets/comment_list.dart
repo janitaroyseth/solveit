@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../entities/comment.dart';
+import '../models/comment.dart';
 import 'comment_list_item.dart';
 
 /// The list of comments in the task.
@@ -18,8 +18,8 @@ class _CommentListState extends State<CommentList> {
     return Expanded(
       child: ListView.builder(
         itemBuilder: ((context, index) => CommentListItem(
-          comment: widget.comments[index],
-        )),
+              comment: widget.comments[index],
+            )),
         itemCount: widget.comments.length,
       ),
     );

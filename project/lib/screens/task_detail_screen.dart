@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
-import '../entities/task.dart';
+import '../models/task.dart';
 import '../widgets/appbar_button.dart';
 import '../widgets/comment_list.dart';
-import '../widgets/tag.dart' as widget_tag;
+import '../widgets/tag_widget.dart' as widget_tag;
 import '../widgets/tags_list.dart';
 
 /// Screen/Scaffold for the details of a task in a project
@@ -18,7 +18,6 @@ class TaskDetailScreen extends StatefulWidget {
 }
 
 class _TaskDetailsScreenState extends State<TaskDetailScreen> {
-
   @override
   void initState() {
     super.initState();
@@ -32,9 +31,7 @@ class _TaskDetailsScreenState extends State<TaskDetailScreen> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Text(
-              widget.task.title
-            ),
+            Text(widget.task.title),
             Visibility(
               visible: true,
               child: _textStatus(),
@@ -85,7 +82,9 @@ class _TaskDetailsScreenState extends State<TaskDetailScreen> {
           });
         },
         tooltip: "Open or close the current task",
-        icon: widget.task.done ? PhosphorIcons.arrowsCounterClockwise : PhosphorIcons.checkCircle);
+        icon: widget.task.done
+            ? PhosphorIcons.arrowsCounterClockwise
+            : PhosphorIcons.checkCircle);
   }
 }
 
@@ -98,7 +97,6 @@ class TaskDetailsBody extends StatefulWidget {
 }
 
 class _TaskDetailsBodyState extends State<TaskDetailsBody> {
-
   Task task = Task();
 
   @override
@@ -110,31 +108,42 @@ class _TaskDetailsBodyState extends State<TaskDetailsBody> {
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        const Text("tags", style: TextStyle(
-          fontWeight: FontWeight.bold,
-        )),
-        const SizedBox(height: 5,),
-        TagsList(tags: task.tags, size: widget_tag.Size.large,),
-        const SizedBox(height: 20,),
-        const Text("description",
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-            )),
-        const SizedBox(height: 5,),
-        Text(task.description),
-        const SizedBox(height: 20,),
-        const Text("comments",
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-            )),
-        const SizedBox(height: 5,),
-        CommentList(
-            comments: widget.task.comments
-        ),
-      ]
-    );
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          const Text("tags",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              )),
+          const SizedBox(
+            height: 5,
+          ),
+          TagsList(
+            tags: task.tags,
+            size: widget_tag.Size.large,
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          const Text("description",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              )),
+          const SizedBox(
+            height: 5,
+          ),
+          Text(task.description),
+          const SizedBox(
+            height: 20,
+          ),
+          const Text("comments",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+              )),
+          const SizedBox(
+            height: 5,
+          ),
+          CommentList(comments: widget.task.comments),
+        ]);
   }
 }

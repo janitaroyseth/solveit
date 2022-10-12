@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
-import '../entities/project.dart';
-import '../entities/task.dart';
+import '../models/project.dart';
+import '../models/task.dart';
 import '../widgets/appbar_button.dart';
 import '../widgets/search_bar.dart';
 import '../widgets/task_list_item.dart';
@@ -82,7 +82,8 @@ class _TaskOverviewBodyState extends State<TaskOverviewBody> {
     if (query.isNotEmpty) {
       List<Task> searchResult = [];
       for (var item in widget.project.tasks) {
-        if (item.values()
+        if (item
+            .values()
             .toString()
             .toLowerCase()
             .contains(query.toLowerCase())) {

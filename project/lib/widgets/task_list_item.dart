@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:project/screens/task_detail_screen.dart';
-import '../entities/task.dart';
+import '../models/task.dart';
 
 import 'tags_list.dart';
 
@@ -38,9 +38,8 @@ class TaskListItem extends StatelessWidget {
           onTap: () {
             Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => TaskDetailScreen(
-                task: task
-              )),
+              MaterialPageRoute(
+                  builder: (context) => TaskDetailScreen(task: task)),
             );
           },
           child: Padding(

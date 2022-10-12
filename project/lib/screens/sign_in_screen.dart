@@ -4,8 +4,8 @@ import 'package:project/screens/task_overview_screen.dart';
 import 'package:project/widgets/sign_in_button.dart';
 import 'package:project/widgets/sign_up_button.dart';
 
-import '../entities/project.dart';
-import '../exampleData/exampleData.dart';
+import '../models/project.dart';
+import '../example_data/example_data.dart';
 
 ///Represents the sign-in screen for the application
 class SignInScreen extends StatelessWidget {
@@ -42,8 +42,8 @@ Widget _buildContent(BuildContext context) {
               spreadRadius: 5,
               blurRadius: 7,
               offset: const Offset(0, 3),
-            )]
-      ),
+            )
+          ]),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -73,7 +73,8 @@ Widget _buildContent(BuildContext context) {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => TaskOverviewScreen(project: project)),
+                MaterialPageRoute(
+                    builder: (context) => TaskOverviewScreen(project: project)),
               );
             },
           ),
@@ -109,6 +110,7 @@ Widget _buildContent(BuildContext context) {
                   padding: EdgeInsets.zero,
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   alignment: Alignment.centerLeft,
+
                   ///foregroundColor: Colors.black,
                   textStyle: const TextStyle(
                     fontWeight: FontWeight.bold,

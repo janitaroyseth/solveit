@@ -5,7 +5,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/widgets/appbar_button.dart';
 import 'package:project/widgets/calendar.dart';
 import 'package:project/widgets/calendar_task_list.dart';
-import 'package:project/widgets/tag.dart';
+import 'package:project/widgets/tag_widget.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:intl/intl.dart';
 
@@ -24,8 +24,8 @@ class _ProjectCalendarScreenState extends State<ProjectCalendarScreen> {
       "deadline": "09/10/2022",
       "description":
           "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.",
-      "tags": <Tag>[
-        const Tag(
+      "tags": <TagWidget>[
+        const TagWidget(
           size: Size.small,
           color: Color.fromRGBO(255, 0, 0, 1),
           tagText: "urgent",
@@ -37,13 +37,13 @@ class _ProjectCalendarScreenState extends State<ProjectCalendarScreen> {
       "deadline": "10/10/2022",
       "description":
           "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.",
-      "tags": <Tag>[
-        const Tag(
+      "tags": <TagWidget>[
+        const TagWidget(
           size: Size.small,
           color: Colors.lightGreen,
           tagText: "green",
         ),
-        const Tag(
+        const TagWidget(
           size: Size.small,
           color: Color.fromRGBO(4, 0, 255, 1),
           tagText: "fun",

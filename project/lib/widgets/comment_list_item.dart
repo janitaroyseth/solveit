@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 
-import '../entities/comment.dart';
+import '../models/comment.dart';
 
 /// Converts a Comment object to a list item used in a comment list.
 class CommentListItem extends StatelessWidget {
-
   /// The [comment] to be converted.
   final Comment comment;
 
@@ -51,19 +50,18 @@ class CommentListItem extends StatelessWidget {
                   padding: const EdgeInsets.only(top: 4.0),
                   alignment: Alignment.topLeft,
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                      comment.author.toLowerCase(),
-                      textAlign: TextAlign.start,
-                      style: Theme.of(context).textTheme.caption,
-                      ),
-                      Text(
-                        comment.date,
-                        style: Theme.of(context).textTheme.caption,
-                      ),
-                    ]
-                  ),
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          comment.author.toLowerCase(),
+                          textAlign: TextAlign.start,
+                          style: Theme.of(context).textTheme.caption,
+                        ),
+                        Text(
+                          comment.date,
+                          style: Theme.of(context).textTheme.caption,
+                        ),
+                      ]),
                 ),
                 const SizedBox(
                   height: 10.0,
