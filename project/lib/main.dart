@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:project/screens/create_project_screen.dart';
+import 'package:project/screens/sign_in_screen.dart';
 import 'package:project/styles/theme.dart';
 
 void main() {
@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: "solveIt",
       theme: Themes.themeData,
-      home: const CreateProjectScreen(),
+      home: const SignInScreen(),
     );
   }
 }
