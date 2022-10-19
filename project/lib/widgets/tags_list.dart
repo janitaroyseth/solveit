@@ -14,7 +14,10 @@ class TagsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return Wrap(
+      spacing: 1.0,
+      runSpacing: 1.0,
+      alignment: WrapAlignment.start,
       children: tags,
     );
   }

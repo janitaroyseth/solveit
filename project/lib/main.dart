@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:project/widgets/bottom_bar.dart';
+import 'package:project/screens/sign_in_screen.dart';
+import 'package:project/styles/theme.dart';
 
 void main() {
   runApp(const MyApp());
@@ -12,12 +13,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: "solveIt",
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-        fontFamily: "Comfortaa",
-      ),
-      home: const BottomBar(),
-      debugShowCheckedModeBanner: false,
+      theme: Themes.themeData,
+      home: const SignInScreen(),
     );
   }
 }
