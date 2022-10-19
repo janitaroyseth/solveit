@@ -56,11 +56,19 @@ class Themes {
     bodySmall: const TextStyle(
       fontSize: 11,
     ),
-    bodyLarge: const TextStyle(fontSize: 12, height: 1.5),
+    bodyLarge: const TextStyle(
+      fontSize: 12,
+      height: 1.5,
+    ),
+    labelLarge: const TextStyle(
+      fontSize: 18,
+      overflow: TextOverflow.ellipsis,
+    ),
     labelSmall: TextStyle(
       color: textColor.withOpacity(0.54),
       fontSize: 12,
       letterSpacing: 0,
+      overflow: TextOverflow.ellipsis,
     ),
   );
 }
