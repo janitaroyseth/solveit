@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/widgets/appbar_button.dart';
-import 'package:project/widgets/profile_card.dart';
+import 'package:project/widgets/project_card.dart';
 import 'package:project/widgets/search_bar.dart';
 
+/// Screen/Scaffold for the overview of projects the user have access to.
 class ProjectOverviewScreen extends StatelessWidget {
   const ProjectOverviewScreen({super.key});
 

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/widgets/appbar_button.dart';
 
+/// Screen/Scaffold for the profile of the user.
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 

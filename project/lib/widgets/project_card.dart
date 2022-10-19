@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+/// Represents a project as a card used on project screen.
 class ProjectCard extends StatelessWidget {
   const ProjectCard({super.key});
 

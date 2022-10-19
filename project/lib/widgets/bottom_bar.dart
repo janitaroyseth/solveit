@@ -3,6 +3,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/screens/profile_screen.dart';
 import 'package:project/screens/project_overview_screen.dart';
 
+/// Represents the bar at the bottom of the screen.
 class BottomBar extends StatefulWidget {
   const BottomBar({
     Key? key,
@@ -12,6 +13,7 @@ class BottomBar extends StatefulWidget {
   State<BottomBar> createState() => _BottomBarState();
 }
 
+///
 class _BottomBarState extends State<BottomBar> {
   late List<Map<String, Object>> _pages;
   int _pageIndex = 0;
