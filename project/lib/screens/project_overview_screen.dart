@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/widgets/appbar_button.dart';
-import 'package:project/widgets/bottom_bar.dart';
+import 'package:project/widgets/profile_card.dart';
+import 'package:project/widgets/search_bar.dart';
 
 class ProjectOverviewScreen extends StatelessWidget {
   const ProjectOverviewScreen({super.key});
@@ -13,11 +14,53 @@ class ProjectOverviewScreen extends StatelessWidget {
         centerTitle: true,
         title: const Text("solveit", textAlign: TextAlign.center),
         actions: [
+          // TODO: Add action to button.
           AppBarButton(
-              handler: () {}, tooltip: "YOLO", icon: PhosphorIcons.plus)
+              handler: () {},
+              tooltip: "Add new project",
+              icon: PhosphorIcons.plus)
         ],
       ),
-      bottomNavigationBar: const BottomBar(),
+      body: Padding(
+        padding: const EdgeInsets.all(0),
+        child: Column(
+          children: [
+            SearchBar(
+              placeholderText: "search for project",
+              searchFunction: () {},
+              textEditingController: TextEditingController(),
+              filterModal: const SizedBox(),
+            ),
+            const Padding(
+              padding: EdgeInsets.only(top: 10),
+            ),
+            Expanded(
+              child: SingleChildScrollView(
+                child: Wrap(
+                  alignment: WrapAlignment.spaceBetween,
+                  children: const [
+                    ProjectCard(),
+                    ProjectCard(),
+                    ProjectCard(),
+                    ProjectCard(),
+                    ProjectCard(),
+                    ProjectCard(),
+                    ProjectCard(),
+                    ProjectCard(),
+                    ProjectCard(),
+                    ProjectCard(),
+                    ProjectCard(),
+                    ProjectCard(),
+                    ProjectCard(),
+                    ProjectCard(),
+                    ProjectCard(),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
