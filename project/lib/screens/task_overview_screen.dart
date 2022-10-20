@@ -9,10 +9,10 @@ import '../widgets/task_list_item.dart';
 
 /// Screen/Scaffold for the overview of tasks in a project
 class TaskOverviewScreen extends StatelessWidget {
-  final Project project;
-  const TaskOverviewScreen({super.key, required this.project});
+  const TaskOverviewScreen({super.key});
   @override
   Widget build(BuildContext context) {
+    final project = ModalRoute.of(context)!.settings.arguments as Project;
     return Scaffold(
       appBar: AppBar(
         title: Text(project.title),

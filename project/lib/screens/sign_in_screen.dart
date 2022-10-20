@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
-import 'package:project/screens/task_overview_screen.dart';
 import 'package:project/widgets/sign_in_button.dart';
 import 'package:project/widgets/sign_up_button.dart';
 
@@ -71,11 +70,7 @@ Widget _buildContent(BuildContext context) {
             icon: PhosphorIcons.googleLogo,
             text: "Continue with Google",
             onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => TaskOverviewScreen(project: project)),
-              );
+              Navigator.pushNamed(context, '/tasks', arguments: project);
             },
           ),
           const SizedBox(height: 15.0),

@@ -9,9 +9,7 @@ import '../widgets/tags_list.dart';
 
 /// Screen/Scaffold for the details of a task in a project
 class TaskDetailScreen extends StatefulWidget {
-  final Task task;
-
-  const TaskDetailScreen({super.key, required this.task});
+  const TaskDetailScreen({super.key});
 
   @override
   State<StatefulWidget> createState() => _TaskDetailsScreenState();
@@ -25,16 +23,17 @@ class _TaskDetailsScreenState extends State<TaskDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final task = ModalRoute.of(context)!.settings.arguments as Task;
     return Scaffold(
       appBar: AppBar(
         title: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Text(widget.task.title),
+            Text(task.title),
             Visibility(
               visible: true,
-              child: _textStatus(),
+              child: _textStatus(task),
             ),
           ],
         ),
@@ -47,7 +46,7 @@ class _TaskDetailsScreenState extends State<TaskDetailScreen> {
           icon: PhosphorIcons.caretLeftLight,
         ),
         actions: <Widget>[
-          _openCloseTaskButton(),
+          _openCloseTaskButton(task),
           AppBarButton(
             handler: () {},
             tooltip: "Edit the current task",
@@ -62,27 +61,27 @@ class _TaskDetailsScreenState extends State<TaskDetailScreen> {
           onRefresh: () => Future.delayed(
             const Duration(seconds: 2),
           ),
-          child: TaskDetailsBody(task: widget.task),
+          child: TaskDetailsBody(task: task),
         ),
       ),
     );
   }
 
   /// Text displaying task status - whether task is open or done.
-  Widget _textStatus() {
-    return Text(" - ${widget.task.done ? "done" : "open"}");
+  Widget _textStatus(Task task) {
+    return Text(" - ${task.done ? "done" : "open"}");
   }
 
   /// Button for opening or closing the task.
-  Widget _openCloseTaskButton() {
+  Widget _openCloseTaskButton(Task task) {
     return AppBarButton(
         handler: () {
           setState(() {
-            widget.task.done = !widget.task.done;
+            task.done = !task.done;
           });
         },
         tooltip: "Open or close the current task",
-        icon: widget.task.done
+        icon: task.done
             ? PhosphorIcons.arrowsCounterClockwise
             : PhosphorIcons.checkCircle);
   }
