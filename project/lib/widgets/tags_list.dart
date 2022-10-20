@@ -5,7 +5,7 @@ import '../models/tag.dart';
 /// Represents a list containing [TagWidget].
 class TagsList extends StatelessWidget {
   /// The [tags] in the [TagList].
-  final List<dynamic> tags;
+  final List<Tag> tags;
   final Size size;
 
   /// Creates an instance of tag list, where [tags] is the list of tags represented in the list.
@@ -13,17 +13,13 @@ class TagsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (size == Size.large) {
-      List<TagWidget> newTags = [];
-      for (Tag tag in tags) {
-        newTags.add(TagWidget(
-          tagText: tag.text,
-          size: Size.large,
-          color: Color(tag.color),
-        ));
-      }
-      tags.clear();
-      tags.addAll(newTags);
+    List<Widget> newTags = [];
+    for (Tag tag in tags) {
+      newTags.add(TagWidget(
+        tagText: tag.text,
+        size: size,
+        color: Color(tag.color),
+      ));
     }
     return Wrap(
       spacing: 1.0,
@@ -35,7 +31,7 @@ class TagsList extends StatelessWidget {
       alignment: WrapAlignment.start,
 
       /// How the children within a run should be placed in the main axis.
-      children: tags as List<Widget>,
+      children: newTags,
     );
   }
 }
