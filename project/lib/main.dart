@@ -21,7 +21,6 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         fontFamily: "Comfortaa",
       ),
-      home: const SignInScreen(),
       initialRoute: '/',
       routes: {
         //TODO: Update route names.
