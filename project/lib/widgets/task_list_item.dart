@@ -40,7 +40,6 @@ class TaskListItem extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Container(
@@ -48,17 +47,16 @@ class TaskListItem extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      Text(
-                        task.title.toLowerCase(),
-                        textAlign: TextAlign.start,
-                        style: Theme.of(context).textTheme.headline3,
+                      Expanded(
+                        child: Text(
+                          task.title.toLowerCase(),
+                          textAlign: TextAlign.start,
+                          style: Theme.of(context).textTheme.displaySmall,
+                        ),
                       ),
                       Text(
                         task.deadline!,
-                        style: const TextStyle(
-                          color: Colors.black54,
-                          fontSize: 12,
-                        ),
+                        style: Theme.of(context).textTheme.labelSmall,
                       )
                     ],
                   ),
@@ -69,7 +67,7 @@ class TaskListItem extends StatelessWidget {
                   child: Text(
                     task.description,
                     textAlign: TextAlign.start,
-                    style: Theme.of(context).textTheme.caption,
+                    style: Theme.of(context).textTheme.bodySmall,
                   ),
                 ),
                 const SizedBox(

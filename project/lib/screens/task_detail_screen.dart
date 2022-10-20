@@ -4,8 +4,8 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import '../models/task.dart';
 import '../widgets/appbar_button.dart';
 import '../widgets/comment_list.dart';
-import '../widgets/tag_widget.dart' as widget_tag;
 import '../widgets/tags_list.dart';
+import '../models/tag.dart';
 
 /// Screen/Scaffold for the details of a task in a project
 class TaskDetailScreen extends StatefulWidget {
@@ -16,6 +16,7 @@ class TaskDetailScreen extends StatefulWidget {
 }
 
 class _TaskDetailsScreenState extends State<TaskDetailScreen> {
+  Task task = Task();
   @override
   void initState() {
     super.initState();
@@ -23,7 +24,7 @@ class _TaskDetailsScreenState extends State<TaskDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final task = ModalRoute.of(context)!.settings.arguments as Task;
+    task = ModalRoute.of(context)!.settings.arguments as Task;
     return Scaffold(
       appBar: AppBar(
         title: Row(
@@ -46,7 +47,12 @@ class _TaskDetailsScreenState extends State<TaskDetailScreen> {
           icon: PhosphorIcons.caretLeftLight,
         ),
         actions: <Widget>[
-          _openCloseTaskButton(task),
+          AppBarButton(
+              handler: _closeTask,
+              tooltip: "Open or close the current task",
+              icon: task.done == true
+                  ? PhosphorIcons.arrowsCounterClockwiseLight
+                  : PhosphorIcons.checkCircleLight),
           AppBarButton(
             handler: () {},
             tooltip: "Edit the current task",
@@ -55,7 +61,7 @@ class _TaskDetailsScreenState extends State<TaskDetailScreen> {
         ],
       ),
       body: Padding(
-        padding: const EdgeInsets.only(left: 10.0, right: 10.0, top: 10.0),
+        padding: const EdgeInsets.only(left: 18.0, right: 10.0, top: 18.0),
         child: RefreshIndicator(
           // color: Colors.black,
           onRefresh: () => Future.delayed(
@@ -67,40 +73,52 @@ class _TaskDetailsScreenState extends State<TaskDetailScreen> {
     );
   }
 
+  Text openStatus =
+      const Text(" - open", style: TextStyle(color: Colors.green));
+
   /// Text displaying task status - whether task is open or done.
   Widget _textStatus(Task task) {
     return Text(" - ${task.done ? "done" : "open"}");
   }
 
-  /// Button for opening or closing the task.
-  Widget _openCloseTaskButton(Task task) {
-    return AppBarButton(
-        handler: () {
-          setState(() {
-            task.done = !task.done;
-          });
-        },
-        tooltip: "Open or close the current task",
-        icon: task.done
-            ? PhosphorIcons.arrowsCounterClockwise
-            : PhosphorIcons.checkCircle);
+  void _closeTask() {
+    setState(() {
+      task.done = task.done ? false : true;
+    });
   }
 }
 
 /// Body for the detailed information of a task in the task-details screen.
 class TaskDetailsBody extends StatefulWidget {
-  final Task task;
   const TaskDetailsBody({super.key, required this.task});
+  final Task task;
+  static TagsList tags = const TagsList(
+    tags: [
+      Tag(
+        color: 0xff0000,
+        text: "urgent",
+      ),
+      Tag(
+        color: 0x00ff00,
+        text: "long-term",
+      ),
+      Tag(
+        color: 0x0000ff,
+        text: "recurring",
+      ),
+    ],
+  );
+
   @override
   State<TaskDetailsBody> createState() => _TaskDetailsBodyState();
 }
 
 class _TaskDetailsBodyState extends State<TaskDetailsBody> {
-  Task task = Task();
+  TagsList tags = const TagsList(tags: []);
 
   @override
   void initState() {
-    task = widget.task;
+    tags = TagsList(tags: widget.task.tags);
     super.initState();
   }
 
@@ -110,39 +128,78 @@ class _TaskDetailsBodyState extends State<TaskDetailsBody> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          const Text("tags",
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-              )),
+          _taskTags(),
           const SizedBox(
-            height: 5,
+            height: 32,
           ),
-          TagsList(
-            tags: task.tags,
-            size: widget_tag.Size.large,
-          ),
+          _description(),
           const SizedBox(
-            height: 20,
+            height: 32,
           ),
-          const Text("description",
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-              )),
-          const SizedBox(
-            height: 5,
-          ),
-          Text(task.description),
-          const SizedBox(
-            height: 20,
-          ),
-          const Text("comments",
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-              )),
-          const SizedBox(
-            height: 5,
-          ),
-          CommentList(comments: widget.task.comments),
+          _comments()
         ]);
+  }
+
+  /// Tags section - displaying the tags that have been set on the task.
+  Widget _taskTags() {
+    return Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text(
+            "tags",
+            style: Theme.of(context).textTheme.displayMedium,
+          ),
+          const SizedBox(
+            height: 5,
+          ),
+          tags
+        ]);
+  }
+
+  /// Description section - displaying the task description.
+  Widget _description() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          "description",
+          style: Theme.of(context).textTheme.displayMedium,
+        ),
+        const SizedBox(
+          height: 5,
+        ),
+        Text(
+          widget.task.description,
+          style: Theme.of(context).textTheme.bodyLarge,
+        )
+      ],
+    );
+  }
+
+  /// The comment section - displaying all comments to the task.
+  Widget _comments() {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          "comments",
+          style: Theme.of(context).textTheme.displayMedium,
+        ),
+        /*TextStyle(
+              fontWeight: FontWeight.bold,
+            )),*/
+        const SizedBox(
+          height: 5,
+        ),
+        // Text(
+        //   "comments go here",
+        //   style: Theme.of(context).textTheme.bodyLarge,
+        // )
+        CommentList(comments: widget.task.comments),
+      ],
+    );
   }
 }

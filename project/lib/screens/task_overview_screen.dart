@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
-
-import '../models/project.dart';
-import '../models/task.dart';
-import '../widgets/appbar_button.dart';
-import '../widgets/search_bar.dart';
-import '../widgets/task_list_item.dart';
+import 'package:project/models/filter.dart';
+import 'package:project/models/filter_option.dart';
+import 'package:project/widgets/appbar_button.dart';
+import 'package:project/widgets/filtering_modal.dart';
+import 'package:project/widgets/search_bar.dart';
+import 'package:project/widgets/tag_widget.dart';
+import 'package:project/widgets/task_list_item.dart';
+import 'package:project/models/project.dart';
+import 'package:project/models/task.dart';
 
 /// Screen/Scaffold for the overview of tasks in a project
 class TaskOverviewScreen extends StatelessWidget {
@@ -61,6 +64,8 @@ class TaskOverviewBody extends StatefulWidget {
   final Project project;
   const TaskOverviewBody({super.key, required this.project});
 
+  //var displayedItems = List<Map>.from(tasks);
+
   @override
   State<TaskOverviewBody> createState() => _TaskOverviewBodyState();
 }
@@ -76,8 +81,54 @@ class _TaskOverviewBodyState extends State<TaskOverviewBody> {
     super.initState();
   }
 
-  /// Filters through task with the given query string
-  /// [query] - the string to filter through the tasklist for.
+  void sortByNearestDeadline() {
+    List<Map> sortResults = List<Map>.from(items);
+    sortResults.sort((a, b) => (a["deadline"] as String).compareTo(
+          (b["deadline"] as String),
+        ));
+
+    setState(() {
+      items = sortResults.cast<Task>();
+    });
+  }
+
+  void sortByFurthestDeadline() {
+    List<Map> sortResults = List<Map>.from(items);
+    sortResults.sort((a, b) => (b["deadline"] as String).compareTo(
+          (a["deadline"] as String),
+        ));
+
+    setState(() {
+      items = sortResults.cast<Task>();
+    });
+  }
+
+  void filterByTags(Filter filter) {
+    // List<FilterOption> filterOptions =
+    //     filter.filterOptions.where((element) => element.filterBy).toList();
+    //
+    // List<Map> filterResults = [];
+    // for (Task item in widget.project.tasks) {
+    //   for (var element in filterOptions) {
+    //     if ((item.tags as List<Tag>).contains(element.filterOption) &&
+    //         !filterResults.contains(item)) {
+    //       filterResults.add(item);
+    //     }
+    //   }
+    // }
+    //
+    // if (filterResults.isNotEmpty) {
+    //   setState(() {
+    //     items = filterResults;
+    //   });
+    // } else {
+    //   setState(() {
+    //     items = TaskOverviewBody.tasks;
+    //   });
+    // }
+  }
+
+  /// Filters through task with the given query [String] query - the string to filter through the tasklist for.
   void filterSearchResults(String query) {
     if (query.isNotEmpty) {
       List<Task> searchResult = [];
@@ -111,8 +162,67 @@ class _TaskOverviewBodyState extends State<TaskOverviewBody> {
           textEditingController: _searchController,
           searchFunction: filterSearchResults,
           placeholderText: "Search for tasks",
-          // TODO: Add filter modal
-          filterModal: const SizedBox(),
+          filterModal: FilterModal(
+            modalTitle: "Sort and filter tasks",
+            filters: [
+              Filter(
+                title: "sort by",
+                filterHandler: null,
+                filterOptions: [
+                  FilterOption(
+                    filterOption: const Text("nearest deadline"),
+                    filterBy: false,
+                    filterHandler: sortByNearestDeadline,
+                  ),
+                  FilterOption(
+                    filterOption: const Text("furthest deadline"),
+                    filterBy: false,
+                    filterHandler: sortByFurthestDeadline,
+                  ),
+                ],
+                filterType: FilterType.sort,
+              ),
+              Filter(
+                title: "tags",
+                filterHandler: filterByTags,
+                filterOptions: [
+                  FilterOption(
+                    filterOption: const TagWidget(
+                      size: Size.large,
+                      color: Color.fromRGBO(255, 0, 0, 1),
+                      tagText: "urgent",
+                    ),
+                    filterBy: false,
+                  ),
+                  FilterOption(
+                    filterOption: const TagWidget(
+                      size: Size.large,
+                      color: Color.fromRGBO(4, 0, 255, 1),
+                      tagText: "fun",
+                    ),
+                    filterBy: false,
+                  ),
+                  FilterOption(
+                    filterOption: const TagWidget(
+                      size: Size.large,
+                      color: Colors.lightGreen,
+                      tagText: "green",
+                    ),
+                    filterBy: false,
+                  ),
+                  FilterOption(
+                    filterOption: const TagWidget(
+                      size: Size.large,
+                      color: Colors.brown,
+                      tagText: "house",
+                    ),
+                    filterBy: false,
+                  ),
+                ],
+                filterType: FilterType.check,
+              ),
+            ],
+          ),
         ),
         TaskList(
           tasks: items,
