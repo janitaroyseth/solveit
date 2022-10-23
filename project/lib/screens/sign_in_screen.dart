@@ -101,6 +101,7 @@ Widget _buildContent() {
                   padding: EdgeInsets.zero,
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   alignment: Alignment.centerLeft,
+                  //change form foregroundColor to backgroundColor
                   backgroundColor: Colors.black,
                   textStyle: const TextStyle(
                     fontWeight: FontWeight.bold,
