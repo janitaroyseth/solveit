@@ -1,3 +1,5 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/widgets/sign_in_button.dart';
@@ -37,8 +39,8 @@ Widget _buildContent() {
               spreadRadius: 5,
               blurRadius: 7,
               offset: const Offset(0, 3),
-            )]
-      ),
+            )
+          ]),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -88,7 +90,7 @@ Widget _buildContent() {
           const SizedBox(height: 15.0),
           SignUpButton(
             text: "Sign up with email",
-            onPressed: () {},
+            onPressed: _signInAnonymously,
           ),
           const SizedBox(height: 25.0),
           Row(mainAxisAlignment: MainAxisAlignment.center, children: [
@@ -99,7 +101,7 @@ Widget _buildContent() {
                   padding: EdgeInsets.zero,
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   alignment: Alignment.centerLeft,
-                  foregroundColor: Colors.black,
+                  backgroundColor: Colors.black,
                   textStyle: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontFamily: "Comfortaa",
@@ -114,4 +116,15 @@ Widget _buildContent() {
       ),
     ),
   );
+}
+
+Future<void> _signInAnonymously() async {
+  try {
+    final userCredentials = await FirebaseAuth.instance.signInAnonymously();
+    if (kDebugMode) {
+      print("${userCredentials.user?.uid}");
+    }
+  } catch (e) {
+    print(e.toString());
+  }
 }
