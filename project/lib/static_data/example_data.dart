@@ -6,7 +6,7 @@ import '../models/task.dart';
 /// Temp list for testing.
 class ExampleData {
   static List<Project> projects = [
-    Project(title: "Household", tasks: [
+    Project(title: "Household", tags: tags, tasks: [
       Task(
         title: "Vacuum the house",
         description: "Vacuum the living room, hallway and kitchen.",
@@ -29,7 +29,7 @@ class ExampleData {
         ]),
       Task(
         title: "Water flowers",
-        deadline: "15/10/2022",
+        deadline: "15.10.2022",
         description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.",
         tags: <Tag>[
           const Tag(
@@ -43,5 +43,19 @@ class ExampleData {
         ]
       ),
     ])
+  ];
+  static List<Tag> tags = [
+    const Tag(
+      text: "urgent",
+      color: 0xFFFF0000,
+    ),
+    const Tag(
+      text: "green",
+      color: 0xFF8BC34A,
+    ),
+    const Tag(
+      text: "fun",
+      color: 0xFF0400FF,
+    ),
   ];
 }

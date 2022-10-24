@@ -3,19 +3,21 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/models/filter.dart';
 import 'package:project/models/filter_option.dart';
 import 'package:project/widgets/appbar_button.dart';
-import 'package:project/widgets/filtering_modal.dart';
+import 'package:project/widgets/filter_modal.dart';
 import 'package:project/widgets/search_bar.dart';
-import 'package:project/widgets/tag_widget.dart';
 import 'package:project/widgets/task_list_item.dart';
 import 'package:project/models/project.dart';
 import 'package:project/models/task.dart';
+
+import '../static_data/sorting_methods.dart';
+import '../models/tag.dart';
 
 /// Screen/Scaffold for the overview of tasks in a project
 class TaskOverviewScreen extends StatelessWidget {
   const TaskOverviewScreen({super.key});
   @override
   Widget build(BuildContext context) {
-    final project = ModalRoute.of(context)!.settings.arguments as Project;
+    final Project project = ModalRoute.of(context)!.settings.arguments as Project;
     return Scaffold(
       appBar: AppBar(
         title: Text(project.title),
@@ -64,8 +66,6 @@ class TaskOverviewBody extends StatefulWidget {
   final Project project;
   const TaskOverviewBody({super.key, required this.project});
 
-  //var displayedItems = List<Map>.from(tasks);
-
   @override
   State<TaskOverviewBody> createState() => _TaskOverviewBodyState();
 }
@@ -74,61 +74,94 @@ class _TaskOverviewBodyState extends State<TaskOverviewBody> {
   final TextEditingController _searchController = TextEditingController();
 
   List<Task> items = [];
+  String sortType = SortingMethods.dateDesc;
 
   @override
   void initState() {
-    items.addAll(widget.project.tasks);
+    items = widget.project.tasks;
+    sort();
     super.initState();
   }
 
-  void sortByNearestDeadline() {
-    List<Map> sortResults = List<Map>.from(items);
-    sortResults.sort((a, b) => (a["deadline"] as String).compareTo(
-          (b["deadline"] as String),
-        ));
+  /// When sorting method is changed by user, sort the list by new method.
+  /// [FilterOption] filterOption - The sorting method to use when sorting the task list.
+  void onSortChange(FilterOption filterOption) {
+    sortType = filterOption.description;
+    sort();
+  }
 
+  /// Sorts the task list by the chosen method.
+  void sort() {
+    switch(sortType) {
+      case SortingMethods.titleAsc : sortByVariable("title", false); break;
+      case SortingMethods.titleDesc : sortByVariable("title", true); break;
+      case SortingMethods.dateAsc : sortByVariable("deadline", false); break;
+      case SortingMethods.dateDesc : sortByVariable("deadline", true);
+    }
+  }
+
+  /// Sorts the task list by attribute name.
+  /// [String] attribute - Name of the attribute by which to sort.
+  /// [bool] descending - Whether or not the list should be sorted descending.
+  void sortByVariable(String attribute, bool descending) {
+    List<Map> sortResults = [];
+    for (Task task in items) {
+      sortResults.add(task.asMap());
+    }
+    if (descending) {
+      sortResults.sort((a, b) => (a[attribute] as String).compareTo(
+        (b[attribute] as String),
+      ));
+    } else {
+      sortResults.sort((a, b) => (b[attribute] as String).compareTo(
+        (a[attribute] as String),
+      ));
+    }
     setState(() {
-      items = sortResults.cast<Task>();
+      items.clear();
+      for (Map map in sortResults) {
+        items.add(Task(
+            title: map["title"],
+            description: map["description"],
+            tags: map["tags"],
+            deadline: map["deadline"],
+            done: map["done"],
+            comments: map["comments"]
+        ));
+      }
     });
   }
 
-  void sortByFurthestDeadline() {
-    List<Map> sortResults = List<Map>.from(items);
-    sortResults.sort((a, b) => (b["deadline"] as String).compareTo(
-          (a["deadline"] as String),
-        ));
-
-    setState(() {
-      items = sortResults.cast<Task>();
-    });
-  }
-
+  /// Filters the task list by the selected tags.
+  /// [Filter] filter - the filter containing the tags from which to filter.
   void filterByTags(Filter filter) {
-    // List<FilterOption> filterOptions =
-    //     filter.filterOptions.where((element) => element.filterBy).toList();
-    //
-    // List<Map> filterResults = [];
-    // for (Task item in widget.project.tasks) {
-    //   for (var element in filterOptions) {
-    //     if ((item.tags as List<Tag>).contains(element.filterOption) &&
-    //         !filterResults.contains(item)) {
-    //       filterResults.add(item);
-    //     }
-    //   }
-    // }
-    //
-    // if (filterResults.isNotEmpty) {
-    //   setState(() {
-    //     items = filterResults;
-    //   });
-    // } else {
-    //   setState(() {
-    //     items = TaskOverviewBody.tasks;
-    //   });
-    // }
+
+    List<FilterOption> filterOptions =
+        filter.filterOptions.where((element) => element.filterBy).toList();
+
+    List<Task> filterResults = [];
+    for (Task task in widget.project.tasks) {
+      for (FilterOption option in filterOptions) {
+        for (Tag tag in task.tags) {
+          if (tag.text == option.description && !filterResults.contains(task)) {
+            filterResults.add(task);
+          }
+        }
+      }
+    }
+    if (filterResults.isNotEmpty) {
+      setState(() {
+        items = filterResults;
+      });
+    } else {
+      setState(() {
+        items = widget.project.tasks;
+      });
+    }
   }
 
-  /// Filters through task with the given query [String] query - the string to filter through the tasklist for.
+  /// Filters through task with the given query.
+  /// [String] query - the string to filter through the tasklist for.
   void filterSearchResults(String query) {
     if (query.isNotEmpty) {
       List<Task> searchResult = [];
@@ -156,6 +189,7 @@ class _TaskOverviewBodyState extends State<TaskOverviewBody> {
 
   @override
   Widget build(BuildContext context) {
+    Project project = ModalRoute.of(context)!.settings.arguments as Project;
     return Column(
       children: <Widget>[
         SearchBar(
@@ -167,59 +201,20 @@ class _TaskOverviewBodyState extends State<TaskOverviewBody> {
             filters: [
               Filter(
                 title: "sort by",
-                filterHandler: null,
                 filterOptions: [
-                  FilterOption(
-                    filterOption: const Text("nearest deadline"),
-                    filterBy: false,
-                    filterHandler: sortByNearestDeadline,
-                  ),
-                  FilterOption(
-                    filterOption: const Text("furthest deadline"),
-                    filterBy: false,
-                    filterHandler: sortByFurthestDeadline,
-                  ),
+                  FilterOption(description: SortingMethods.dateDesc, filterBy: false),
+                  FilterOption(description: SortingMethods.dateAsc, filterBy: false),
+                  FilterOption(description: SortingMethods.titleDesc, filterBy: false),
+                  FilterOption(description: SortingMethods.titleAsc, filterBy: false),
                 ],
+                filterHandler: onSortChange,
                 filterType: FilterType.sort,
               ),
               Filter(
                 title: "tags",
+                filterOptions: _buildTagFilterOptions(project),
                 filterHandler: filterByTags,
-                filterOptions: [
-                  FilterOption(
-                    filterOption: const TagWidget(
-                      size: Size.large,
-                      color: Color.fromRGBO(255, 0, 0, 1),
-                      tagText: "urgent",
-                    ),
-                    filterBy: false,
-                  ),
-                  FilterOption(
-                    filterOption: const TagWidget(
-                      size: Size.large,
-                      color: Color.fromRGBO(4, 0, 255, 1),
-                      tagText: "fun",
-                    ),
-                    filterBy: false,
-                  ),
-                  FilterOption(
-                    filterOption: const TagWidget(
-                      size: Size.large,
-                      color: Colors.lightGreen,
-                      tagText: "green",
-                    ),
-                    filterBy: false,
-                  ),
-                  FilterOption(
-                    filterOption: const TagWidget(
-                      size: Size.large,
-                      color: Colors.brown,
-                      tagText: "house",
-                    ),
-                    filterBy: false,
-                  ),
-                ],
-                filterType: FilterType.check,
+                filterType: FilterType.tag
               ),
             ],
           ),
@@ -229,6 +224,17 @@ class _TaskOverviewBodyState extends State<TaskOverviewBody> {
         ),
       ],
     );
+  }
+
+  /// Builds the list of tag filter options.
+  /// [Project] the project to retrieve the tags of.
+  List<FilterOption> _buildTagFilterOptions(Project project) {
+    List<FilterOption> options = [];
+
+    for (Tag tag in project.tags) {
+      options.add(FilterOption(tag: tag, description: tag.text, filterBy: false));
+    }
+    return options;
   }
 }
 

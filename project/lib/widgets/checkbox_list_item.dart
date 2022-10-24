@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:project/models/filter.dart';
 import 'package:project/models/filter_option.dart';
+import 'package:project/widgets/tag_widget.dart';
 
 /// Represents a list item with a checkbox for filtering through lists.
 class CheckboxListItem extends StatefulWidget {
@@ -42,6 +43,7 @@ class _CheckboxListItemState extends State<CheckboxListItem> {
   /// Builds a list tile with a checkmark for filtering with the given [FilterOption]
   /// of the given [Filter].
   Widget buildCheckBoxListTile(FilterOption filterOption, Filter filter) {
+
     return Padding(
       padding: const EdgeInsets.only(left: 35.0),
       child: SizedBox(
@@ -49,7 +51,7 @@ class _CheckboxListItemState extends State<CheckboxListItem> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            Flexible(child: filterOption.filterOption),
+            Flexible(child: TagWidget.fromTag(widget.filterOption.tag!)),
             buildCheckMark(filterOption, filter),
           ],
         ),

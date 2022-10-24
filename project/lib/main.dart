@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:project/example_data/example_data.dart';
+import 'package:project/static_data/example_data.dart';
 import 'package:project/screens/project_calendar_screen.dart';
 import 'package:project/screens/sign_in_screen.dart';
 import 'package:project/styles/theme.dart';

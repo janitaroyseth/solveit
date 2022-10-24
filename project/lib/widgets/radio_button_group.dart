@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:project/models/filter_option.dart';
 
+import '../models/filter.dart';
+
 /// Represents a group of radio buttons.
 class RadioButtonGroup extends StatefulWidget {
   /// The list of [FilterOption] this radio group represents.
-  final List<FilterOption> filterOptions;
+  final Filter filter;
 
   /// Creates an instance of [RadioButtonGroup] from the given [List<FilterOption>].
   const RadioButtonGroup({
     super.key,
-    required this.filterOptions,
+    required this.filter,
   });
 
   @override
@@ -21,7 +23,7 @@ class _RadioButtonGroupState extends State<RadioButtonGroup> {
 
   @override
   void initState() {
-    chosenSort = widget.filterOptions[0];
+    chosenSort = widget.filter.filterOptions[0];
     super.initState();
   }
 
@@ -34,18 +36,18 @@ class _RadioButtonGroupState extends State<RadioButtonGroup> {
       onChanged: (value) => setState(
         () {
           chosenSort = value;
-          filterOption.filterHandler!();
+          widget.filter.filterHandler!(filterOption);
         },
       ),
     );
   }
 
   /// Returns a [List<Widget>] of radio buttons made from the given [List<FilterOption>].
-  Widget buildRadioButtonGroup(List<FilterOption> filterOptions) {
-    List<Widget> radiobuttons = [];
+  Widget buildRadioButtonGroup(Filter filter) {
+    List<Widget> radioButtons = [];
 
-    for (FilterOption filterOption in filterOptions) {
-      radiobuttons.add(
+    for (FilterOption filterOption in filter.filterOptions) {
+      radioButtons.add(
         Padding(
           padding: const EdgeInsets.only(left: 35.0),
           child: SizedBox(
@@ -53,7 +55,7 @@ class _RadioButtonGroupState extends State<RadioButtonGroup> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                Flexible(child: filterOption.filterOption),
+                Flexible(child: Text(filterOption.description)),
                 buildRadioButton(filterOption),
               ],
             ),
@@ -62,12 +64,12 @@ class _RadioButtonGroupState extends State<RadioButtonGroup> {
       );
     }
     return Column(
-      children: radiobuttons,
+      children: radioButtons,
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return buildRadioButtonGroup(widget.filterOptions);
+    return buildRadioButtonGroup(widget.filter);
   }
 }

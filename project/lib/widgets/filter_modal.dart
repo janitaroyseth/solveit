@@ -35,10 +35,10 @@ class _FilterModalState extends State<FilterModal> {
 
     if (filter.filterType == FilterType.sort) {
       filterOptionsDropDownList
-          .add(RadioButtonGroup(filterOptions: filterOptions));
+          .add(RadioButtonGroup(filter: filter));
     }
 
-    if (filter.filterType == FilterType.check) {
+    if (filter.filterType == FilterType.tag) {
       for (FilterOption filterOption in filterOptions) {
         filterOptionsDropDownList
             .add(CheckboxListItem(filterOption: filterOption, filter: filter));

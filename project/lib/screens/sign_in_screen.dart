@@ -4,7 +4,7 @@ import 'package:project/widgets/sign_in_button.dart';
 import 'package:project/widgets/sign_up_button.dart';
 
 import '../models/project.dart';
-import '../example_data/example_data.dart';
+import '../static_data/example_data.dart';
 
 ///Represents the sign-in screen for the application
 class SignInScreen extends StatelessWidget {

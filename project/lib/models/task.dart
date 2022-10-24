@@ -29,4 +29,9 @@ class Task {
   List<dynamic> values() {
     return [title, description, done, deadline, tags];
   }
+
+  /// Returns the data content of the task as a map.
+  Map asMap() {
+    return {"title": title, "description": description, "tags": tags, "done": done, "deadline": deadline, "comments": comments};
+  }
 }
