@@ -15,13 +15,12 @@ class CommentList extends StatefulWidget {
 class _CommentListState extends State<CommentList> {
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: ListView.builder(
-        itemBuilder: ((context, index) => CommentListItem(
-              comment: widget.comments[index],
-            )),
-        itemCount: widget.comments.length,
-      ),
+    List<Widget> commentWidgets = [];
+    for (Comment comment in widget.comments) {
+      commentWidgets.add(CommentListItem(comment: comment));
+    }
+    return Column(
+      children: commentWidgets,
     );
   }
 }

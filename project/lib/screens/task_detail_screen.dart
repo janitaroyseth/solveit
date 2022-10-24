@@ -5,7 +5,6 @@ import '../models/task.dart';
 import '../widgets/appbar_button.dart';
 import '../widgets/comment_list.dart';
 import '../widgets/tags_list.dart';
-import '../models/tag.dart';
 
 /// Screen/Scaffold for the details of a task in a project
 class TaskDetailScreen extends StatefulWidget {
@@ -92,38 +91,19 @@ class _TaskDetailsScreenState extends State<TaskDetailScreen> {
 class TaskDetailsBody extends StatefulWidget {
   const TaskDetailsBody({super.key, required this.task});
   final Task task;
-  static TagsList tags = const TagsList(
-    tags: [
-      Tag(
-        color: 0xff0000,
-        text: "urgent",
-      ),
-      Tag(
-        color: 0x00ff00,
-        text: "long-term",
-      ),
-      Tag(
-        color: 0x0000ff,
-        text: "recurring",
-      ),
-    ],
-  );
 
   @override
   State<TaskDetailsBody> createState() => _TaskDetailsBodyState();
 }
 
 class _TaskDetailsBodyState extends State<TaskDetailsBody> {
+  Task? task;
   TagsList tags = const TagsList(tags: []);
 
   @override
-  void initState() {
-    tags = TagsList(tags: widget.task.tags);
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    task = ModalRoute.of(context)!.settings.arguments as Task;
+    tags = TagsList(tags: task!.tags);
     return Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -154,7 +134,8 @@ class _TaskDetailsBodyState extends State<TaskDetailsBody> {
             height: 5,
           ),
           tags
-        ]);
+        ]
+    );
   }
 
   /// Description section - displaying the task description.
