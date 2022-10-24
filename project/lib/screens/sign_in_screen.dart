@@ -90,7 +90,7 @@ Widget _buildContent() {
           const SizedBox(height: 15.0),
           SignUpButton(
             text: "Sign up with email",
-            onPressed: _signInAnonymously,
+            onPressed: () {},
           ),
           const SizedBox(height: 25.0),
           Row(mainAxisAlignment: MainAxisAlignment.center, children: [
@@ -101,15 +101,16 @@ Widget _buildContent() {
                   padding: EdgeInsets.zero,
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   alignment: Alignment.centerLeft,
-                  //change form foregroundColor to backgroundColor
-                  backgroundColor: Colors.black,
+                  //TODO: Check why foregroundColor makes error.
+                  //foregroundColor: Colors.black,
                   textStyle: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontFamily: "Comfortaa",
                     color: Colors.black,
                   )),
-              onPressed: () {},
-              child: const Text("log in"),
+              onPressed: _signInAnonymously,
+              //TODO: Remove anonymously login from here.
+              child: const Text("log in anonymously"),
             ),
             //Text("log in", style: TextStyle(fontWeight: FontWeight.bold))
           ]),
