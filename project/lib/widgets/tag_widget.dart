@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:project/models/tag.dart';
 
 /// Options for sizing of tags.
 enum Size { small, large }
 
 /// Represents a tag which descibes a task.
-class Tag extends StatelessWidget {
+class TagWidget extends StatelessWidget {
   /// The [size] of the tag, of type enum [Size].
   final Size size;
 
@@ -14,13 +15,17 @@ class Tag extends StatelessWidget {
   /// [tagText] is the text in the tag, of type [String].
   final String tagText;
 
-  /// Creates an instance of [Tag].
-  const Tag({
+  /// Creates an instance of [TagWidget].
+  const TagWidget({
     super.key,
     required this.size,
     required this.color,
     required this.tagText,
   });
+
+  TagWidget.fromTag(Tag tag, {super.key, this.size = Size.large})
+      : tagText = tag.text,
+        color = Color(tag.color);
 
   @override
   int get hashCode => color.hashCode + tagText.hashCode;

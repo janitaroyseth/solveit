@@ -3,6 +3,9 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/widgets/sign_in_button.dart';
 import 'package:project/widgets/sign_up_button.dart';
 
+import '../models/project.dart';
+import '../static_data/example_data.dart';
+
 ///Represents the sign-in screen for the application
 class SignInScreen extends StatelessWidget {
   const SignInScreen({super.key});
@@ -17,14 +20,15 @@ class SignInScreen extends StatelessWidget {
             fit: BoxFit.fill,
           ),
         ),
-        child: _buildContent(),
+        child: _buildContent(context),
       ),
     );
   }
 }
 
 //TODO: ADD BLUR
-Widget _buildContent() {
+Widget _buildContent(BuildContext context) {
+  Project project = ExampleData.projects[0];
   return Padding(
     padding: const EdgeInsets.fromLTRB(40, 120, 40, 100),
     child: Container(
@@ -37,8 +41,8 @@ Widget _buildContent() {
               spreadRadius: 5,
               blurRadius: 7,
               offset: const Offset(0, 3),
-            )]
-      ),
+            )
+          ]),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -65,7 +69,9 @@ Widget _buildContent() {
           SignInButton(
             icon: PhosphorIcons.googleLogo,
             text: "Continue with Google",
-            onPressed: () {},
+            onPressed: () {
+              Navigator.pushNamed(context, '/tasks', arguments: project);
+            },
           ),
           const SizedBox(height: 15.0),
           SignInButton(
@@ -99,7 +105,8 @@ Widget _buildContent() {
                   padding: EdgeInsets.zero,
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   alignment: Alignment.centerLeft,
-                  foregroundColor: Colors.black,
+
+                  ///foregroundColor: Colors.black,
                   textStyle: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontFamily: "Comfortaa",

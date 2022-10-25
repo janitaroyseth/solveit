@@ -1,58 +1,47 @@
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
+import '../models/task.dart';
 import '../widgets/appbar_button.dart';
-import '../widgets/tag.dart';
+import '../widgets/comment_list.dart';
 import '../widgets/tags_list.dart';
 
 /// Screen/Scaffold for the details of a task in a project
 class TaskDetailScreen extends StatefulWidget {
   const TaskDetailScreen({super.key});
-  static var task = {
-    "title": "Clean house",
-    "deadline": "10/10/2022",
-    "description":
-        "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.",
-    "done": false,
-    "tags": <Tag>[
-      const Tag(
-        size: Size.small,
-        color: Color.fromRGBO(255, 0, 0, 1),
-        tagText: "urgent",
-      ),
-    ]
-  };
 
   @override
   State<StatefulWidget> createState() => _TaskDetailsScreenState();
 }
 
 class _TaskDetailsScreenState extends State<TaskDetailScreen> {
-  var task = {};
-
+  Task task = Task();
   @override
   void initState() {
-    task = TaskDetailScreen.task;
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
+    task = ModalRoute.of(context)!.settings.arguments as Task;
     return Scaffold(
       appBar: AppBar(
         title: Row(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Text(
-              (task["title"] as String).toLowerCase(),
+            Text(task.title),
+            Visibility(
+              visible: true,
+              child: _textStatus(task),
             ),
-            _textStatus(),
           ],
         ),
         titleSpacing: -4,
         leading: AppBarButton(
-          handler: () {},
+          handler: () {
+            Navigator.pop(context);
+          },
           tooltip: "Go back",
           icon: PhosphorIcons.caretLeftLight,
         ),
@@ -60,7 +49,7 @@ class _TaskDetailsScreenState extends State<TaskDetailScreen> {
           AppBarButton(
               handler: _closeTask,
               tooltip: "Open or close the current task",
-              icon: task["done"] == true
+              icon: task.done == true
                   ? PhosphorIcons.arrowsCounterClockwiseLight
                   : PhosphorIcons.checkCircleLight),
           AppBarButton(
@@ -77,7 +66,7 @@ class _TaskDetailsScreenState extends State<TaskDetailScreen> {
           onRefresh: () => Future.delayed(
             const Duration(seconds: 2),
           ),
-          child: const TaskDetailsBody(),
+          child: TaskDetailsBody(task: task),
         ),
       ),
     );
@@ -87,59 +76,34 @@ class _TaskDetailsScreenState extends State<TaskDetailScreen> {
       const Text(" - open", style: TextStyle(color: Colors.green));
 
   /// Text displaying task status - whether task is open or done.
-  Text _textStatus() {
-    return task["done"] == true ? const Text(" - done") : openStatus;
+  Widget _textStatus(Task task) {
+    return Text(" - ${task.done ? "done" : "open"}");
   }
 
   void _closeTask() {
     setState(() {
-      task["done"] = task["done"] == true ? false : true;
+      task.done = task.done ? false : true;
     });
   }
 }
 
 /// Body for the detailed information of a task in the task-details screen.
 class TaskDetailsBody extends StatefulWidget {
-  const TaskDetailsBody({super.key});
-
-  static TagsList tags = const TagsList(
-    tags: [
-      Tag(
-        size: Size.large,
-        color: Color.fromRGBO(255, 0, 0, 1),
-        tagText: "urgent",
-      ),
-      Tag(
-        size: Size.large,
-        color: Color.fromRGBO(0, 200, 0, 1),
-        tagText: "long-term",
-      ),
-      Tag(
-        size: Size.large,
-        color: Color.fromRGBO(255, 0, 200, 1),
-        tagText: "recurring",
-      ),
-    ],
-  );
+  const TaskDetailsBody({super.key, required this.task});
+  final Task task;
 
   @override
   State<TaskDetailsBody> createState() => _TaskDetailsBodyState();
 }
 
 class _TaskDetailsBodyState extends State<TaskDetailsBody> {
+  Task? task;
   TagsList tags = const TagsList(tags: []);
-  String description =
-      "Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. "
-      "Velit officia consequat duis enim velit mollit. Exercitation veniam consequat sunt nostrud...";
-
-  @override
-  void initState() {
-    tags = TaskDetailsBody.tags;
-    super.initState();
-  }
 
   @override
   Widget build(BuildContext context) {
+    task = ModalRoute.of(context)!.settings.arguments as Task;
+    tags = TagsList(tags: task!.tags);
     return Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -170,7 +134,8 @@ class _TaskDetailsBodyState extends State<TaskDetailsBody> {
             height: 5,
           ),
           tags
-        ]);
+        ]
+    );
   }
 
   /// Description section - displaying the task description.
@@ -187,7 +152,7 @@ class _TaskDetailsBodyState extends State<TaskDetailsBody> {
           height: 5,
         ),
         Text(
-          description,
+          widget.task.description,
           style: Theme.of(context).textTheme.bodyLarge,
         )
       ],
@@ -210,10 +175,11 @@ class _TaskDetailsBodyState extends State<TaskDetailsBody> {
         const SizedBox(
           height: 5,
         ),
-        Text(
-          "comments go here",
-          style: Theme.of(context).textTheme.bodyLarge,
-        )
+        // Text(
+        //   "comments go here",
+        //   style: Theme.of(context).textTheme.bodyLarge,
+        // )
+        CommentList(comments: widget.task.comments),
       ],
     );
   }
