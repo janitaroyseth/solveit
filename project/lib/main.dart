@@ -1,3 +1,4 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:project/static_data/example_data.dart';
 import 'package:project/screens/project_calendar_screen.dart';
@@ -7,7 +8,9 @@ import 'package:project/screens/task_detail_screen.dart';
 import 'package:project/screens/task_overview_screen.dart';
 import './models/project.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(const MyApp());
 }
 

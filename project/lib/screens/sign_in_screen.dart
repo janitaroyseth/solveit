@@ -1,3 +1,5 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/widgets/sign_in_button.dart';
@@ -105,15 +107,16 @@ Widget _buildContent(BuildContext context) {
                   padding: EdgeInsets.zero,
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                   alignment: Alignment.centerLeft,
-
-                  ///foregroundColor: Colors.black,
+                  //TODO: Check why foregroundColor makes error.
+                  //foregroundColor: Colors.black,
                   textStyle: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontFamily: "Comfortaa",
                     color: Colors.black,
                   )),
-              onPressed: () {},
-              child: const Text("log in"),
+              onPressed: _signInAnonymously,
+              //TODO: Remove anonymously login from here.
+              child: const Text("log in anonymously"),
             ),
             //Text("log in", style: TextStyle(fontWeight: FontWeight.bold))
           ]),
@@ -121,4 +124,15 @@ Widget _buildContent(BuildContext context) {
       ),
     ),
   );
+}
+
+Future<void> _signInAnonymously() async {
+  try {
+    final userCredentials = await FirebaseAuth.instance.signInAnonymously();
+    if (kDebugMode) {
+      print("${userCredentials.user?.uid}");
+    }
+  } catch (e) {
+    print(e.toString());
+  }
 }

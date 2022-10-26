@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "339135253031",
+    "project_id": "solveit-1337",
+    "storage_bucket": "solveit-1337.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:339135253031:android:e521ddb12c6a01b9019c02",
+        "android_client_info": {
+          "package_name": "com.example.project"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "339135253031-rd3no0rf79mljf83326ott5m1uj9l16o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC_U8VSLeguHccwSdaM31iR4yoyZRR3neM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "339135253031-rd3no0rf79mljf83326ott5m1uj9l16o.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "339135253031-qgfooj4sdnl3me1rn5edlg52uagdf12p.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.project"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
