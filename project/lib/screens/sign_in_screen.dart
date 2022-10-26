@@ -1,5 +1,4 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/screens/create_profile_screen.dart';
@@ -11,7 +10,17 @@ import '../static_data/example_data.dart';
 
 ///Represents the sign-in screen for the application
 class SignInScreen extends StatelessWidget {
-  const SignInScreen({super.key});
+  const SignInScreen({Key? key, required this.onSignIn}) : super(key: key);
+  final void Function(User) onSignIn;
+
+  Future<void> _signInAnonymously() async {
+    try {
+      final userCredentials = await FirebaseAuth.instance.signInAnonymously();
+      onSignIn(userCredentials.user);
+    } catch (e) {
+      print(e.toString());
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -126,15 +135,4 @@ Widget _buildContent(BuildContext context) {
       ),
     ),
   );
-}
-
-Future<void> _signInAnonymously() async {
-  try {
-    final userCredentials = await FirebaseAuth.instance.signInAnonymously();
-    if (kDebugMode) {
-      print("${userCredentials.user?.uid}");
-    }
-  } catch (e) {
-    print(e.toString());
-  }
 }
