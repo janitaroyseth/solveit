@@ -5,8 +5,28 @@ import 'package:table_calendar/table_calendar.dart';
 class Themes {
   static Color textColor = Colors.black;
 
+  // TODO: fix this shit
+  static const MaterialColor primaryColor = MaterialColor(
+    0xff5C00F1,
+    <int, Color>{
+      50: Color(0xff5C00F1), //10%
+      100: Color.fromRGBO(92, 0, 241, 1),
+      200: Color.fromRGBO(92, 0, 241, 1),
+      300: Color.fromRGBO(92, 0, 241, 1),
+      400: Color.fromRGBO(92, 0, 241, 1),
+      500: Color.fromRGBO(92, 0, 241, 1),
+      600: Color.fromRGBO(92, 0, 241, 1),
+      700: Color.fromRGBO(92, 0, 241, 1),
+      800: Color.fromRGBO(92, 0, 241, 1),
+      900: Color(0xff5C00F1),
+    },
+  );
+
+  static const String fontFamily = "Comfortaa";
+
   static ThemeData themeData = ThemeData(
-    primarySwatch: Colors.indigo,
+    primarySwatch: primaryColor,
+    // primaryColor: const Color.fromRGBO(92, 0, 241, 1),
     scaffoldBackgroundColor: Colors.white,
     fontFamily: "Comfortaa",
     indicatorColor: Colors.black,
@@ -19,7 +39,7 @@ class Themes {
     textTheme: textTheme,
   );
 
-  static HeaderStyle calendarHeaderTheme = const HeaderStyle(
+  static const HeaderStyle calendarHeaderTheme = HeaderStyle(
     formatButtonVisible: false,
     headerPadding: EdgeInsets.only(top: 10.0, bottom: 10.0),
     titleCentered: true,
@@ -69,6 +89,33 @@ class Themes {
       fontSize: 12,
       letterSpacing: 0,
       overflow: TextOverflow.ellipsis,
+    ),
+  );
+
+  static ButtonStyle primaryButtonStyle = ButtonStyle(
+    elevation: MaterialStateProperty.all<double>(0),
+    foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+      RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(50.0),
+      ),
+    ),
+  );
+
+  static ButtonStyle secondaryButtonStyle = ButtonStyle(
+    elevation: MaterialStateProperty.all<double>(0),
+    backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
+    foregroundColor: MaterialStateProperty.all<Color>(
+      const Color.fromRGBO(92, 0, 241, 1),
+    ),
+    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+      RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(50.0),
+        side: const BorderSide(
+          color: Color.fromRGBO(190, 153, 250, 1),
+          width: 1.5,
+        ),
+      ),
     ),
   );
 }

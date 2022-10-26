@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:project/screens/create_profile_screen.dart';
 import 'package:project/widgets/sign_in_button.dart';
 import 'package:project/widgets/sign_up_button.dart';
 
@@ -79,7 +80,8 @@ Widget _buildContent(BuildContext context) {
           SignInButton(
             icon: PhosphorIcons.facebookLogo,
             text: "Continue with Facebook",
-            onPressed: () {},
+            onPressed: () => Navigator.of(context)
+                .pushReplacementNamed(CreateProfileScreen.routeName),
           ),
           const SizedBox(height: 15.0),
           SignInButton(

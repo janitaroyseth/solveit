@@ -11,6 +11,5 @@ class FilterOption {
   final Tag? tag;
 
   /// Creates an instance of [FilterOption] with the given filter option description
-  FilterOption({
-    required this.description, required this.filterBy, this.tag});
+  FilterOption({required this.description, required this.filterBy, this.tag});
 }
