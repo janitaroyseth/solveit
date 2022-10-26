@@ -5,6 +5,7 @@ class AppBarButton extends StatelessWidget {
   final VoidCallback handler;
   final String tooltip;
   final IconData icon;
+  final Color color;
 
   /// Creates an instance of appbar button with the given function [handler], the given [tooltip] and the given [icon].
   const AppBarButton({
@@ -12,6 +13,7 @@ class AppBarButton extends StatelessWidget {
     required this.handler,
     required this.tooltip,
     required this.icon,
+    this.color = Colors.black,
   });
 
   @override
@@ -26,6 +28,7 @@ class AppBarButton extends StatelessWidget {
       icon: Icon(
         icon,
         size: 34,
+        color: color,
       ),
     );
   }

@@ -1,5 +1,7 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:project/screens/create_profile_screen.dart';
+import 'package:project/screens/project_overview_screen.dart';
 import 'package:project/static_data/example_data.dart';
 import 'package:project/screens/project_calendar_screen.dart';
 import 'package:project/screens/sign_in_screen.dart';
@@ -29,6 +31,9 @@ class MyApp extends StatelessWidget {
         '/project/calendar': (context) => const ProjectCalendarScreen(),
         '/tasks': (context) => const TaskOverviewScreen(),
         '/task': (context) => const TaskDetailScreen(),
+        ProjectOverviewScreen.routeName: (context) =>
+            const ProjectOverviewScreen(),
+        CreateProfileScreen.routeName: (context) => const CreateProfileScreen(),
       },
     );
   }

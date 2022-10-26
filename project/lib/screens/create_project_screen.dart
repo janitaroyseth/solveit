@@ -18,14 +18,16 @@ class CreateProjectScreen extends StatelessWidget {
           handler: () => Navigator.of(context).pop(),
           tooltip: "Add new task",
           icon: PhosphorIcons.caretLeftLight,
+          color: Colors.black,
         ),
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         actions: <Widget>[
           AppBarButton(
-              handler: () {},
-              tooltip: "Create new project",
-              icon: PhosphorIcons.floppyDiskLight)
+            handler: () {},
+            tooltip: "Create new project",
+            icon: PhosphorIcons.floppyDiskLight,
+          )
         ],
       ),
       body: Padding(
