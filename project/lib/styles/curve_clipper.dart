@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
+/// Clipper which clips a path with a inward curve at the bottom horizontal line.
 class CurveClipper extends CustomClipper<Path> {
+  /// Creates an instance of [CurveClipper]
   CurveClipper();
 
   @override
