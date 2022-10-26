@@ -1,33 +1,18 @@
 import 'package:flutter/material.dart';
+import '../models/task.dart';
 
-import 'tag.dart';
 import 'tags_list.dart';
 
-/// Represents a task as a list item used in a task list.
+/// Converts a Task object to a list item used in a task list.
 class TaskListItem extends StatelessWidget {
-  /// The [title] or name of the task as string.
-  final String title;
+  /// The [task] to be converted.
+  final Task task;
 
-  /// The [description] of the task as string.
-  final String description;
-
-  /// The [deadline] of the task as string.
-  final String deadline;
-
-  /// List of [tags] (type Tag) connected to the task.
-  final List<Tag> tags;
-
-  /// Creates an instance of task list item where [title] is the name of the
-  /// task, [description] is the description of the task, [deadline] is the
-  /// deadline of the task and [tags] is a list containing type Tag connected
+  /// Creates an instance of task list item where [task.title] is the name of the
+  /// task, [task.description] is the description of the task, [task.deadline] is the
+  /// deadline of the task and [task.tags] is a list containing type Tag connected
   /// to the task.
-  const TaskListItem({
-    Key? key,
-    required this.title,
-    required this.description,
-    required this.deadline,
-    required this.tags,
-  }) : super(key: key);
+  const TaskListItem({super.key, required this.task});
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +34,9 @@ class TaskListItem extends StatelessWidget {
           ],
         ),
         child: InkWell(
-          onTap: () {},
+          onTap: () {
+            Navigator.pushNamed(context, '/task', arguments: task);
+          },
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Column(
@@ -62,13 +49,13 @@ class TaskListItem extends StatelessWidget {
                     children: <Widget>[
                       Expanded(
                         child: Text(
-                          title.toLowerCase(),
+                          task.title.toLowerCase(),
                           textAlign: TextAlign.start,
                           style: Theme.of(context).textTheme.displaySmall,
                         ),
                       ),
                       Text(
-                        deadline,
+                        task.deadline!,
                         style: Theme.of(context).textTheme.labelSmall,
                       )
                     ],
@@ -78,7 +65,7 @@ class TaskListItem extends StatelessWidget {
                   padding: const EdgeInsets.only(top: 4.0),
                   alignment: Alignment.topLeft,
                   child: Text(
-                    description,
+                    task.description,
                     textAlign: TextAlign.start,
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
@@ -87,7 +74,7 @@ class TaskListItem extends StatelessWidget {
                   height: 10.0,
                 ),
                 TagsList(
-                  tags: tags,
+                  tags: task.tags,
                 ),
               ],
             ),

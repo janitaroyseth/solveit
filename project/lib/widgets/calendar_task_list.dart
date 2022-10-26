@@ -39,11 +39,7 @@ class CalendarTaskList extends StatelessWidget {
                 ),
               );
             }
-            return TaskListItem(
-              title: value[index - 1]["title"],
-              description: value[index - 1]["description"],
-              deadline: value[index - 1]["deadline"],
-              tags: value[index - 1]["tags"],
+            return TaskListItem(task: value[index-1]
             );
           },
         ),

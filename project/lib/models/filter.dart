@@ -1,9 +1,9 @@
 import 'package:project/models/filter_option.dart';
 
 /// What type of filtering, sort or check.
-enum FilterType { sort, check }
+enum FilterType { sort, tag }
 
-/// Reptresents a filter option to filter and sort through lists.
+/// Represents a filter option to filter and sort through lists.
 class Filter {
   /// [bool] showing whether the filter is collapsed (hidden), or not (showing).
   bool collapsed;
@@ -12,16 +12,17 @@ class Filter {
   final String title;
 
   /// [Function] function to be used for filtering or sorting, ignore if not needed.
-  final Function(Filter filter)? filterHandler;
+  final Function? filterHandler;
 
-  /// [List<FilterOption>] list of filteroptions to filter by.
-  List<FilterOption> filterOptions;
+  /// [List<FilterOption>] list of filterOptions to filter by.
+  final List<FilterOption> filterOptions;
 
-  /// [FilterType] enum describing which type of filtering this is.
+  ///[FilterType] which type of filter it is.
   final FilterType filterType;
 
-  /// Creates an instance of [Filter] with the given title, filterhandler,
-  /// filter options and filtertype.
+
+  /// Creates an instance of [Filter] with the given title, filterHandler,
+  /// filter options and filterType.
   Filter({
     this.collapsed = true,
     required this.title,
