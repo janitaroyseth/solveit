@@ -3,10 +3,9 @@ import 'package:jiffy/jiffy.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/models/project.dart';
 import 'package:project/screens/profile_screen.dart';
-import 'package:project/screens/task_overview_screen.dart';
-import 'package:project/static_data/example_data.dart';
 import 'package:project/styles/curve_clipper.dart';
 import 'package:project/widgets/appbar_button.dart';
+import 'package:project/widgets/project_pop_up_menu.dart';
 import 'package:project/widgets/user_list_item.dart';
 
 /// Scaffold/screen displaying a preview of the project with
@@ -32,7 +31,10 @@ class ProjectPreviewScreen extends StatelessWidget {
           color: Colors.white,
         ),
         actions: <Widget>[
-          _ProjectPopUpMenu(project: project),
+          ProjectPopUpMenu(
+            project: project,
+            currentRouteName: "/project-preview",
+          ),
         ],
       ),
       body: SingleChildScrollView(
@@ -137,88 +139,6 @@ class ProjectPreviewScreen extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
-}
-
-class _ProjectPopUpMenu extends StatefulWidget {
-  final Project project;
-  const _ProjectPopUpMenu({required this.project});
-
-  @override
-  State<_ProjectPopUpMenu> createState() => __ProjectPopUpMenuState();
-}
-
-class __ProjectPopUpMenuState extends State<_ProjectPopUpMenu> {
-  @override
-  Widget build(BuildContext context) {
-    return PopupMenuButton(
-      icon: const Icon(
-        PhosphorIcons.dotsThreeVertical,
-        color: Colors.white,
-        size: 34,
-      ),
-      tooltip: "Menu for project",
-      itemBuilder: (context) => [
-        const PopupMenuItem(
-          value: 0,
-          height: 48,
-          child: Text("edit project"),
-        ),
-        PopupMenuItem(
-          value: 1,
-          height: 48,
-          onTap: () {
-            Future.delayed(
-              const Duration(seconds: 0),
-              () => Navigator.of(context).pushReplacementNamed(
-                TaskOverviewScreen.routeName,
-                arguments: widget.project,
-              ),
-            );
-          },
-          child: const Text("go to tasks"),
-        ),
-        PopupMenuItem(
-          value: 2,
-          height: 48,
-          onTap: () {
-            Future.delayed(
-              const Duration(seconds: 0),
-              () => showDialog(
-                context: context,
-                builder: (context) => AlertDialog(
-                  title: const Text(
-                    "deleting project",
-                  ),
-                  content: Text(
-                    "Are you sure you want to delete the project \"${widget.project.title.toLowerCase()}\"",
-                  ),
-                  actions: [
-                    TextButton(
-                      onPressed: () {},
-                      child: const Text("no"),
-                    ),
-                    TextButton(
-                      onPressed: () {},
-                      child: Text(
-                        "yes",
-                        style: TextStyle(
-                          color: Colors.red.shade900,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          },
-          child: Text(
-            "delete projext",
-            style: TextStyle(color: Colors.red.shade900),
-          ),
-        ),
-      ],
     );
   }
 }
