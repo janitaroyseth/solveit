@@ -82,7 +82,7 @@ class CreateProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color.fromRGBO(92, 0, 241, 1),
+        backgroundColor: Themes.primaryColor,
         elevation: 0,
         leading: AppBarButton(
           handler: () => Navigator.of(context).pop(),
@@ -99,7 +99,7 @@ class CreateProfileScreen extends StatelessWidget {
                 clipper: CurveClipper(),
                 child: Container(
                   height: 400,
-                  color: const Color.fromRGBO(92, 0, 241, 1),
+                  color: Themes.primaryColor,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: <Widget>[
