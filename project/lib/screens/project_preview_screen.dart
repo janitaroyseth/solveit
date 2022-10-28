@@ -26,7 +26,7 @@ class ProjectPreviewScreen extends StatelessWidget {
         backgroundColor: Colors.transparent,
         leading: AppBarButton(
           icon: PhosphorIcons.caretLeftLight,
-          handler: () {},
+          handler: () => Navigator.of(context).pop(),
           tooltip: "Go back",
           color: Colors.white,
         ),
