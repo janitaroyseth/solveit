@@ -14,18 +14,23 @@ class ProjectCard extends StatelessWidget {
         child: SizedBox(
           width: 150,
           height: 75,
-          child: Column(
-            children: [
-              Row(
-                children: [
-                  Text(project.title, textAlign: TextAlign.left),
-                ],
-              ),
-              const Text(
-                "Laboris non cillum consectetur reprehenderit quis labore nisi elit.",
-                style: TextStyle(fontSize: 8),
-              ),
-            ],
+          child: InkWell(
+            onTap: () {
+              Navigator.pushNamed(context, '/tasks', arguments: project);
+            },
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    Text(project.title, textAlign: TextAlign.left),
+                  ],
+                ),
+                const Text(
+                  "Laboris non cillum consectetur reprehenderit quis labore nisi elit.",
+                  style: TextStyle(fontSize: 8),
+                ),
+              ],
+            ),
           ),
         ),
       ),
