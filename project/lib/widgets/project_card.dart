@@ -1,29 +1,28 @@
 import 'package:flutter/material.dart';
-import 'package:project/screens/project_preview_screen.dart';
-import 'package:project/static_data/example_data.dart';
+import 'package:project/models/project.dart';
 
 /// Represents a project as a card used on project screen.
 class ProjectCard extends StatelessWidget {
-  const ProjectCard({super.key});
+  final Project project;
+  const ProjectCard({super.key, required this.project});
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () => Navigator.of(context).pushNamed(
-        ProjectPreviewScreen.routeName,
-        arguments: ExampleData.projects[0],
-      ),
-      child: Card(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: SizedBox(
-            width: 150,
-            height: 75,
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: SizedBox(
+          width: 150,
+          height: 75,
+          child: InkWell(
+            onTap: () {
+              Navigator.pushNamed(context, '/tasks', arguments: project);
+            },
             child: Column(
               children: [
                 Row(
-                  children: const [
-                    Text("Title", textAlign: TextAlign.left),
+                  children: [
+                    Text(project.title, textAlign: TextAlign.left),
                   ],
                 ),
                 const Text(

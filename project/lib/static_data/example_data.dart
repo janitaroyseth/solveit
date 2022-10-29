@@ -6,32 +6,29 @@ import '../models/task.dart';
 /// Temp list for testing.
 class ExampleData {
   static List<Project> projects = [
-    Project(
-      title: "Household",
-      tags: tags,
-      tasks: [
-        Task(
-            title: "Vacuum the house",
-            description: "Vacuum the living room, hallway and kitchen.",
-            deadline: "23.10.2022",
-            comments: [
-              Comment(
-                  author: "Espen",
-                  date: "18.10.2022",
-                  text: "Only had time to vacuum the living room and hallway."),
-              Comment(
-                  author: "Sakarias",
-                  date: "19.10.2022",
-                  text:
-                      "That's okay, your mother and I still love you. \nYou can do the rest tomorrow."),
-            ],
-            tags: [
-              const Tag(
-                text: "urgent",
-                color: 0xFFFF0000,
-              ),
-            ]),
-        Task(
+    Project(title: "Household", tags: tags, tasks: [
+      Task(
+          title: "Vacuum the house",
+          description: "Vacuum the living room, hallway and kitchen.",
+          deadline: "23.10.2022",
+          comments: [
+            Comment(
+                author: "Espen",
+                date: "18.10.2022",
+                text: "Only had time to vacuum the living room and hallway."),
+            Comment(
+                author: "Sakarias",
+                date: "19.10.2022",
+                text:
+                    "That's okay, your mother and I still love you. \nYou can do the rest tomorrow."),
+          ],
+          tags: [
+            const Tag(
+              text: "urgent",
+              color: 0xFFFF0000,
+            ),
+          ]),
+      Task(
           title: "Water flowers",
           deadline: "15.10.2022",
           description:
@@ -45,14 +42,8 @@ class ExampleData {
               text: "fun",
               color: 0xFF0400FF,
             ),
-          ],
-        ),
-      ],
-      imageUrl: "assets/images/project_1_image.png",
-      description:
-          "Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis enim velit mollit. Exercitation veniam consequat sunt nostrud amet.",
-      lastUpdated: "31/10/2022",
-    )
+          ]),
+    ])
   ];
   static List<Tag> tags = [
     const Tag(

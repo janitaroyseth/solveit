@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/models/filter.dart';
 import 'package:project/models/filter_option.dart';
+import 'package:project/styles/theme.dart';
+import 'package:project/widgets/project_pop_up_menu.dart';
 import 'package:project/widgets/appbar_button.dart';
 import 'package:project/widgets/filter_modal.dart';
 import 'package:project/widgets/search_bar.dart';
@@ -22,30 +24,29 @@ class TaskOverviewScreen extends StatelessWidget {
         ModalRoute.of(context)!.settings.arguments as Project;
     return Scaffold(
       appBar: AppBar(
-        title: Text(project.title),
+        foregroundColor: Colors.white,
+        elevation: 0,
+        title: Text(project.title.toLowerCase()),
         titleSpacing: -4,
+        backgroundColor: Themes.primaryColor,
         leading: AppBarButton(
           handler: () {
             Navigator.pop(context);
           },
           tooltip: "Go back",
           icon: PhosphorIcons.caretLeftLight,
+          color: Colors.white,
         ),
         actions: <Widget>[
           AppBarButton(
             handler: () {},
             tooltip: "Open calendar for this project",
-            icon: PhosphorIcons.calendarLight,
+            icon: PhosphorIcons.calendarCheckLight,
+            color: Colors.white,
           ),
-          AppBarButton(
-            handler: () {},
-            tooltip: "Edit the current project",
-            icon: PhosphorIcons.pencilSimpleLight,
-          ),
-          AppBarButton(
-            handler: () {},
-            tooltip: "Add a new task to the current project",
-            icon: PhosphorIcons.plusLight,
+          ProjectPopUpMenu(
+            project: project,
+            currentRouteName: routeName,
           ),
         ],
       ),
@@ -66,7 +67,7 @@ class TaskOverviewScreen extends StatelessWidget {
 /// Body for the overview of tasks in the task-overview screen.
 class _TaskOverviewBody extends StatefulWidget {
   final Project project;
-  const _TaskOverviewBody({required this.project});
+  const _TaskOverviewBody({super.key, required this.project});
 
   @override
   State<_TaskOverviewBody> createState() => _TaskOverviewBodyState();
@@ -80,7 +81,7 @@ class _TaskOverviewBodyState extends State<_TaskOverviewBody> {
 
   @override
   void initState() {
-    items = widget.project.tasks;
+    items.addAll(widget.project.tasks);
     sort();
     super.initState();
   }
@@ -268,6 +269,88 @@ class _TaskListState extends State<TaskList> {
             )),
         itemCount: widget.tasks.length,
       ),
+    );
+  }
+}
+
+class _ProjectPopUpMenu extends StatefulWidget {
+  final Project project;
+  const _ProjectPopUpMenu({required this.project});
+
+  @override
+  State<_ProjectPopUpMenu> createState() => __ProjectPopUpMenuState();
+}
+
+class __ProjectPopUpMenuState extends State<_ProjectPopUpMenu> {
+  @override
+  Widget build(BuildContext context) {
+    return PopupMenuButton(
+      icon: const Icon(
+        PhosphorIcons.dotsThreeVertical,
+        color: Colors.white,
+        size: 34,
+      ),
+      tooltip: "Menu for project",
+      itemBuilder: (context) => [
+        const PopupMenuItem(
+          value: 0,
+          height: 48,
+          child: Text("edit project"),
+        ),
+        PopupMenuItem(
+          value: 1,
+          height: 48,
+          onTap: () {
+            Future.delayed(
+              const Duration(seconds: 0),
+              () => Navigator.of(context).pushReplacementNamed(
+                TaskOverviewScreen.routeName,
+                arguments: widget.project,
+              ),
+            );
+          },
+          child: const Text("go to tasks"),
+        ),
+        PopupMenuItem(
+          value: 2,
+          height: 48,
+          onTap: () {
+            Future.delayed(
+              const Duration(seconds: 0),
+              () => showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text(
+                    "deleting project",
+                  ),
+                  content: Text(
+                    "Are you sure you want to delete the project \"${widget.project.title.toLowerCase()}\"",
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () {},
+                      child: const Text("no"),
+                    ),
+                    TextButton(
+                      onPressed: () {},
+                      child: Text(
+                        "yes",
+                        style: TextStyle(
+                          color: Colors.red.shade900,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+          child: Text(
+            "delete projext",
+            style: TextStyle(color: Colors.red.shade900),
+          ),
+        ),
+      ],
     );
   }
 }
