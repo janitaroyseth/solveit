@@ -9,10 +9,17 @@ class ImagePickerModal extends StatefulWidget {
   /// [Function] for what to do with the chosen image.
   final Function handler;
 
+  /// [BuildContext] build context for the screen the modal is displayed on.
+  final BuildContext buildContext;
+
   /// Creates an instance of [ImagePickerModal], which displays options for
   /// adding an image. Takes a [handler] parameter of type [Function], which should
   /// handle the chosen image.
-  const ImagePickerModal({super.key, required this.handler});
+  const ImagePickerModal({
+    super.key,
+    required this.handler,
+    required this.buildContext,
+  });
 
   @override
   State<ImagePickerModal> createState() => _ImagePickerModalState();
@@ -29,10 +36,8 @@ class _ImagePickerModalState extends State<ImagePickerModal> {
 
     if (pickedImage == null) return;
 
-    setState(() {
-      image = File(pickedImage.path);
-      widget.handler(image);
-    });
+    image = File(pickedImage.path);
+    widget.handler(image);
   }
 
   /// Opens up the phones local storage and handles the chosen image.
@@ -42,10 +47,8 @@ class _ImagePickerModalState extends State<ImagePickerModal> {
 
     if (pickedImage == null) return;
 
-    setState(() {
-      image = File(pickedImage.path);
-      widget.handler(image);
-    });
+    image = File(pickedImage.path);
+    widget.handler(image);
   }
 
   @override
@@ -74,7 +77,10 @@ class _ImagePickerModalState extends State<ImagePickerModal> {
             ),
             const SizedBox(height: 16.0),
             InkWell(
-              onTap: getImageFromCamera,
+              onTap: () {
+                getImageFromCamera();
+                Navigator.of(widget.buildContext).pop();
+              },
               child: Row(
                 children: const <Widget>[
                   Icon(
@@ -88,7 +94,10 @@ class _ImagePickerModalState extends State<ImagePickerModal> {
             ),
             const SizedBox(height: 12.0),
             InkWell(
-              onTap: getImageFromLocalStorage,
+              onTap: () {
+                getImageFromLocalStorage();
+                Navigator.of(widget.buildContext).pop();
+              },
               child: Row(
                 children: const <Widget>[
                   Icon(

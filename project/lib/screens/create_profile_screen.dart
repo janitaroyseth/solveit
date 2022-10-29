@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/screens/project_overview_screen.dart';
 import 'package:project/styles/curve_clipper.dart';
@@ -176,7 +175,10 @@ class _PickProfilePictureState extends State<_PickProfilePicture> {
               ),
             ),
             context: context,
-            builder: (context) => ImagePickerModal(handler: imageHandler),
+            builder: (context) => ImagePickerModal(
+              handler: imageHandler,
+              buildContext: context,
+            ),
           ),
           style: Themes.secondaryButtonStyle,
           child: const Text("add profile picture"),
