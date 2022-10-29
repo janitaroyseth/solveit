@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:project/data/example_data.dart';
 import 'package:project/screens/project_overview_screen.dart';
 import 'package:project/styles/curve_clipper.dart';
 import 'package:project/styles/theme.dart';
@@ -202,8 +203,9 @@ class CreateProfileScreen extends StatelessWidget {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => Navigator.of(context)
-            .pushReplacementNamed(ProjectOverviewScreen.routeName),
+        onPressed: () => Navigator.of(context).pushReplacementNamed(
+            ProjectOverviewScreen.routeName,
+            arguments: ExampleData.projects),
         child: const Icon(
           PhosphorIcons.arrowRight,
           color: Colors.white,

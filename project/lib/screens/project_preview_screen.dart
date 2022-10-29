@@ -43,12 +43,12 @@ class ProjectPreviewScreen extends StatelessWidget {
             ClipPath(
               clipper: CurveClipper(),
               child: Container(
-                height: 420,
+                height: 390,
                 width: double.infinity,
                 color: const Color.fromRGBO(92, 0, 241, 1),
                 child: Column(
                   children: <Widget>[
-                    const SizedBox(height: 60),
+                    const SizedBox(height: 40),
                     Image.asset(
                       project.imageUrl,
                       height: 270,

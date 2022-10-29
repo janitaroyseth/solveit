@@ -8,7 +8,7 @@ import 'package:project/widgets/sign_in_button.dart';
 import 'package:project/widgets/sign_up_button.dart';
 
 import '../models/project.dart';
-import '../static_data/example_data.dart';
+import '../data/example_data.dart';
 
 ///Represents the sign-in screen for the application
 class SignInScreen extends StatelessWidget {
@@ -74,7 +74,8 @@ Widget _buildContent(BuildContext context) {
             icon: PhosphorIcons.googleLogo,
             text: "Continue with Google",
             onPressed: () {
-              Navigator.pushNamed(context, ProjectOverviewScreen.routeName, arguments: projects);
+              Navigator.pushNamed(context, ProjectOverviewScreen.routeName,
+                  arguments: projects);
             },
           ),
           const SizedBox(height: 15.0),

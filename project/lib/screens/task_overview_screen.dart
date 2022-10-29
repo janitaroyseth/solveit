@@ -11,12 +11,13 @@ import 'package:project/widgets/task_list_item.dart';
 import 'package:project/models/project.dart';
 import 'package:project/models/task.dart';
 
-import '../static_data/sorting_methods.dart';
+import '../data/sorting_methods.dart';
 import '../models/tag.dart';
 
 /// Screen/Scaffold for the overview of tasks in a project
 class TaskOverviewScreen extends StatelessWidget {
   static const routeName = "/tasks";
+
   const TaskOverviewScreen({super.key});
   @override
   Widget build(BuildContext context) {
@@ -67,7 +68,7 @@ class TaskOverviewScreen extends StatelessWidget {
 /// Body for the overview of tasks in the task-overview screen.
 class _TaskOverviewBody extends StatefulWidget {
   final Project project;
-  const _TaskOverviewBody({super.key, required this.project});
+  const _TaskOverviewBody({required this.project});
 
   @override
   State<_TaskOverviewBody> createState() => _TaskOverviewBodyState();

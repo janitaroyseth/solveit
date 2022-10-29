@@ -4,7 +4,7 @@ import 'package:project/screens/create_profile_screen.dart';
 import 'package:project/screens/profile_screen.dart';
 import 'package:project/screens/project_overview_screen.dart';
 import 'package:project/screens/project_preview_screen.dart';
-import 'package:project/static_data/example_data.dart';
+import 'package:project/data/example_data.dart';
 import 'package:project/screens/project_calendar_screen.dart';
 import 'package:project/screens/sign_in_screen.dart';
 import 'package:project/styles/theme.dart';
