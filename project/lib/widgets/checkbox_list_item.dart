@@ -5,14 +5,13 @@ import 'package:project/widgets/tag_widget.dart';
 
 /// Represents a list item with a checkbox for filtering through lists.
 class CheckboxListItem extends StatefulWidget {
-
   /// [Filter] this checkmark will filter for.
   final Filter filter;
 
   /// [FilterOption] this checkmark list tile is built for.
   final FilterOption filterOption;
 
-  /// Creates an instance of [CheckboxListItem] with the given [Filter] and 
+  /// Creates an instance of [CheckboxListItem] with the given [Filter] and
   /// [FilterOption].
   const CheckboxListItem({
     super.key,
@@ -43,7 +42,6 @@ class _CheckboxListItemState extends State<CheckboxListItem> {
   /// Builds a list tile with a checkmark for filtering with the given [FilterOption]
   /// of the given [Filter].
   Widget buildCheckBoxListTile(FilterOption filterOption, Filter filter) {
-
     return Padding(
       padding: const EdgeInsets.only(left: 35.0),
       child: SizedBox(
