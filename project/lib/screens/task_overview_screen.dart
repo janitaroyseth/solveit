@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/models/filter.dart';
 import 'package:project/models/filter_option.dart';
+import 'package:project/styles/theme.dart';
+import 'package:project/widgets/project_pop_up_menu.dart';
 import 'package:project/widgets/appbar_button.dart';
 import 'package:project/widgets/filter_modal.dart';
 import 'package:project/widgets/search_bar.dart';
@@ -9,41 +11,43 @@ import 'package:project/widgets/task_list_item.dart';
 import 'package:project/models/project.dart';
 import 'package:project/models/task.dart';
 
-import '../static_data/sorting_methods.dart';
+import '../data/sorting_methods.dart';
 import '../models/tag.dart';
 
 /// Screen/Scaffold for the overview of tasks in a project
 class TaskOverviewScreen extends StatelessWidget {
+  static const routeName = "/tasks";
+
   const TaskOverviewScreen({super.key});
   @override
   Widget build(BuildContext context) {
-    final Project project = ModalRoute.of(context)!.settings.arguments as Project;
+    final Project project =
+        ModalRoute.of(context)!.settings.arguments as Project;
     return Scaffold(
       appBar: AppBar(
-        title: Text(project.title),
+        foregroundColor: Colors.white,
+        elevation: 0,
+        title: Text(project.title.toLowerCase()),
         titleSpacing: -4,
+        backgroundColor: Themes.primaryColor,
         leading: AppBarButton(
           handler: () {
             Navigator.pop(context);
           },
           tooltip: "Go back",
           icon: PhosphorIcons.caretLeftLight,
+          color: Colors.white,
         ),
         actions: <Widget>[
           AppBarButton(
             handler: () {},
             tooltip: "Open calendar for this project",
-            icon: PhosphorIcons.calendarLight,
+            icon: PhosphorIcons.calendarCheckLight,
+            color: Colors.white,
           ),
-          AppBarButton(
-            handler: () {},
-            tooltip: "Edit the current project",
-            icon: PhosphorIcons.pencilSimpleLight,
-          ),
-          AppBarButton(
-            handler: () {},
-            tooltip: "Add a new task to the current project",
-            icon: PhosphorIcons.plusLight,
+          ProjectPopUpMenu(
+            project: project,
+            currentRouteName: routeName,
           ),
         ],
       ),
@@ -54,7 +58,7 @@ class TaskOverviewScreen extends StatelessWidget {
           onRefresh: () => Future.delayed(
             const Duration(seconds: 2),
           ),
-          child: TaskOverviewBody(project: project),
+          child: _TaskOverviewBody(project: project),
         ),
       ),
     );
@@ -62,15 +66,15 @@ class TaskOverviewScreen extends StatelessWidget {
 }
 
 /// Body for the overview of tasks in the task-overview screen.
-class TaskOverviewBody extends StatefulWidget {
+class _TaskOverviewBody extends StatefulWidget {
   final Project project;
-  const TaskOverviewBody({super.key, required this.project});
+  const _TaskOverviewBody({required this.project});
 
   @override
-  State<TaskOverviewBody> createState() => _TaskOverviewBodyState();
+  State<_TaskOverviewBody> createState() => _TaskOverviewBodyState();
 }
 
-class _TaskOverviewBodyState extends State<TaskOverviewBody> {
+class _TaskOverviewBodyState extends State<_TaskOverviewBody> {
   final TextEditingController _searchController = TextEditingController();
 
   List<Task> items = [];
@@ -78,7 +82,7 @@ class _TaskOverviewBodyState extends State<TaskOverviewBody> {
 
   @override
   void initState() {
-    items = widget.project.tasks;
+    items.addAll(widget.project.tasks);
     sort();
     super.initState();
   }
@@ -92,11 +96,18 @@ class _TaskOverviewBodyState extends State<TaskOverviewBody> {
 
   /// Sorts the task list by the chosen method.
   void sort() {
-    switch(sortType) {
-      case SortingMethods.titleAsc : sortByVariable("title", false); break;
-      case SortingMethods.titleDesc : sortByVariable("title", true); break;
-      case SortingMethods.dateAsc : sortByVariable("deadline", false); break;
-      case SortingMethods.dateDesc : sortByVariable("deadline", true);
+    switch (sortType) {
+      case SortingMethods.titleAsc:
+        sortByVariable("title", false);
+        break;
+      case SortingMethods.titleDesc:
+        sortByVariable("title", true);
+        break;
+      case SortingMethods.dateAsc:
+        sortByVariable("deadline", false);
+        break;
+      case SortingMethods.dateDesc:
+        sortByVariable("deadline", true);
     }
   }
 
@@ -110,12 +121,12 @@ class _TaskOverviewBodyState extends State<TaskOverviewBody> {
     }
     if (descending) {
       sortResults.sort((a, b) => (a[attribute] as String).compareTo(
-        (b[attribute] as String),
-      ));
+            (b[attribute] as String),
+          ));
     } else {
       sortResults.sort((a, b) => (b[attribute] as String).compareTo(
-        (a[attribute] as String),
-      ));
+            (a[attribute] as String),
+          ));
     }
     setState(() {
       items.clear();
@@ -126,8 +137,7 @@ class _TaskOverviewBodyState extends State<TaskOverviewBody> {
             tags: map["tags"],
             deadline: map["deadline"],
             done: map["done"],
-            comments: map["comments"]
-        ));
+            comments: map["comments"]));
       }
     });
   }
@@ -135,7 +145,6 @@ class _TaskOverviewBodyState extends State<TaskOverviewBody> {
   /// Filters the task list by the selected tags.
   /// [Filter] filter - the filter containing the tags from which to filter.
   void filterByTags(Filter filter) {
-
     List<FilterOption> filterOptions =
         filter.filterOptions.where((element) => element.filterBy).toList();
 
@@ -202,20 +211,23 @@ class _TaskOverviewBodyState extends State<TaskOverviewBody> {
               Filter(
                 title: "sort by",
                 filterOptions: [
-                  FilterOption(description: SortingMethods.dateDesc, filterBy: false),
-                  FilterOption(description: SortingMethods.dateAsc, filterBy: false),
-                  FilterOption(description: SortingMethods.titleDesc, filterBy: false),
-                  FilterOption(description: SortingMethods.titleAsc, filterBy: false),
+                  FilterOption(
+                      description: SortingMethods.dateDesc, filterBy: false),
+                  FilterOption(
+                      description: SortingMethods.dateAsc, filterBy: false),
+                  FilterOption(
+                      description: SortingMethods.titleDesc, filterBy: false),
+                  FilterOption(
+                      description: SortingMethods.titleAsc, filterBy: false),
                 ],
                 filterHandler: onSortChange,
                 filterType: FilterType.sort,
               ),
               Filter(
-                title: "tags",
-                filterOptions: _buildTagFilterOptions(project),
-                filterHandler: filterByTags,
-                filterType: FilterType.tag
-              ),
+                  title: "tags",
+                  filterOptions: _buildTagFilterOptions(project),
+                  filterHandler: filterByTags,
+                  filterType: FilterType.tag),
             ],
           ),
         ),
@@ -232,7 +244,8 @@ class _TaskOverviewBodyState extends State<TaskOverviewBody> {
     List<FilterOption> options = [];
 
     for (Tag tag in project.tags) {
-      options.add(FilterOption(tag: tag, description: tag.text, filterBy: false));
+      options
+          .add(FilterOption(tag: tag, description: tag.text, filterBy: false));
     }
     return options;
   }
@@ -257,6 +270,88 @@ class _TaskListState extends State<TaskList> {
             )),
         itemCount: widget.tasks.length,
       ),
+    );
+  }
+}
+
+class _ProjectPopUpMenu extends StatefulWidget {
+  final Project project;
+  const _ProjectPopUpMenu({required this.project});
+
+  @override
+  State<_ProjectPopUpMenu> createState() => __ProjectPopUpMenuState();
+}
+
+class __ProjectPopUpMenuState extends State<_ProjectPopUpMenu> {
+  @override
+  Widget build(BuildContext context) {
+    return PopupMenuButton(
+      icon: const Icon(
+        PhosphorIcons.dotsThreeVertical,
+        color: Colors.white,
+        size: 34,
+      ),
+      tooltip: "Menu for project",
+      itemBuilder: (context) => [
+        const PopupMenuItem(
+          value: 0,
+          height: 48,
+          child: Text("edit project"),
+        ),
+        PopupMenuItem(
+          value: 1,
+          height: 48,
+          onTap: () {
+            Future.delayed(
+              const Duration(seconds: 0),
+              () => Navigator.of(context).pushReplacementNamed(
+                TaskOverviewScreen.routeName,
+                arguments: widget.project,
+              ),
+            );
+          },
+          child: const Text("go to tasks"),
+        ),
+        PopupMenuItem(
+          value: 2,
+          height: 48,
+          onTap: () {
+            Future.delayed(
+              const Duration(seconds: 0),
+              () => showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text(
+                    "deleting project",
+                  ),
+                  content: Text(
+                    "Are you sure you want to delete the project \"${widget.project.title.toLowerCase()}\"",
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () {},
+                      child: const Text("no"),
+                    ),
+                    TextButton(
+                      onPressed: () {},
+                      child: Text(
+                        "yes",
+                        style: TextStyle(
+                          color: Colors.red.shade900,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+          child: Text(
+            "delete projext",
+            style: TextStyle(color: Colors.red.shade900),
+          ),
+        ),
+      ],
     );
   }
 }
