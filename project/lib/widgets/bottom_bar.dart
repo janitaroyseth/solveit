@@ -5,6 +5,7 @@ import 'package:project/screens/project_overview_screen.dart';
 
 /// Represents the bar at the bottom of the screen.
 class BottomBar extends StatefulWidget {
+  static const routeName = "/index";
   const BottomBar({
     Key? key,
   }) : super(key: key);

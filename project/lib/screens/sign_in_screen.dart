@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/screens/create_profile_screen.dart';
-import 'package:project/screens/project_overview_screen.dart';
+import 'package:project/widgets/bottom_bar.dart';
 import 'package:project/widgets/sign_in_button.dart';
 import 'package:project/widgets/sign_up_button.dart';
 
@@ -12,6 +12,7 @@ import '../data/example_data.dart';
 
 ///Represents the sign-in screen for the application
 class SignInScreen extends StatelessWidget {
+  static const routeName = "/";
   const SignInScreen({super.key});
 
   @override
@@ -74,7 +75,7 @@ Widget _buildContent(BuildContext context) {
             icon: PhosphorIcons.googleLogo,
             text: "Continue with Google",
             onPressed: () {
-              Navigator.pushNamed(context, ProjectOverviewScreen.routeName,
+              Navigator.pushReplacementNamed(context, BottomBar.routeName,
                   arguments: projects);
             },
           ),

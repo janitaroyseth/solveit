@@ -43,7 +43,7 @@ class ProjectPreviewScreen extends StatelessWidget {
             ClipPath(
               clipper: CurveClipper(),
               child: Container(
-                height: 390,
+                height: 380,
                 width: double.infinity,
                 color: const Color.fromRGBO(92, 0, 241, 1),
                 child: Column(
@@ -51,13 +51,13 @@ class ProjectPreviewScreen extends StatelessWidget {
                     const SizedBox(height: 40),
                     Image.asset(
                       project.imageUrl,
-                      height: 270,
+                      height: 260,
                     ),
                     Text(
                       project.title.toLowerCase(),
                       style: const TextStyle(
                         color: Colors.white,
-                        fontSize: 28,
+                        fontSize: 24,
                       ),
                     ),
                   ],
@@ -72,7 +72,7 @@ class ProjectPreviewScreen extends StatelessWidget {
               child: Text(
                 project.description,
                 style: const TextStyle(
-                  fontSize: 15,
+                  fontSize: 14,
                   fontWeight: FontWeight.w300,
                 ),
                 textAlign: TextAlign.center,
