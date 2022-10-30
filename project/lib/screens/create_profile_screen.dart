@@ -52,14 +52,14 @@ class CreateProfileScreen extends StatelessWidget {
                                 fontSize: 40,
                                 color: Colors.white,
                                 fontWeight: FontWeight.w300,
-
-                              Text(
-                                "it",
-                                style: TextStyle(
-                                  fontSize: 40,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w500,
-                                ),
+                              ),
+                            ),
+                            Text(
+                              "it",
+                              style: TextStyle(
+                                fontSize: 40,
+                                color: Colors.white,
+                                fontWeight: FontWeight.w500,
                               ),
                             ),
                             Text(
