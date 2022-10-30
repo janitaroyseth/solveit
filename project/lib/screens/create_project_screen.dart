@@ -61,7 +61,7 @@ class CreateProjectScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 16),
-              const RadioButtonsOption(),
+              const _PublicProjectOptions(),
               const SizedBox(height: 16),
               const Text(
                 "collaborators",
@@ -158,14 +158,17 @@ class CreateProjectScreen extends StatelessWidget {
   }
 }
 
-class RadioButtonsOption extends StatefulWidget {
-  const RadioButtonsOption({super.key});
+/// Radio buttons for choosing whether the project is to be private or public.
+class _PublicProjectOptions extends StatefulWidget {
+  /// Creates an instance of public project options.
+  const _PublicProjectOptions();
 
   @override
-  State<RadioButtonsOption> createState() => _RadioButtonsOptionState();
+  State<_PublicProjectOptions> createState() => _RadioButtonsOptionState();
 }
 
-class _RadioButtonsOptionState extends State<RadioButtonsOption> {
+class _RadioButtonsOptionState extends State<_PublicProjectOptions> {
+  /// Current value for whether the project is to be public.
   bool? isPublic;
   @override
   void initState() {
@@ -213,7 +216,9 @@ class _RadioButtonsOptionState extends State<RadioButtonsOption> {
   }
 }
 
+/// [GridView] showing the project avatar options and lets a user pick one.
 class _ProjectAvatarPicker extends StatefulWidget {
+  /// Creates an instance of [ProjectAvatarPicker].
   const _ProjectAvatarPicker();
 
   @override
@@ -221,6 +226,7 @@ class _ProjectAvatarPicker extends StatefulWidget {
 }
 
 class __ProjectAvatarPickerState extends State<_ProjectAvatarPicker> {
+  /// Index of the currently chosen image, defaults to 0.
   int chosenIndex = 0;
 
   @override
