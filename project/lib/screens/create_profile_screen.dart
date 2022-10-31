@@ -7,6 +7,7 @@ import 'package:project/screens/project_overview_screen.dart';
 import 'package:project/styles/curve_clipper.dart';
 import 'package:project/styles/theme.dart';
 import 'package:project/widgets/appbar_button.dart';
+import 'package:project/screens/home_screen.dart';
 import 'package:project/widgets/image_picker_modal.dart';
 
 /// Scaffold/Screen for creating profile after signing up.
@@ -121,7 +122,7 @@ class CreateProfileScreen extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => Navigator.of(context).pushReplacementNamed(
-            ProjectOverviewScreen.routeName,
+            HomeScreen.routeName,
             arguments: ExampleData.projects),
         child: const Icon(
           PhosphorIcons.arrowRight,

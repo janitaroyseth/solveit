@@ -10,6 +10,7 @@ import 'package:project/screens/sign_in_screen.dart';
 import 'package:project/styles/theme.dart';
 import 'package:project/screens/task_detail_screen.dart';
 import 'package:project/screens/task_overview_screen.dart';
+import 'package:project/screens/home_screen.dart';
 import './models/project.dart';
 
 Future<void> main() async {
@@ -30,6 +31,7 @@ class MyApp extends StatelessWidget {
       routes: {
         //TODO: Update route names.
         '/': (context) => const SignInScreen(),
+        HomeScreen.routeName: (context) => const HomeScreen(),
         '/project/calendar': (context) => const ProjectCalendarScreen(),
         TaskOverviewScreen.routeName: (context) => const TaskOverviewScreen(),
         '/task': (context) => const TaskDetailScreen(),

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/screens/create_profile_screen.dart';
 import 'package:project/screens/project_overview_screen.dart';
+import 'package:project/screens/home_screen.dart';
 import 'package:project/widgets/sign_in_button.dart';
 import 'package:project/widgets/sign_up_button.dart';
 
@@ -74,7 +75,7 @@ Widget _buildContent(BuildContext context) {
             icon: PhosphorIcons.googleLogo,
             text: "Continue with Google",
             onPressed: () {
-              Navigator.pushNamed(context, ProjectOverviewScreen.routeName,
+              Navigator.pushReplacementNamed(context, HomeScreen.routeName,
                   arguments: projects);
             },
           ),
