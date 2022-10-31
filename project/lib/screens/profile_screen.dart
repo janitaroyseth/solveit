@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:project/screens/user_settings_screen.dart';
 import 'package:project/widgets/appbar_button.dart';
 
 /// Screen/Scaffold for the profile of the user.
@@ -14,9 +15,9 @@ class ProfileScreen extends StatelessWidget {
         centerTitle: true,
         title: const Text("profile", textAlign: TextAlign.center),
         actions: [
-          // TODO: Add action to button.
           AppBarButton(
-              handler: () {},
+              handler: () => Navigator.of(context)
+                  .pushReplacementNamed(UserSettingsScreen.routeName),
               tooltip: "Settings",
               icon: PhosphorIcons.gearSixLight)
         ],

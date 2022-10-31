@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/screens/create_profile_screen.dart';
 import 'package:project/screens/project_overview_screen.dart';
+import 'package:project/screens/user_settings_screen.dart';
 import 'package:project/widgets/sign_in_button.dart';
 import 'package:project/widgets/sign_up_button.dart';
 
@@ -89,7 +90,8 @@ Widget _buildContent(BuildContext context) {
           SignInButton(
             icon: PhosphorIcons.appleLogo,
             text: "Continue with Apple",
-            onPressed: () {},
+            onPressed: () => Navigator.of(context)
+                .pushReplacementNamed(UserSettingsScreen.routeName),
           ),
           const SizedBox(height: 25.0),
           const Text(
