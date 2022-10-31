@@ -10,5 +10,18 @@ class Project {
   // The list of tags in the project.
   List<Tag> tags;
 
-  Project({this.title = "project title", this.tasks = const [], this.tags = const []});
+  String imageUrl;
+
+  String description;
+
+  String? lastUpdated;
+
+  Project({
+    this.title = "project title",
+    this.tasks = const [],
+    this.tags = const [],
+    this.imageUrl = "",
+    this.description = "",
+    this.lastUpdated,
+  });
 }

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:project/models/project.dart';
 
 /// Represents a project as a card used on project screen.
 class ProjectCard extends StatelessWidget {
-  const ProjectCard({super.key});
+  final Project project;
+  const ProjectCard({super.key, required this.project});
 
   @override
   Widget build(BuildContext context) {
@@ -12,18 +14,23 @@ class ProjectCard extends StatelessWidget {
         child: SizedBox(
           width: 150,
           height: 75,
-          child: Column(
-            children: [
-              Row(
-                children: const [
-                  Text("Title", textAlign: TextAlign.left),
-                ],
-              ),
-              const Text(
-                "Laboris non cillum consectetur reprehenderit quis labore nisi elit.",
-                style: TextStyle(fontSize: 8),
-              ),
-            ],
+          child: InkWell(
+            onTap: () {
+              Navigator.pushNamed(context, '/tasks', arguments: project);
+            },
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    Text(project.title, textAlign: TextAlign.left),
+                  ],
+                ),
+                const Text(
+                  "Laboris non cillum consectetur reprehenderit quis labore nisi elit.",
+                  style: TextStyle(fontSize: 8),
+                ),
+              ],
+            ),
           ),
         ),
       ),
