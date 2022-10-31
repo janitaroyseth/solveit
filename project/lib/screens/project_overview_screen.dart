@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:project/screens/create_project_screen.dart';
 import 'package:project/widgets/appbar_button.dart';
 import 'package:project/widgets/project_card.dart';
 import 'package:project/widgets/search_bar.dart';
@@ -13,7 +14,8 @@ class ProjectOverviewScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<Project> projects = ModalRoute.of(context)!.settings.arguments as List<Project>;
+    final List<Project> projects =
+        ModalRoute.of(context)!.settings.arguments as List<Project>;
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -21,7 +23,8 @@ class ProjectOverviewScreen extends StatelessWidget {
         actions: [
           // TODO: Add action to button.
           AppBarButton(
-              handler: () {},
+              handler: () => Navigator.of(context)
+                  .pushNamed(CreateProjectScreen.routeName),
               tooltip: "Add new project",
               icon: PhosphorIcons.plus)
         ],
@@ -34,7 +37,6 @@ class ProjectOverviewScreen extends StatelessWidget {
               placeholderText: "search for project",
               searchFunction: () {},
               textEditingController: TextEditingController(),
-              filterModal: const SizedBox(),
             ),
             const Padding(
               padding: EdgeInsets.only(top: 10),
@@ -52,6 +54,7 @@ class ProjectOverviewScreen extends StatelessWidget {
       ),
     );
   }
+
   List<Widget> _buildProjectList(List<Project> projects) {
     List<Widget> projectCards = [];
     for (Project project in projects) {

@@ -9,7 +9,7 @@ class ExampleData {
     Project(
         title: "Household",
         tags: tags,
-        imageUrl: "assets/images/project_1_image.png",
+        imageUrl: "assets/images/project_1.png",
         description:
             "Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis enim velit mollit. Exercitation veniam consequat sunt nostrud amet.",
         lastUpdated: "22/10/2022",
