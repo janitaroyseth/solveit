@@ -3,9 +3,11 @@ import 'package:flutter/services.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/models/project.dart';
 import 'package:project/screens/project_preview_screen.dart';
+import 'package:project/screens/sign_in_screen.dart';
 import 'package:project/styles/curve_clipper.dart';
 import 'package:project/styles/theme.dart';
 import 'package:project/widgets/appbar_button.dart';
+import 'package:project/widgets/modal_list_item.dart';
 
 import '../widgets/project_card.dart';
 
@@ -54,8 +56,65 @@ class ProfileScreen extends StatelessWidget {
                 ),
               ),
               context: context,
-              builder: (context) => const SizedBox(
-                height: 400,
+              builder: (context) => Container(
+                decoration: const BoxDecoration(
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20.0),
+                    topRight: Radius.circular(20.0),
+                  ),
+                ),
+                height: 300,
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    children: <Widget>[
+                      Container(
+                        height: 3,
+                        width: 100,
+                        decoration: const BoxDecoration(
+                          color: Colors.black,
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(50.0),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 4.0),
+                      ModalListItem(
+                        icon: PhosphorIcons.userCircleGearLight,
+                        label: "edit profile",
+                        handler: () {},
+                      ),
+                      ModalListItem(
+                        icon: PhosphorIcons.gearSixLight,
+                        label: "settings",
+                        handler: () {},
+                      ),
+                      ModalListItem(
+                        icon: PhosphorIcons.signOutLight,
+                        label: "log out",
+                        handler: () {
+                          Navigator.of(context).pushNamedAndRemoveUntil(
+                            SignInScreen.routeName,
+                            ModalRoute.withName(ProfileScreen.routeName),
+                          );
+                        },
+                      ),
+                      ModalListItem(
+                        handler: () => showDialog(
+                          context: context,
+                          builder: (context) => const AboutDialog(
+                            applicationLegalese:
+                                "Copyright © 2022 NTNU, IDATA2503 Group 3 - Espen, Sakarias and Janita",
+                            applicationVersion: "version 0.0.1",
+                            applicationName: "solveit",
+                          ),
+                        ),
+                        icon: PhosphorIcons.infoLight,
+                        label: "app info",
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
             tooltip: "Settings",
@@ -173,23 +232,23 @@ class ProfileScreen extends StatelessWidget {
               ),
             ),
           ),
-          ProfileTab(projects: projects),
+          _ProfileProjectList(projects: projects),
         ],
       ),
     );
   }
 }
 
-class ProfileTab extends StatefulWidget {
+class _ProfileProjectList extends StatefulWidget {
   final List<Project> projects;
 
-  const ProfileTab({super.key, required this.projects});
+  const _ProfileProjectList({super.key, required this.projects});
 
   @override
-  State<ProfileTab> createState() => _ProfileTabState();
+  State<_ProfileProjectList> createState() => _ProfileProjectListState();
 }
 
-class _ProfileTabState extends State<ProfileTab> {
+class _ProfileProjectListState extends State<_ProfileProjectList> {
   String projects = "projects";
   String starred = "starred";
   late String isSelected;
@@ -215,7 +274,7 @@ class _ProfileTabState extends State<ProfileTab> {
                             isSelected = projects;
                           });
                         },
-                        style: Themes.tertiaryElevatedButtonStyle,
+                        style: Themes.softPrimaryElevatedButtonStyle,
                         child: Text(projects),
                       )
                     : TextButton(
@@ -234,7 +293,7 @@ class _ProfileTabState extends State<ProfileTab> {
                             isSelected = starred;
                           });
                         },
-                        style: Themes.tertiaryElevatedButtonStyle,
+                        style: Themes.softPrimaryElevatedButtonStyle,
                         child: Text(starred),
                       )
                     : TextButton(
