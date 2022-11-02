@@ -43,7 +43,7 @@ class ProjectPreviewScreen extends StatelessWidget {
             ClipPath(
               clipper: CurveClipper(),
               child: Container(
-                height: 380,
+                height: 370,
                 width: double.infinity,
                 color: const Color.fromRGBO(92, 0, 241, 1),
                 child: Column(
@@ -51,13 +51,13 @@ class ProjectPreviewScreen extends StatelessWidget {
                     const SizedBox(height: 40),
                     Image.asset(
                       project.imageUrl,
-                      height: 260,
+                      height: 250,
                     ),
                     Text(
                       project.title.toLowerCase(),
                       style: const TextStyle(
                         color: Colors.white,
-                        fontSize: 24,
+                        fontSize: 22,
                       ),
                     ),
                   ],
@@ -72,7 +72,7 @@ class ProjectPreviewScreen extends StatelessWidget {
               child: Text(
                 project.description,
                 style: const TextStyle(
-                  fontSize: 14,
+                  fontSize: 13,
                   fontWeight: FontWeight.w300,
                 ),
                 textAlign: TextAlign.center,
@@ -86,7 +86,7 @@ class ProjectPreviewScreen extends StatelessWidget {
                   const Text(
                     "collaborators",
                     style: TextStyle(
-                      fontSize: 16,
+                      fontSize: 14,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
@@ -116,9 +116,9 @@ class ProjectPreviewScreen extends StatelessWidget {
                     height: 24.0,
                   ),
                   const Text(
-                    "collaborators",
+                    "last updated",
                     style: TextStyle(
-                      fontSize: 16,
+                      //fontSize: 14,
                       fontWeight: FontWeight.w700,
                     ),
                   ),

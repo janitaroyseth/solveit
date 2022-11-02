@@ -18,6 +18,9 @@ class Project {
   /// Description of the project.
   String description;
 
+  /// Whether the project is public or not.
+  bool isPublic;
+
   /// When the project was last updated.
   String? lastUpdated;
 
@@ -29,5 +32,6 @@ class Project {
     this.imageUrl = "",
     this.description = "",
     this.lastUpdated,
+    this.isPublic = false,
   });
 }
