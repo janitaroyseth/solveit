@@ -6,7 +6,8 @@ import 'package:project/styles/theme.dart';
 /// Represents a project as a card used on project screen.
 class ProjectCard extends StatelessWidget {
   final Project project;
-  const ProjectCard({super.key, required this.project});
+  final VoidCallback handler;
+  const ProjectCard({super.key, required this.project, required this.handler});
 
   @override
   Widget build(BuildContext context) {
@@ -22,9 +23,7 @@ class ProjectCard extends StatelessWidget {
           width: 150,
           height: 75,
           child: InkWell(
-            onTap: () {
-              Navigator.pushNamed(context, '/tasks', arguments: project);
-            },
+            onTap: handler,
             child: Stack(
               children: <Widget>[
                 Column(

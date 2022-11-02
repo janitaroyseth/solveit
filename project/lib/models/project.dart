@@ -20,6 +20,7 @@ class Project {
   /// When the project was last updated.
   String? lastUpdated;
 
+  /// Creates an instance of [Project],
   Project({
     this.title = "project title",
     this.tasks = const [],

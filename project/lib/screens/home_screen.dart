@@ -42,6 +42,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        toolbarHeight: 0,
+        backgroundColor: Themes.primaryColor,
+      ),
       body: SafeArea(
         child: TabBarView(
           controller: tabBarController,
