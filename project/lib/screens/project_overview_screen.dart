@@ -74,8 +74,8 @@ class ProjectOverviewScreen extends StatelessWidget {
                   itemBuilder: (context, index) => ProjectCard(
                     project: projects[index],
                     handler: () => Navigator.of(context).pushNamed(
-                      TaskOverviewScreen.routeName,
-                    ),
+                        TaskOverviewScreen.routeName,
+                        arguments: projects[index]),
                   ),
                 ),
               ),
