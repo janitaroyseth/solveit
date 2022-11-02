@@ -13,6 +13,7 @@ import '../data/example_data.dart';
 
 ///Represents the sign-in screen for the application
 class SignInScreen extends StatelessWidget {
+  static const routeName = "/";
   const SignInScreen({super.key});
 
   @override

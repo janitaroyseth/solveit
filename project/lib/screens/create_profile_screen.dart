@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/data/example_data.dart';
-import 'package:project/screens/project_overview_screen.dart';
 import 'package:project/styles/curve_clipper.dart';
 import 'package:project/styles/theme.dart';
 import 'package:project/widgets/appbar_button.dart';
@@ -183,7 +182,7 @@ class _PickProfilePictureState extends State<_PickProfilePicture> {
               buildContext: context,
             ),
           ),
-          style: Themes.secondaryButtonStyle,
+          style: Themes.secondaryElevatedButtonStyle,
           child: const Text("add profile picture"),
         ),
       ],
