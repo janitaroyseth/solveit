@@ -147,7 +147,7 @@ class CreateProjectScreen extends StatelessWidget {
               const _ProjectAvatarPicker(),
               ElevatedButton(
                 onPressed: () => Navigator.of(context).pop(),
-                style: Themes.primaryButtonStyle,
+                style: Themes.primaryElevatedButtonStyle,
                 child: const Text("create project"),
               )
             ],
