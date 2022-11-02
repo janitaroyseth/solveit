@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:project/data/example_data.dart';
 import 'package:project/models/project.dart';
 import 'package:project/screens/profile_screen.dart';
 import 'package:project/styles/curve_clipper.dart';
@@ -43,7 +44,7 @@ class ProjectPreviewScreen extends StatelessWidget {
             ClipPath(
               clipper: CurveClipper(),
               child: Container(
-                height: 390,
+                height: 370,
                 width: double.infinity,
                 color: const Color.fromRGBO(92, 0, 241, 1),
                 child: Column(
@@ -51,13 +52,13 @@ class ProjectPreviewScreen extends StatelessWidget {
                     const SizedBox(height: 40),
                     Image.asset(
                       project.imageUrl,
-                      height: 270,
+                      height: 250,
                     ),
                     Text(
                       project.title.toLowerCase(),
                       style: const TextStyle(
                         color: Colors.white,
-                        fontSize: 28,
+                        fontSize: 22,
                       ),
                     ),
                   ],
@@ -72,7 +73,7 @@ class ProjectPreviewScreen extends StatelessWidget {
               child: Text(
                 project.description,
                 style: const TextStyle(
-                  fontSize: 15,
+                  fontSize: 13,
                   fontWeight: FontWeight.w300,
                 ),
                 textAlign: TextAlign.center,
@@ -86,7 +87,7 @@ class ProjectPreviewScreen extends StatelessWidget {
                   const Text(
                     "collaborators",
                     style: TextStyle(
-                      fontSize: 16,
+                      fontSize: 14,
                       fontWeight: FontWeight.w700,
                     ),
                   ),
@@ -94,21 +95,27 @@ class ProjectPreviewScreen extends StatelessWidget {
                     height: 12.0,
                   ),
                   UserListItem(
-                    handler: () => Navigator.of(context)
-                        .pushNamed(ProfileScreen.routeName),
+                    handler: () => Navigator.of(context).pushNamed(
+                      ProfileScreen.routeName,
+                      arguments: ExampleData.projects,
+                    ),
                     name: "Jane Cooper",
                     imageUrl: "assets/images/jane_cooper.png",
                     isOwner: true,
                   ),
                   UserListItem(
-                    handler: () => Navigator.of(context)
-                        .pushNamed(ProfileScreen.routeName),
+                    handler: () => Navigator.of(context).pushNamed(
+                      ProfileScreen.routeName,
+                      arguments: ExampleData.projects,
+                    ),
                     name: "Leslie Alexander",
                     imageUrl: "assets/images/leslie_alexander.png",
                   ),
                   UserListItem(
-                    handler: () => Navigator.of(context)
-                        .pushNamed(ProfileScreen.routeName),
+                    handler: () => Navigator.of(context).pushNamed(
+                      ProfileScreen.routeName,
+                      arguments: ExampleData.projects,
+                    ),
                     name: "Guy Hawkins",
                     imageUrl: "assets/images/guy_hawkins.png",
                   ),
@@ -116,9 +123,9 @@ class ProjectPreviewScreen extends StatelessWidget {
                     height: 24.0,
                   ),
                   const Text(
-                    "collaborators",
+                    "last updated",
                     style: TextStyle(
-                      fontSize: 16,
+                      //fontSize: 14,
                       fontWeight: FontWeight.w700,
                     ),
                   ),

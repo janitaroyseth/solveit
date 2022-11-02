@@ -1,7 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:project/models/project.dart';
+import 'package:project/screens/project_preview_screen.dart';
+import 'package:project/screens/sign_in_screen.dart';
+import 'package:project/styles/curve_clipper.dart';
+import 'package:project/styles/theme.dart';
 import 'package:project/screens/user_settings_screen.dart';
 import 'package:project/widgets/appbar_button.dart';
+import 'package:project/widgets/modal_list_item.dart';
+
+import '../widgets/project_card.dart';
 
 /// Screen/Scaffold for the profile of the user.
 class ProfileScreen extends StatelessWidget {
@@ -10,42 +19,315 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final List<Project> projects =
+        ModalRoute.of(context)!.settings.arguments as List<Project>;
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: const Text("profile", textAlign: TextAlign.center),
-        actions: [
-          AppBarButton(
-              handler: () => Navigator.of(context)
-                  .pushReplacementNamed(UserSettingsScreen.routeName),
-              tooltip: "Settings",
-              icon: PhosphorIcons.gearSixLight)
-        ],
-      ),
-      body: Center(
-        child: Column(
-          children: [
-            const Padding(
-              padding: EdgeInsets.all(50),
+        elevation: 0,
+        foregroundColor: Colors.white,
+        backgroundColor: Themes.primaryColor,
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: const <Widget>[
+            Text(
+              "solve",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w300,
+              ),
             ),
-            Image.asset(
-              "assets/images/profile_pictuer_placeholder.png",
-              height: 200,
-            ),
-            const Padding(
-              padding: EdgeInsets.all(40),
-            ),
-            const Text("Testy"),
-            const Padding(
-              padding: EdgeInsets.all(20),
-            ),
-            const Text("Testyson"),
-            const Padding(
-              padding: EdgeInsets.all(20),
-            ),
-            const Text("About me yo!"),
+            Text(
+              "it",
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 18,
+              ),
+            )
           ],
         ),
+        actions: [
+          AppBarButton(
+            handler: () => showModalBottomSheet(
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(20.0),
+                  topRight: Radius.circular(20.0),
+                ),
+              ),
+              context: context,
+              builder: (context) => Container(
+                decoration: const BoxDecoration(
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20.0),
+                    topRight: Radius.circular(20.0),
+                  ),
+                ),
+                height: 300,
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    children: <Widget>[
+                      Container(
+                        height: 3,
+                        width: 100,
+                        decoration: const BoxDecoration(
+                          color: Colors.black,
+                          borderRadius: BorderRadius.all(
+                            Radius.circular(50.0),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 4.0),
+                      ModalListItem(
+                        icon: PhosphorIcons.userCircleGearLight,
+                        label: "edit profile",
+                        handler: () {},
+                      ),
+                      ModalListItem(
+                        icon: PhosphorIcons.gearSixLight,
+                        label: "settings",
+                        handler: () {},
+                      ),
+                      ModalListItem(
+                        icon: PhosphorIcons.signOutLight,
+                        label: "log out",
+                        handler: () {
+                          Navigator.of(context).pushNamedAndRemoveUntil(
+                            SignInScreen.routeName,
+                            ModalRoute.withName(ProfileScreen.routeName),
+                          );
+                        },
+                      ),
+                      ModalListItem(
+                        handler: () => showDialog(
+                          context: context,
+                          builder: (context) => const AboutDialog(
+                            applicationLegalese:
+                                "Copyright © 2022 NTNU, IDATA2503 Group 3 - Espen, Sakarias and Janita",
+                            applicationVersion: "version 0.0.1",
+                            applicationName: "solveit",
+                          ),
+                        ),
+                        icon: PhosphorIcons.infoLight,
+                        label: "app info",
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            tooltip: "Settings",
+            icon: PhosphorIcons.list,
+            color: Colors.white,
+          )
+        ],
+      ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: <Widget>[
+          ClipPath(
+            clipper: CurveClipper(),
+            child: Container(
+              color: Themes.primaryColor,
+              height: 220,
+              child: Padding(
+                padding: const EdgeInsets.only(
+                  left: 24.0,
+                  right: 24.0,
+                  bottom: 16.0,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    CircleAvatar(
+                      radius: MediaQuery.of(context).size.width / 6,
+                      backgroundImage: const AssetImage(
+                        "assets/images/jane_cooper.png",
+                      ),
+                    ),
+                    const SizedBox(width: 16.0),
+                    Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          const Text(
+                            "Jane Cooper",
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600),
+                          ),
+                          const SizedBox(height: 4.0),
+                          const Flexible(
+                            child: Text(
+                              "Hard working student ready for that 8-16 grind!",
+                              overflow: TextOverflow.clip,
+                              style: TextStyle(
+                                overflow: TextOverflow.clip,
+                                color: Colors.white,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: 36.0),
+                          Row(
+                            children: const <Widget>[
+                              Text(
+                                "3 ",
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 12,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              Text(
+                                "projects",
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              SizedBox(width: 8.0),
+                              Text(
+                                "3 ",
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              Text(
+                                "friends",
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              SizedBox(width: 8.0),
+                              Text(
+                                "3 ",
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w700,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              Text(
+                                "stars",
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: Colors.white,
+                                ),
+                              ),
+                            ],
+                          )
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          _ProfileProjectList(projects: projects),
+        ],
+      ),
+    );
+  }
+}
+
+class _ProfileProjectList extends StatefulWidget {
+  final List<Project> projects;
+
+  const _ProfileProjectList({super.key, required this.projects});
+
+  @override
+  State<_ProfileProjectList> createState() => _ProfileProjectListState();
+}
+
+class _ProfileProjectListState extends State<_ProfileProjectList> {
+  String projects = "projects";
+  String starred = "starred";
+  late String isSelected;
+  @override
+  void initState() {
+    isSelected = projects;
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: Column(
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.only(left: 16.0),
+            child: Row(
+              children: <Widget>[
+                isSelected == projects
+                    ? ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            isSelected = projects;
+                          });
+                        },
+                        style: Themes.softPrimaryElevatedButtonStyle,
+                        child: Text(projects),
+                      )
+                    : TextButton(
+                        onPressed: () {
+                          setState(() {
+                            isSelected = projects;
+                          });
+                        },
+                        child: Text(projects),
+                      ),
+                const SizedBox(width: 4.0),
+                isSelected == starred
+                    ? ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            isSelected = starred;
+                          });
+                        },
+                        style: Themes.softPrimaryElevatedButtonStyle,
+                        child: Text(starred),
+                      )
+                    : TextButton(
+                        style: Themes.textButtonStyle,
+                        onPressed: () {
+                          setState(() {
+                            isSelected = starred;
+                          });
+                        },
+                        child: Text(starred),
+                      ),
+              ],
+            ),
+          ),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: GridView.builder(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  mainAxisExtent: 120,
+                  crossAxisSpacing: 16,
+                  mainAxisSpacing: 16,
+                ),
+                itemCount: widget.projects.length,
+                itemBuilder: (context, index) => ProjectCard(
+                    project: widget.projects[index],
+                    handler: () => Navigator.of(context).pushNamed(
+                        ProjectPreviewScreen.routeName,
+                        arguments: widget.projects[index])),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/models/filter.dart';
 import 'package:project/models/filter_option.dart';
+import 'package:project/styles/curve_clipper.dart';
 import 'package:project/styles/theme.dart';
 import 'package:project/widgets/project_pop_up_menu.dart';
 import 'package:project/widgets/appbar_button.dart';
@@ -24,12 +25,22 @@ class TaskOverviewScreen extends StatelessWidget {
     final Project project =
         ModalRoute.of(context)!.settings.arguments as Project;
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
         foregroundColor: Colors.white,
         elevation: 0,
-        title: Text(project.title.toLowerCase()),
+        toolbarHeight: 90,
+        title: Row(
+          children: [
+            Image.asset(
+              project.imageUrl,
+              height: 90,
+            ),
+            Text(project.title.toLowerCase()),
+          ],
+        ),
         titleSpacing: -4,
-        backgroundColor: Themes.primaryColor,
+        backgroundColor: Colors.transparent,
         leading: AppBarButton(
           handler: () {
             Navigator.pop(context);
@@ -51,14 +62,18 @@ class TaskOverviewScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.only(left: 8.0, right: 8.0),
-        child: RefreshIndicator(
-          // color: Colors.black,
-          onRefresh: () => Future.delayed(
-            const Duration(seconds: 2),
-          ),
-          child: _TaskOverviewBody(project: project),
+      body: RefreshIndicator(
+        // color: Colors.black,
+        onRefresh: () => Future.delayed(
+          const Duration(seconds: 2),
+        ),
+        child: _TaskOverviewBody(project: project),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => Navigator.of(context).pop(),
+        child: const Icon(
+          PhosphorIcons.plus,
+          color: Colors.white,
         ),
       ),
     );
@@ -201,10 +216,18 @@ class _TaskOverviewBodyState extends State<_TaskOverviewBody> {
     Project project = ModalRoute.of(context)!.settings.arguments as Project;
     return Column(
       children: <Widget>[
+        ClipPath(
+          clipper: CurveClipper(),
+          child: Container(
+            color: Themes.primaryColor,
+            height: 150,
+          ),
+        ),
         SearchBar(
           textEditingController: _searchController,
           searchFunction: filterSearchResults,
           placeholderText: "Search for tasks",
+          filter: true,
           filterModal: FilterModal(
             modalTitle: "Sort and filter tasks",
             filters: [
@@ -265,6 +288,7 @@ class _TaskListState extends State<TaskList> {
   Widget build(BuildContext context) {
     return Expanded(
       child: ListView.builder(
+        padding: EdgeInsets.zero,
         itemBuilder: ((context, index) => TaskListItem(
               task: widget.tasks[index],
             )),
