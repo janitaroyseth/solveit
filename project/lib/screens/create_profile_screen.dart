@@ -3,10 +3,10 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/data/example_data.dart';
-import 'package:project/screens/project_overview_screen.dart';
 import 'package:project/styles/curve_clipper.dart';
 import 'package:project/styles/theme.dart';
 import 'package:project/widgets/appbar_button.dart';
+import 'package:project/screens/home_screen.dart';
 import 'package:project/widgets/image_picker_modal.dart';
 
 /// Scaffold/Screen for creating profile after signing up.
@@ -52,14 +52,6 @@ class CreateProfileScreen extends StatelessWidget {
                                 fontSize: 40,
                                 color: Colors.white,
                                 fontWeight: FontWeight.w300,
-
-                              Text(
-                                "it",
-                                style: TextStyle(
-                                  fontSize: 40,
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.w500,
-                                ),
                               ),
                             ),
                             Text(
@@ -129,7 +121,7 @@ class CreateProfileScreen extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => Navigator.of(context).pushReplacementNamed(
-            ProjectOverviewScreen.routeName,
+            HomeScreen.routeName,
             arguments: ExampleData.projects),
         child: const Icon(
           PhosphorIcons.arrowRight,
@@ -190,7 +182,7 @@ class _PickProfilePictureState extends State<_PickProfilePicture> {
               buildContext: context,
             ),
           ),
-          style: Themes.secondaryButtonStyle,
+          style: Themes.secondaryElevatedButtonStyle,
           child: const Text("add profile picture"),
         ),
       ],

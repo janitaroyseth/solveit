@@ -205,6 +205,7 @@ class _TaskOverviewBodyState extends State<_TaskOverviewBody> {
           textEditingController: _searchController,
           searchFunction: filterSearchResults,
           placeholderText: "Search for tasks",
+          filter: true,
           filterModal: FilterModal(
             modalTitle: "Sort and filter tasks",
             filters: [
