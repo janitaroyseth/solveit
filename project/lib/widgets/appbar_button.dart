@@ -27,7 +27,7 @@ class AppBarButton extends StatelessWidget {
       tooltip: tooltip,
       icon: Icon(
         icon,
-        size: 34,
+        size: 30,
         color: color,
       ),
     );
