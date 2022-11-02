@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:project/widgets/modal_list_item.dart';
 
 /// Modal sheet displaying options for adding images.
 class ImagePickerModal extends StatefulWidget {
@@ -75,40 +76,24 @@ class _ImagePickerModalState extends State<ImagePickerModal> {
                 ),
               ),
             ),
-            const SizedBox(height: 16.0),
-            InkWell(
-              onTap: () {
+            const SizedBox(height: 4.0),
+            ModalListItem(
+              icon: PhosphorIcons.cameraLight,
+              label: "take picture",
+              handler: () {
                 getImageFromCamera();
                 Navigator.of(widget.buildContext).pop();
               },
-              child: Row(
-                children: const <Widget>[
-                  Icon(
-                    PhosphorIcons.cameraLight,
-                    size: 32,
-                  ),
-                  SizedBox(width: 8),
-                  Text("take picture")
-                ],
-              ),
             ),
-            const SizedBox(height: 12.0),
-            InkWell(
-              onTap: () {
+            ModalListItem(
+              icon: PhosphorIcons.imageLight,
+              label: "upload image",
+              handler: () {
                 getImageFromLocalStorage();
                 Navigator.of(widget.buildContext).pop();
               },
-              child: Row(
-                children: const <Widget>[
-                  Icon(
-                    PhosphorIcons.imageLight,
-                    size: 32,
-                  ),
-                  SizedBox(width: 8),
-                  Text("upload image")
-                ],
-              ),
             ),
+            const SizedBox(height: 12.0),
           ],
         ),
       ),

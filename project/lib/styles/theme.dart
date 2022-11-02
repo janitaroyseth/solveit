@@ -119,7 +119,7 @@ class Themes {
     ),
   );
 
-  static ButtonStyle tertiaryElevatedButtonStyle = ButtonStyle(
+  static ButtonStyle softPrimaryElevatedButtonStyle = ButtonStyle(
     elevation: MaterialStateProperty.all<double>(0),
     foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
     backgroundColor: MaterialStateProperty.all<Color>(
