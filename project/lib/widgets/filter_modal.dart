@@ -34,8 +34,7 @@ class _FilterModalState extends State<FilterModal> {
     List<Widget> filterOptionsDropDownList = [];
 
     if (filter.filterType == FilterType.sort) {
-      filterOptionsDropDownList
-          .add(RadioButtonGroup(filter: filter));
+      filterOptionsDropDownList.add(RadioButtonGroup(filter: filter));
     }
 
     if (filter.filterType == FilterType.tag) {
@@ -52,10 +51,6 @@ class _FilterModalState extends State<FilterModal> {
   /// for filtering.
   List<Widget> buildFilterOptionListItems() {
     List<Widget> filterOptions = [];
-
-    filterOptions.add(
-      Text(widget.modalTitle.toLowerCase()),
-    );
 
     for (var filter in widget.filters) {
       Widget listTile = ListTile(
@@ -102,11 +97,17 @@ class _FilterModalState extends State<FilterModal> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 500,
+      height: 400,
       child: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: buildFilterOptionListItems(),
+        child: ListView(
+          children: [
+            Text(
+              widget.modalTitle.toLowerCase(),
+              textAlign: TextAlign.center,
+            ),
+            ...buildFilterOptionListItems()
+          ],
         ),
       ),
     );
