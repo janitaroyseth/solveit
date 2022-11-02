@@ -20,8 +20,6 @@
   </p>
 </div>
 
-
-
 <!-- TABLE OF CONTENTS -->
 <details>
   <summary>Table of Contents</summary>
@@ -48,12 +46,11 @@
   </ol>
 </details>
 
-
-
 <!-- ABOUT THE PROJECT -->
+
 ## About The Project
 
-![Wireframes](documentation/sketch/Solveit-Sketch.png)
+![Wireframes](documentation/sketch/solveit-sketch-v2.svg)
 
 Our project assignment is to create a mobile application for a target group of our choice. To solve a realistic problem for a user. Our group have decided to create a "task" - tracker app. We wish to create a way for people to organize their projects and tasks. Our brains are not made for keeping track of tasks and deadlines, our app will provide the opportunity to have a place where this can be collected into one place so your brain can focus on being creative.
 
@@ -61,33 +58,32 @@ Our project assignment is to create a mobile application for a target group of o
 
 ### Built With
 
-* Flutter
-* Dart
-* Firebase
+- Flutter
+- Dart
+- Firebase
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-
-
 <!-- GETTING STARTED -->
+
 ## Getting Started
 
 ### Prerequisites
 
-* Flutter
-* Dart
-* Android Studio or X-Code
+- Flutter
+- Dart
+- Android Studio or X-Code
 
 ### Installation
 
-1. Clone the repository with ``git clone https://github.com/janital/solveIt``.
-2. Start a simulator either through Android Studio Device Manager or on Mac through the terminal with ``open -a Simulator.app``.
-3. Run ``flutter run``from the project root folder ``cd project/``.
+1. Clone the repository with `git clone https://github.com/janital/solveIt`.
+2. Start a simulator either through Android Studio Device Manager or on Mac through the terminal with `open -a Simulator.app`.
+3. Run `flutter run`from the project root folder `cd project/`.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-
 <!-- ROADMAP -->
+
 ## Roadmap
 
 - [ ] Create static version of the wireframe.
@@ -95,7 +91,7 @@ Our project assignment is to create a mobile application for a target group of o
 - [ ] Add dark theme
 - [ ] Implement shared projects
 - [ ] Integrate with device calendar
-- [ ] Integrate with mobile camera
+- [x] Integrate with mobile camera
 
 (more coming..)
 
@@ -103,44 +99,40 @@ See the [open issues](https://github.com/janital/solveIt/issues) for a full list
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-
-
 <!-- CONTRIBUTING -->
+
 ## Contributing
 
 This project is not open for outside contributions as this is a school project.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-
-
 <!-- LICENSE -->
+
 ## License
 
 Distributed under the MIT License. See `documentation/LICENSE.txt` for more information.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-
-
 <!-- CONTACT -->
+
 ## Contact
 
-[Janita Røyseth](https://github.com/janital) - janital@stud.ntnu.no - repository owner   
-[Sakarias Sæterstøl](https://github.com/pr0xity) - sakariks@stud.ntnu.no - group leader   
-[Espen Otlo](https://github.com/espenotlo) - espenotl@stud.ntnu.no  
-[Didrik Eilertsen](https://github.com/didrikeilertsen) - didrikei@stud.ntnu.no  
+[Janita Røyseth](https://github.com/janital) - janital@stud.ntnu.no - repository owner  
+[Sakarias Sæterstøl](https://github.com/pr0xity) - sakariks@stud.ntnu.no - group leader  
+[Espen Otlo](https://github.com/espenotlo) - espenotl@stud.ntnu.no
 
 Project Link: [https://github.com/janital/solveIt](https://github.com/janital/solveIt)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-
-
 <!-- ACKNOWLEDGMENTS -->
+
 ## Acknowledgments
 
 - [Google fonts](https://fonts.google.com/)
 - [Phosphor icons](https://phosphoricons.com/)
+- [Icons8 Illustrations](https://icons8.com/illustrations)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
