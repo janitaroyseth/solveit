@@ -16,24 +16,10 @@ class TaskListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 8.0,
-        vertical: 10.0,
-      ),
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12.0),
-          boxShadow: const [
-            BoxShadow(
-                blurRadius: 2.0,
-                color: Colors.black38,
-                blurStyle: BlurStyle.outer,
-                offset: Offset(0.0, 0.0),
-                spreadRadius: 0.5),
-          ],
-        ),
-        child: InkWell(
+    return Column(
+      children: <Widget>[
+        const Divider(),
+        InkWell(
           onTap: () {
             Navigator.pushNamed(context, '/task', arguments: task);
           },
@@ -67,6 +53,8 @@ class TaskListItem extends StatelessWidget {
                   child: Text(
                     task.description,
                     textAlign: TextAlign.start,
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
                 ),
@@ -80,7 +68,7 @@ class TaskListItem extends StatelessWidget {
             ),
           ),
         ),
-      ),
+      ],
     );
   }
 }

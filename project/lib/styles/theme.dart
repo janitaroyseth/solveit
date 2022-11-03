@@ -92,7 +92,7 @@ class Themes {
     ),
   );
 
-  static ButtonStyle primaryButtonStyle = ButtonStyle(
+  static ButtonStyle primaryElevatedButtonStyle = ButtonStyle(
     elevation: MaterialStateProperty.all<double>(0),
     foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
     shape: MaterialStateProperty.all<RoundedRectangleBorder>(
@@ -102,7 +102,7 @@ class Themes {
     ),
   );
 
-  static ButtonStyle secondaryButtonStyle = ButtonStyle(
+  static ButtonStyle secondaryElevatedButtonStyle = ButtonStyle(
     elevation: MaterialStateProperty.all<double>(0),
     backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
     foregroundColor: MaterialStateProperty.all<Color>(
@@ -116,6 +116,30 @@ class Themes {
           width: 1.5,
         ),
       ),
+    ),
+  );
+
+  static ButtonStyle softPrimaryElevatedButtonStyle = ButtonStyle(
+    elevation: MaterialStateProperty.all<double>(0),
+    foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
+    backgroundColor: MaterialStateProperty.all<Color>(
+      primaryColor.withOpacity(0.6),
+    ),
+    textStyle: MaterialStateProperty.all<TextStyle>(
+      const TextStyle(fontSize: 16, fontFamily: Themes.fontFamily),
+    ),
+    padding: MaterialStateProperty.all<EdgeInsets>(
+        const EdgeInsets.symmetric(horizontal: 12.0, vertical: 0.0)),
+    shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+      RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10.0),
+      ),
+    ),
+  );
+
+  static ButtonStyle textButtonStyle = ButtonStyle(
+    textStyle: MaterialStateProperty.all<TextStyle>(
+      const TextStyle(fontSize: 16, fontFamily: Themes.fontFamily),
     ),
   );
 }

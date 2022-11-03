@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:project/screens/create_project_screen.dart';
+import 'package:project/screens/task_overview_screen.dart';
+import 'package:project/styles/theme.dart';
 import 'package:project/widgets/appbar_button.dart';
 import 'package:project/widgets/project_card.dart';
 import 'package:project/widgets/search_bar.dart';
+import 'package:project/models/project.dart';
 
 /// Screen/Scaffold for the overview of projects the user have access to.
 class ProjectOverviewScreen extends StatelessWidget {
@@ -12,14 +16,37 @@ class ProjectOverviewScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final List<Project> projects =
+        ModalRoute.of(context)!.settings.arguments as List<Project>;
     return Scaffold(
       appBar: AppBar(
+        elevation: 0,
         centerTitle: true,
-        title: const Text("solveit", textAlign: TextAlign.center),
+        backgroundColor: Colors.white,
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: const <Widget>[
+            Text(
+              "solve",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w300,
+              ),
+            ),
+            Text(
+              "it",
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 18,
+                color: Themes.primaryColor,
+              ),
+            )
+          ],
+        ),
         actions: [
-          // TODO: Add action to button.
           AppBarButton(
-              handler: () {},
+              handler: () => Navigator.of(context)
+                  .pushNamed(CreateProjectScreen.routeName),
               tooltip: "Add new project",
               icon: PhosphorIcons.plus)
         ],
@@ -32,32 +59,24 @@ class ProjectOverviewScreen extends StatelessWidget {
               placeholderText: "search for project",
               searchFunction: () {},
               textEditingController: TextEditingController(),
-              filterModal: const SizedBox(),
-            ),
-            const Padding(
-              padding: EdgeInsets.only(top: 10),
             ),
             Expanded(
-              child: SingleChildScrollView(
-                child: Wrap(
-                  alignment: WrapAlignment.spaceBetween,
-                  children: const [
-                    ProjectCard(),
-                    ProjectCard(),
-                    ProjectCard(),
-                    ProjectCard(),
-                    ProjectCard(),
-                    ProjectCard(),
-                    ProjectCard(),
-                    ProjectCard(),
-                    ProjectCard(),
-                    ProjectCard(),
-                    ProjectCard(),
-                    ProjectCard(),
-                    ProjectCard(),
-                    ProjectCard(),
-                    ProjectCard(),
-                  ],
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: GridView.builder(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    mainAxisExtent: 120,
+                    crossAxisSpacing: 16,
+                    mainAxisSpacing: 16,
+                  ),
+                  itemCount: projects.length,
+                  itemBuilder: (context, index) => ProjectCard(
+                    project: projects[index],
+                    handler: () => Navigator.of(context).pushNamed(
+                        TaskOverviewScreen.routeName,
+                        arguments: projects[index]),
+                  ),
                 ),
               ),
             ),

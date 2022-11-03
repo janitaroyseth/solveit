@@ -2,14 +2,16 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/screens/create_profile_screen.dart';
+import 'package:project/screens/home_screen.dart';
 import 'package:project/widgets/sign_in_button.dart';
 import 'package:project/widgets/sign_up_button.dart';
 
 import '../models/project.dart';
-import '../static_data/example_data.dart';
+import '../data/example_data.dart';
 
 ///Represents the sign-in screen for the application
 class SignInScreen extends StatelessWidget {
+  static const routeName = "/";
   const SignInScreen({Key? key, required this.onSignIn}) : super(key: key);
   final void Function(User) onSignIn;
 
@@ -40,7 +42,7 @@ class SignInScreen extends StatelessWidget {
 
 //TODO: ADD BLUR
 Widget _buildContent(BuildContext context) {
-  Project project = ExampleData.projects[0];
+  List<Project> projects = ExampleData.projects;
   return Padding(
     padding: const EdgeInsets.fromLTRB(40, 120, 40, 100),
     child: Container(
@@ -82,7 +84,8 @@ Widget _buildContent(BuildContext context) {
             icon: PhosphorIcons.googleLogo,
             text: "Continue with Google",
             onPressed: () {
-              Navigator.pushNamed(context, '/tasks', arguments: project);
+              Navigator.pushReplacementNamed(context, HomeScreen.routeName,
+                  arguments: projects);
             },
           ),
           const SizedBox(height: 15.0),

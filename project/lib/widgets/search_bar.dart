@@ -12,8 +12,10 @@ class SearchBar extends StatefulWidget {
   /// [searchFunction] - the function used for filtering the list.
   final Function searchFunction;
 
+  final bool filter;
+
   /// [filterModal] - the modal window showing filtering options.
-  final Widget filterModal;
+  final Widget? filterModal;
 
   /// Creates an instance of search bar.
   const SearchBar(
@@ -21,7 +23,8 @@ class SearchBar extends StatefulWidget {
       required this.placeholderText,
       required this.searchFunction,
       required this.textEditingController,
-      required this.filterModal});
+      this.filterModal,
+      this.filter = false});
 
   @override
   State<SearchBar> createState() => _SearchBarState();
@@ -35,7 +38,7 @@ class _SearchBarState extends State<SearchBar> {
         Expanded(
           child: Container(
             height: 50,
-            padding: const EdgeInsets.all(4.0),
+            padding: const EdgeInsets.symmetric(horizontal: 0.0, vertical: 4.0),
             child: TextField(
               controller: widget.textEditingController,
               onChanged: (value) => widget.searchFunction(value),
@@ -50,25 +53,27 @@ class _SearchBarState extends State<SearchBar> {
             ),
           ),
         ),
-        IconButton(
-          onPressed: () {
-            showModalBottomSheet(
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(20.0),
-                  topRight: Radius.circular(20.0),
+        widget.filter
+            ? IconButton(
+                onPressed: () {
+                  showModalBottomSheet(
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(20.0),
+                        topRight: Radius.circular(20.0),
+                      ),
+                    ),
+                    context: context,
+                    builder: (context) {
+                      return widget.filterModal!;
+                    },
+                  );
+                },
+                icon: const Icon(
+                  PhosphorIcons.fadersHorizontal,
                 ),
-              ),
-              context: context,
-              builder: (context) {
-                return widget.filterModal;
-              },
-            );
-          },
-          icon: const Icon(
-            PhosphorIcons.fadersHorizontal,
-          ),
-        ),
+              )
+            : Container(),
       ],
     );
   }
