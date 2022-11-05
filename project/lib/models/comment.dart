@@ -8,9 +8,9 @@ class Comment {
   String date;
 
   /// Converts a [Map] object to a [Comment] object.
-  factory Comment.fromMap(Map<String, dynamic> data) {
+  static Comment? fromMap(Map<String, dynamic>? data) {
     if (data == null) {
-      //return null;
+      return null;
     }
     final String text = data['text'];
     final String author = data['author'];

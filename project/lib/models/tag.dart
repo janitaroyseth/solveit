@@ -6,9 +6,9 @@ class Tag {
   final int color;
 
   /// Converts a [Map] object to a [Tag] object.
-  factory Tag.fromMap(Map<String, dynamic> data) {
+  static Tag? fromMap(Map<String, dynamic>? data) {
     if (data == null) {
-      //return null;
+      return null;
     }
     final String text = data['text'];
     final int color = data['color'];

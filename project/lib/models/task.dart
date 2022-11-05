@@ -17,17 +17,26 @@ class Task {
   // List of comments of this task.
   List<Comment> comments;
 
+  Task(
+      {this.title = "task title",
+      this.description = "task description",
+      this.tags = const [],
+      this.done = false,
+      this.deadline,
+      this.comments = const []});
+
   /// Converts a [Map] object to a [Task] object.
-  factory Task.fromMap(Map<String, dynamic> data) {
+  static Task? fromMap(Map<String, dynamic>? data) {
     if (data == null) {
-      //return null;
+      return null;
     }
     final String title = data['title'];
     final String description = data['description'];
     final List<Tag> tags = [];
     if (null != data['tags']) {
       for (Map<String, dynamic> map in data['tags']) {
-        tags.add(Tag.fromMap(map));
+        Tag? tag = Tag.fromMap(map);
+        if (tag != null) tags.add(tag);
       }
     }
     final bool done = data['done'];
@@ -35,7 +44,8 @@ class Task {
     final List<Comment> comments = [];
     if (null != data['comments']) {
       for (Map<String, dynamic> map in data['comments']) {
-        comments.add(Comment.fromMap(map));
+        Comment? comment = Comment.fromMap(map);
+        if (comment != null) comments.add(comment);
       }
     }
     return Task(
@@ -46,14 +56,6 @@ class Task {
         deadline: deadline,
         comments: comments);
   }
-
-  Task(
-      {this.title = "task title",
-      this.description = "task description",
-      this.tags = const [],
-      this.done = false,
-      this.deadline,
-      this.comments = const []});
 
   /// Returns the data content of the task as a dynamic list.
   List<dynamic> values() {
