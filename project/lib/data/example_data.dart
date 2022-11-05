@@ -31,9 +31,9 @@ class ExampleData {
                       "That's okay, your mother and I still love you. \nYou can do the rest tomorrow."),
             ],
             tags: [
-              const Tag(
+              Tag(
                 text: "urgent",
-                color: 0xFFFF0000,
+                color: "#FFFF0000",
               ),
             ]),
         Task(
@@ -42,13 +42,13 @@ class ExampleData {
           description:
               "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.",
           tags: <Tag>[
-            const Tag(
+            Tag(
               text: "green",
-              color: 0xFF8BC34A,
+              color: "#FF8BC34A",
             ),
-            const Tag(
+            Tag(
               text: "fun",
-              color: 0xFF0400FF,
+              color: "#FF0400FF",
             ),
           ],
         ),
@@ -78,9 +78,9 @@ class ExampleData {
                       "That's okay, your mother and I still love you. \nYou can do the rest tomorrow."),
             ],
             tags: [
-              const Tag(
+              Tag(
                 text: "urgent",
-                color: 0xFFFF0000,
+                color: "#FF0000",
               ),
             ]),
         Task(
@@ -89,13 +89,13 @@ class ExampleData {
           description:
               "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.",
           tags: <Tag>[
-            const Tag(
+            Tag(
               text: "green",
-              color: 0xFF8BC34A,
+              color: "#8BC34A",
             ),
-            const Tag(
+            Tag(
               text: "fun",
-              color: 0xFF0400FF,
+              color: "#0400FF",
             ),
           ],
         ),
@@ -125,9 +125,9 @@ class ExampleData {
                       "That's okay, your mother and I still love you. \nYou can do the rest tomorrow."),
             ],
             tags: [
-              const Tag(
+              Tag(
                 text: "urgent",
-                color: 0xFFFF0000,
+                color: "#FF0000",
               ),
             ]),
         Task(
@@ -136,13 +136,13 @@ class ExampleData {
           description:
               "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.",
           tags: <Tag>[
-            const Tag(
+            Tag(
               text: "green",
-              color: 0xFF8BC34A,
+              color: "#8BC34A",
             ),
-            const Tag(
+            Tag(
               text: "fun",
-              color: 0xFF0400FF,
+              color: "#0400FF",
             ),
           ],
         ),
@@ -172,9 +172,9 @@ class ExampleData {
                       "That's okay, your mother and I still love you. \nYou can do the rest tomorrow."),
             ],
             tags: [
-              const Tag(
+              Tag(
                 text: "urgent",
-                color: 0xFFFF0000,
+                color: "#FF0000",
               ),
             ]),
         Task(
@@ -183,13 +183,13 @@ class ExampleData {
           description:
               "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.",
           tags: <Tag>[
-            const Tag(
+            Tag(
               text: "green",
-              color: 0xFF8BC34A,
+              color: "#8BC34A",
             ),
-            const Tag(
+            Tag(
               text: "fun",
-              color: 0xFF0400FF,
+              color: "#0400FF",
             ),
           ],
         ),
@@ -197,17 +197,17 @@ class ExampleData {
     ),
   ];
   static List<Tag> tags = [
-    const Tag(
+    Tag(
       text: "urgent",
-      color: 0xFFFF0000,
+      color: "#FF0000",
     ),
-    const Tag(
+    Tag(
       text: "green",
-      color: 0xFF8BC34A,
+      color: "#8BC34A",
     ),
-    const Tag(
+    Tag(
       text: "fun",
-      color: 0xFF0400FF,
+      color: "#0400FF",
     ),
   ];
 }

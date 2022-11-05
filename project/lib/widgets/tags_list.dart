@@ -15,11 +15,7 @@ class TagsList extends StatelessWidget {
   Widget build(BuildContext context) {
     List<Widget> newTags = [];
     for (Tag tag in tags) {
-      newTags.add(TagWidget(
-        tagText: tag.text,
-        size: size,
-        color: Color(tag.color),
-      ));
+      newTags.add(TagWidget.fromTag(tag, size: size));
     }
     return Wrap(
       spacing: 1.0,
