@@ -25,7 +25,9 @@ class TagWidget extends StatelessWidget {
 
   TagWidget.fromTag(Tag tag, {super.key, this.size = Size.large})
       : tagText = tag.text,
-        color = Color(tag.color);
+        color = tag.color.length > 7
+            ? Color(int.parse(tag.color.substring(1), radix: 16))
+            : Color(int.parse(tag.color.substring(1), radix: 16) + 0xFF000000);
 
   @override
   int get hashCode => color.hashCode + tagText.hashCode;
