@@ -24,6 +24,36 @@ class Project {
   /// When the project was last updated.
   String? lastUpdated;
 
+  /// Converts a [Map] object to a [Project] object.
+  static Project? fromMap(Map<String, dynamic>? data) {
+    if (null == data) {
+      return null;
+    }
+    final String title = data['title'];
+    final List<Task> tasks = [];
+    for (Map<String, dynamic> map in data['tasks']) {
+      Task? task = Task.fromMap(map);
+      if (task != null) tasks.add(task);
+    }
+    final List<Tag> tags = [];
+    for (Map<String, dynamic> map in data['tags']) {
+      Tag? tag = Tag.fromMap(map);
+      if (tag != null) tags.add(tag);
+    }
+    final String imageUrl = data['imageUrl'];
+    final String description = data['description'];
+    final bool isPublic = data['isPublic'];
+    final String? lastUpdated = data['lastUpdated'];
+    return Project(
+        title: title,
+        tasks: tasks,
+        tags: tags,
+        imageUrl: imageUrl,
+        description: description,
+        isPublic: isPublic,
+        lastUpdated: lastUpdated);
+  }
+
   /// Creates an instance of [Project],
   Project({
     this.title = "project title",
