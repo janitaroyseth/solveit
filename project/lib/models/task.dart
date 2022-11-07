@@ -25,6 +25,38 @@ class Task {
       this.deadline,
       this.comments = const []});
 
+  /// Converts a [Map] object to a [Task] object.
+  static Task? fromMap(Map<String, dynamic>? data) {
+    if (data == null) {
+      return null;
+    }
+    final String title = data['title'];
+    final String description = data['description'];
+    final List<Tag> tags = [];
+    if (null != data['tags']) {
+      for (Map<String, dynamic> map in data['tags']) {
+        Tag? tag = Tag.fromMap(map);
+        if (tag != null) tags.add(tag);
+      }
+    }
+    final bool done = data['done'];
+    final String? deadline = data['deadline'];
+    final List<Comment> comments = [];
+    if (null != data['comments']) {
+      for (Map<String, dynamic> map in data['comments']) {
+        Comment? comment = Comment.fromMap(map);
+        if (comment != null) comments.add(comment);
+      }
+    }
+    return Task(
+        title: title,
+        description: description,
+        tags: tags,
+        done: done,
+        deadline: deadline,
+        comments: comments);
+  }
+
   /// Returns the data content of the task as a dynamic list.
   List<dynamic> values() {
     return [title, description, done, deadline, tags];
@@ -32,6 +64,13 @@ class Task {
 
   /// Returns the data content of the task as a map.
   Map asMap() {
-    return {"title": title, "description": description, "tags": tags, "done": done, "deadline": deadline, "comments": comments};
+    return {
+      "title": title,
+      "description": description,
+      "tags": tags,
+      "done": done,
+      "deadline": deadline,
+      "comments": comments
+    };
   }
 }
