@@ -7,24 +7,29 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import 'package:project/main.dart';
+import 'package:project/models/project.dart';
+import 'package:project/data/example_data.dart';
+import 'package:project/widgets/sign_in_button.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
+  testWidgets('SignInButton is displayed and functions correctly',
+      (WidgetTester tester) async {
+    tester.binding.window.physicalSizeTestValue = const Size(42, 42);
     await tester.pumpWidget(const MyApp());
+    expect(find.widgetWithText(SignInButton, 'Continue with Google'),
+        findsOneWidget);
+    expect(find.byIcon(PhosphorIcons.googleLogo), findsOneWidget);
+    expect(find.widgetWithText(SignInButton, 'Continue with Facebook'),
+        findsOneWidget);
+    expect(find.byIcon(PhosphorIcons.facebookLogo), findsOneWidget);
+    expect(find.widgetWithText(SignInButton, 'Continue with Apple'),
+        findsOneWidget);
+    expect(find.byIcon(PhosphorIcons.appleLogo), findsOneWidget);
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
-
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    //await tester.tap(find.widgetWithText(SignInButton, 'Continue with Google'));
+    //expect(find.byType(BottomAppBar), findsOneWidget);
   });
 }

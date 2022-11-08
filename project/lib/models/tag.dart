@@ -5,7 +5,6 @@ class Tag {
   // The numeric color value of the tag.
   final String color;
 
-
   // Set color to default value if no color parameter is given,
   // or to red if color parameter is of invalid format,
   // or to color parameter if its format is valid.
@@ -23,10 +22,7 @@ class Tag {
       return null;
     }
     final String text = data['text'];
-    final int color = data['color'];
+    final String color = data['color'];
     return Tag(text: text, color: color);
   }
-
-  const Tag({this.text = "tag", this.color = 0xFFFFFF});
-
 }
