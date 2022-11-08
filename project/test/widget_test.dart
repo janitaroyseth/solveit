@@ -10,8 +10,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import 'package:project/main.dart';
-import 'package:project/models/project.dart';
-import 'package:project/data/example_data.dart';
 import 'package:project/widgets/sign_in_button.dart';
 
 void main() {
