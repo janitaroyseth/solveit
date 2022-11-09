@@ -4,6 +4,7 @@ import 'package:project/data/project_avatar_options.dart';
 import 'package:project/screens/profile_screen.dart';
 import 'package:project/styles/theme.dart';
 import 'package:project/widgets/appbar_button.dart';
+import 'package:project/widgets/input_field.dart';
 import 'package:project/widgets/search_bar.dart';
 import 'package:project/widgets/user_list_item.dart';
 
@@ -11,6 +12,8 @@ import 'package:project/widgets/user_list_item.dart';
 class CreateProjectScreen extends StatelessWidget {
   static const routeName = "/new-project";
   const CreateProjectScreen({super.key});
+
+  final Widget _verticalPadding = const SizedBox(height: 24);
 
   @override
   Widget build(BuildContext context) {
@@ -41,28 +44,20 @@ class CreateProjectScreen extends StatelessWidget {
         child: Form(
           child: ListView(
             children: <Widget>[
-              TextFormField(
-                autofocus: true,
-                decoration: const InputDecoration(
-                  label: Text("title"),
-                  hintText: "a concise description for the project...",
-                  hintStyle: TextStyle(fontSize: 12),
-                  floatingLabelBehavior: FloatingLabelBehavior.always,
-                ),
+              const InputField(
+                label: "title",
+                placeholderText: "a concise description of your project",
+                keyboardAction: TextInputAction.next,
               ),
-              const SizedBox(height: 16),
-              TextFormField(
-                autofocus: true,
-                decoration: const InputDecoration(
-                  label: Text("description"),
-                  hintText: "desribe your project...",
-                  hintStyle: TextStyle(fontSize: 12),
-                  floatingLabelBehavior: FloatingLabelBehavior.always,
-                ),
+              _verticalPadding,
+              const InputField(
+                label: "description",
+                placeholderText: "describe your project",
+                keyboardAction: TextInputAction.next,
               ),
-              const SizedBox(height: 16),
+              _verticalPadding,
               const _PublicProjectOptions(),
-              const SizedBox(height: 16),
+              _verticalPadding,
               const Text(
                 "collaborators",
                 style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
@@ -142,7 +137,7 @@ class CreateProjectScreen extends StatelessWidget {
                   ],
                 ),
               ),
-              const SizedBox(height: 16),
+              _verticalPadding,
               const Text("choose a project avatar"),
               const _ProjectAvatarPicker(),
               ElevatedButton(
