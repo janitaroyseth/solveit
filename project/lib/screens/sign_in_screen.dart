@@ -28,37 +28,39 @@ class SignInScreen extends StatelessWidget {
           32.0,
           0,
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: <Widget>[
-            FittedBox(
-              fit: BoxFit.scaleDown,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: const <Widget>[
-                  Text(
-                    "solve",
-                    style: TextStyle(
-                      fontSize: 40,
-                      color: Colors.black,
-                      fontWeight: FontWeight.w300,
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const <Widget>[
+                    Text(
+                      "solve",
+                      style: TextStyle(
+                        fontSize: 40,
+                        color: Colors.black,
+                        fontWeight: FontWeight.w300,
+                      ),
                     ),
-                  ),
-                  Text(
-                    "it",
-                    style: TextStyle(
-                      fontSize: 40,
-                      color: Themes.primaryColor,
-                      fontWeight: FontWeight.w500,
+                    Text(
+                      "it",
+                      style: TextStyle(
+                        fontSize: 40,
+                        color: Themes.primaryColor,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            const SizedBox(height: 60),
-            const _SignInForm(),
-          ],
+              const SizedBox(height: 60),
+              const _SignInForm(),
+            ],
+          ),
         ),
       ),
     );
