@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/models/filter.dart';
 import 'package:project/models/filter_option.dart';
+import 'package:project/screens/project_calendar_screen.dart';
 import 'package:project/styles/curve_clipper.dart';
 import 'package:project/styles/theme.dart';
 import 'package:project/widgets/project_pop_up_menu.dart';
@@ -51,7 +52,9 @@ class TaskOverviewScreen extends StatelessWidget {
         ),
         actions: <Widget>[
           AppBarButton(
-            handler: () {},
+            handler: () => Navigator.of(context).popAndPushNamed(
+                ProjectCalendarScreen.routeName,
+                arguments: project),
             tooltip: "Open calendar for this project",
             icon: PhosphorIcons.calendarCheckLight,
             color: Colors.white,

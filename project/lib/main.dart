@@ -34,7 +34,8 @@ class MyApp extends StatelessWidget {
         //TODO: Update route names.
         '/': (context) => const SignInScreen(),
         HomeScreen.routeName: (context) => const HomeScreen(),
-        '/project/calendar': (context) => const ProjectCalendarScreen(),
+        ProjectCalendarScreen.routeName: (context) =>
+            const ProjectCalendarScreen(),
         TaskOverviewScreen.routeName: (context) => const TaskOverviewScreen(),
         '/task': (context) => const TaskDetailScreen(),
         ProfileScreen.routeName: (context) => const ProfileScreen(),
