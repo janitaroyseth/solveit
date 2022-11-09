@@ -8,60 +8,72 @@ import '../widgets/appbar_button.dart';
 class UserSettingsScreen extends StatelessWidget {
   static const routeName = "/settings";
   const UserSettingsScreen({super.key});
-
+  static final List<String> settingsList = ["Theme", "Text", "Time", "Account"];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        foregroundColor: Colors.white,
+        foregroundColor: Colors.black,
         elevation: 0,
-        title: const Text("Settings"),
+        title: const Text("settings"),
         titleSpacing: -4,
-        backgroundColor: Themes.primaryColor,
+        backgroundColor: Colors.white,
         leading: AppBarButton(
           handler: () {
             Navigator.pop(context);
           },
           tooltip: "Go back",
           icon: PhosphorIcons.caretLeftLight,
-          color: Colors.white,
+          color: Colors.black,
         ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(30),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Icon(
-              PhosphorIcons.gearSixLight,
-              size: 60,
-            ),
-            const SizedBox(height: 20),
-            // const Text(
-            //   "User Settings",
-            //   textAlign: TextAlign.center,
-            //   style: TextStyle(fontSize: 20),
-            // ),
-            const SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: () {},
-              child: const Text("Behold"),
-            ),
-            ElevatedButton(
-              onPressed: () {},
-              child: const Text("my"),
-            ),
-            ElevatedButton(
-              onPressed: () {},
-              child: const Text("glorious"),
-            ),
-            ElevatedButton(
-              onPressed: () {},
-              child: const Text("creation"),
-            ),
+            _getSettingsList(),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _getSettingsList() {
+    return Expanded(
+      child: ListView.separated(
+        separatorBuilder: (context, index) => const Divider(
+          color: Color.fromARGB(62, 0, 0, 0),
+          height: 30,
+          thickness: 0.5,
+        ),
+        itemBuilder: ((context, index) => _getSettingsListItem(index)),
+        itemCount: settingsList.length,
+      ),
+    );
+  }
+
+  Widget _getSettingsListItem(int index) {
+    List<Icon> icons = [
+      const Icon(PhosphorIcons.paletteLight),
+      const Icon(PhosphorIcons.textTLight),
+      const Icon(PhosphorIcons.clockLight),
+      const Icon(PhosphorIcons.keyLight)
+    ];
+    return InkWell(
+      onTap: () {},
+      child: Row(
+        children: [
+          icons[index],
+          const Spacer(flex: 1),
+          Text(
+            settingsList[index],
+            style: Themes.textTheme.bodyMedium,
+          ),
+          const Spacer(flex: 9),
+          const Icon(PhosphorIcons.caretRightLight)
+        ],
       ),
     );
   }

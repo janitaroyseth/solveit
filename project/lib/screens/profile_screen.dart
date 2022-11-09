@@ -87,7 +87,11 @@ class ProfileScreen extends StatelessWidget {
                       ModalListItem(
                         icon: PhosphorIcons.gearSixLight,
                         label: "settings",
-                        handler: () {},
+                        handler: () {
+                          Navigator.of(context).pushNamed(
+                            UserSettingsScreen.routeName,
+                          );
+                        },
                       ),
                       ModalListItem(
                         icon: PhosphorIcons.signOutLight,
