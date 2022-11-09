@@ -18,37 +18,37 @@ class ExampleData {
         Task(
             title: "Vacuum the house",
             description: "Vacuum the living room, hallway and kitchen.",
-            deadline: "23.10.2022",
+            deadline: "23/10/2022",
             comments: [
               Comment(
                   author: "Espen",
-                  date: "18.10.2022",
+                  date: "18/10/2022",
                   text: "Only had time to vacuum the living room and hallway."),
               Comment(
                   author: "Sakarias",
-                  date: "19.10.2022",
+                  date: "19/10/2022",
                   text:
                       "That's okay, your mother and I still love you. \nYou can do the rest tomorrow."),
             ],
             tags: [
-              const Tag(
+              Tag(
                 text: "urgent",
-                color: 0xFFFF0000,
+                color: "#FFFF0000",
               ),
             ]),
         Task(
           title: "Water flowers",
-          deadline: "15.10.2022",
+          deadline: "15/10/2022",
           description:
               "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.",
           tags: <Tag>[
-            const Tag(
+            Tag(
               text: "green",
-              color: 0xFF8BC34A,
+              color: "#FF8BC34A",
             ),
-            const Tag(
+            Tag(
               text: "fun",
-              color: 0xFF0400FF,
+              color: "#FF0400FF",
             ),
           ],
         ),
@@ -65,37 +65,37 @@ class ExampleData {
         Task(
             title: "Vacuum the house",
             description: "Vacuum the living room, hallway and kitchen.",
-            deadline: "23.10.2022",
+            deadline: "23/10/2022",
             comments: [
               Comment(
                   author: "Espen",
-                  date: "18.10.2022",
+                  date: "18/10/2022",
                   text: "Only had time to vacuum the living room and hallway."),
               Comment(
                   author: "Sakarias",
-                  date: "19.10.2022",
+                  date: "19/10/2022",
                   text:
                       "That's okay, your mother and I still love you. \nYou can do the rest tomorrow."),
             ],
             tags: [
-              const Tag(
+              Tag(
                 text: "urgent",
-                color: 0xFFFF0000,
+                color: "#FF0000",
               ),
             ]),
         Task(
           title: "Water flowers",
-          deadline: "15.10.2022",
+          deadline: "15/10/2022",
           description:
               "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.",
           tags: <Tag>[
-            const Tag(
+            Tag(
               text: "green",
-              color: 0xFF8BC34A,
+              color: "#8BC34A",
             ),
-            const Tag(
+            Tag(
               text: "fun",
-              color: 0xFF0400FF,
+              color: "#0400FF",
             ),
           ],
         ),
@@ -112,37 +112,37 @@ class ExampleData {
         Task(
             title: "Vacuum the house",
             description: "Vacuum the living room, hallway and kitchen.",
-            deadline: "23.10.2022",
+            deadline: "23/10/2022",
             comments: [
               Comment(
                   author: "Espen",
-                  date: "18.10.2022",
+                  date: "18/10/2022",
                   text: "Only had time to vacuum the living room and hallway."),
               Comment(
                   author: "Sakarias",
-                  date: "19.10.2022",
+                  date: "19/10/2022",
                   text:
                       "That's okay, your mother and I still love you. \nYou can do the rest tomorrow."),
             ],
             tags: [
-              const Tag(
+              Tag(
                 text: "urgent",
-                color: 0xFFFF0000,
+                color: "#FF0000",
               ),
             ]),
         Task(
           title: "Water flowers",
-          deadline: "15.10.2022",
+          deadline: "15/10/2022",
           description:
               "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.",
           tags: <Tag>[
-            const Tag(
+            Tag(
               text: "green",
-              color: 0xFF8BC34A,
+              color: "#8BC34A",
             ),
-            const Tag(
+            Tag(
               text: "fun",
-              color: 0xFF0400FF,
+              color: "#0400FF",
             ),
           ],
         ),
@@ -159,37 +159,37 @@ class ExampleData {
         Task(
             title: "Vacuum the house",
             description: "Vacuum the living room, hallway and kitchen.",
-            deadline: "23.10.2022",
+            deadline: "23/10/2022",
             comments: [
               Comment(
                   author: "Espen",
-                  date: "18.10.2022",
+                  date: "18/10/2022",
                   text: "Only had time to vacuum the living room and hallway."),
               Comment(
                   author: "Sakarias",
-                  date: "19.10.2022",
+                  date: "19/10/2022",
                   text:
                       "That's okay, your mother and I still love you. \nYou can do the rest tomorrow."),
             ],
             tags: [
-              const Tag(
+              Tag(
                 text: "urgent",
-                color: 0xFFFF0000,
+                color: "#FF0000",
               ),
             ]),
         Task(
           title: "Water flowers",
-          deadline: "15.10.2022",
+          deadline: "15/10/2022",
           description:
               "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.",
           tags: <Tag>[
-            const Tag(
+            Tag(
               text: "green",
-              color: 0xFF8BC34A,
+              color: "#8BC34A",
             ),
-            const Tag(
+            Tag(
               text: "fun",
-              color: 0xFF0400FF,
+              color: "#0400FF",
             ),
           ],
         ),
@@ -197,17 +197,17 @@ class ExampleData {
     ),
   ];
   static List<Tag> tags = [
-    const Tag(
+    Tag(
       text: "urgent",
-      color: 0xFFFF0000,
+      color: "#FF0000",
     ),
-    const Tag(
+    Tag(
       text: "green",
-      color: 0xFF8BC34A,
+      color: "#8BC34A",
     ),
-    const Tag(
+    Tag(
       text: "fun",
-      color: 0xFF0400FF,
+      color: "#0400FF",
     ),
   ];
 }

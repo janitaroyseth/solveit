@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/data/example_data.dart';
+import 'package:project/screens/sign_in_screen.dart';
 import 'package:project/styles/curve_clipper.dart';
 import 'package:project/styles/theme.dart';
 import 'package:project/widgets/appbar_button.dart';
@@ -120,9 +121,11 @@ class CreateProfileScreen extends StatelessWidget {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => Navigator.of(context).pushReplacementNamed(
-            HomeScreen.routeName,
-            arguments: ExampleData.projects),
+        onPressed: () {
+          Navigator.of(context).pop();
+          Navigator.of(context).popAndPushNamed(HomeScreen.routeName,
+              arguments: ExampleData.projects);
+        },
         child: const Icon(
           PhosphorIcons.arrowRight,
           color: Colors.white,

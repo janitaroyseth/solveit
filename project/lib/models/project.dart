@@ -25,18 +25,20 @@ class Project {
   String? lastUpdated;
 
   /// Converts a [Map] object to a [Project] object.
-  factory Project.fromMap(Map<String, dynamic> data) {
+  static Project? fromMap(Map<String, dynamic>? data) {
     if (null == data) {
-      //return null;
+      return null;
     }
     final String title = data['title'];
     final List<Task> tasks = [];
     for (Map<String, dynamic> map in data['tasks']) {
-      tasks.add(Task.fromMap(map));
+      Task? task = Task.fromMap(map);
+      if (task != null) tasks.add(task);
     }
     final List<Tag> tags = [];
     for (Map<String, dynamic> map in data['tags']) {
-      tags.add(Tag.fromMap(map));
+      Tag? tag = Tag.fromMap(map);
+      if (tag != null) tags.add(tag);
     }
     final String imageUrl = data['imageUrl'];
     final String description = data['description'];
