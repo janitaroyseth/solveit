@@ -137,9 +137,19 @@ class Themes {
     ),
   );
 
+  static ButtonStyle circularButtonStyle = ButtonStyle(
+    padding: MaterialStateProperty.all<EdgeInsets>(
+      const EdgeInsets.all(11.0),
+    ),
+    elevation: MaterialStateProperty.all<double>(0),
+    shape: MaterialStateProperty.all<OutlinedBorder>(
+      const CircleBorder(),
+    ),
+  );
+
   static ButtonStyle textButtonStyle = ButtonStyle(
     textStyle: MaterialStateProperty.all<TextStyle>(
-      const TextStyle(fontSize: 16, fontFamily: Themes.fontFamily),
+      const TextStyle(fontSize: 14, fontFamily: Themes.fontFamily),
     ),
   );
 }
