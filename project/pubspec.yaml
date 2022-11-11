@@ -20,6 +20,8 @@ dependencies:
   firebase_auth: ^4.0.2
   image_picker: ^0.8.6
   jiffy: ^5.0.0
+  shared_preferences: ^2.0.15
+  settings_ui: ^2.0.2
 
 dev_dependencies:
   flutter_test:

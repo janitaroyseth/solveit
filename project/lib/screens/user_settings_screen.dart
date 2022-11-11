@@ -1,14 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:project/services/preferences_service.dart';
+import 'package:settings_ui/settings_ui.dart';
 
-import '../styles/theme.dart';
+import '../models/settings.dart';
 import '../widgets/appbar_button.dart';
 
 /// Scaffold/Screen for viewing and editing user settings.
-class UserSettingsScreen extends StatelessWidget {
+class UserSettingsScreen extends StatefulWidget {
   static const routeName = "/settings";
   const UserSettingsScreen({super.key});
-  static final List<String> settingsList = ["Theme", "Text", "Time", "Account"];
+
+  @override
+  State<UserSettingsScreen> createState() => _UserSettingsScreenState();
+}
+
+class _UserSettingsScreenState extends State<UserSettingsScreen> {
+  final PreferencesService _preferencesService = PreferencesService();
+  late Settings settings;
+
+  @override
+  void initState() {
+    settings = _preferencesService.getSettings();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,54 +43,38 @@ class UserSettingsScreen extends StatelessWidget {
           color: Colors.black,
         ),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(30),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            _getSettingsList(),
-          ],
-        ),
-      ),
+      body: _getSettingsList(),
     );
   }
 
   Widget _getSettingsList() {
-    return Expanded(
-      child: ListView.separated(
-        separatorBuilder: (context, index) => const Divider(
-          color: Color.fromARGB(62, 0, 0, 0),
-          height: 30,
-          thickness: 0.5,
-        ),
-        itemBuilder: ((context, index) => _getSettingsListItem(index)),
-        itemCount: settingsList.length,
+    return SettingsList(
+      lightTheme: const SettingsThemeData(
+        settingsListBackground: Colors.white,
+        settingsSectionBackground: Colors.white,
+        dividerColor: Colors.black,
       ),
+      sections: [
+        SettingsSection(
+          title: const Text('Theme'),
+          tiles: <SettingsTile>[
+            SettingsTile.switchTile(
+              onToggle: (value) {
+                settings.darkThemeEnabled = value;
+                _saveSettings();
+                setState(() {});
+              },
+              initialValue: settings.darkThemeEnabled,
+              leading: const Icon(Icons.format_paint),
+              title: const Text('Enable dark theme'),
+            ),
+          ],
+        ),
+      ],
     );
   }
 
-  Widget _getSettingsListItem(int index) {
-    List<Icon> icons = [
-      const Icon(PhosphorIcons.paletteLight),
-      const Icon(PhosphorIcons.textTLight),
-      const Icon(PhosphorIcons.clockLight),
-      const Icon(PhosphorIcons.keyLight)
-    ];
-    return InkWell(
-      onTap: () {},
-      child: Row(
-        children: [
-          icons[index],
-          const Spacer(flex: 1),
-          Text(
-            settingsList[index],
-            style: Themes.textTheme.bodyMedium,
-          ),
-          const Spacer(flex: 9),
-          const Icon(PhosphorIcons.caretRightLight)
-        ],
-      ),
-    );
+  void _saveSettings() {
+    _preferencesService.saveSettings(settings);
   }
 }
