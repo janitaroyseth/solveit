@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/services/preferences_service.dart';
 import 'package:settings_ui/settings_ui.dart';
+import 'package:project/styles/theme.dart';
 
 import '../models/settings.dart';
 import '../widgets/appbar_button.dart';
@@ -56,7 +57,10 @@ class _UserSettingsScreenState extends State<UserSettingsScreen> {
       ),
       sections: [
         SettingsSection(
-          title: const Text('Theme'),
+          title: const Text(
+            'theme',
+            style: TextStyle(color: Themes.primaryColor),
+          ),
           tiles: <SettingsTile>[
             SettingsTile.switchTile(
               onToggle: (value) {
@@ -65,8 +69,11 @@ class _UserSettingsScreenState extends State<UserSettingsScreen> {
                 setState(() {});
               },
               initialValue: settings.darkThemeEnabled,
-              leading: const Icon(Icons.format_paint),
-              title: const Text('Enable dark theme'),
+              leading: Icon(
+                PhosphorIcons.paletteFill,
+                color: Themes.textColor.withOpacity(0.5),
+              ),
+              title: const Text('enable dark theme'),
             ),
           ],
         ),
