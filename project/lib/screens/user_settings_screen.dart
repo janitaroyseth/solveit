@@ -34,7 +34,7 @@ class _UserSettingsScreenState extends State<UserSettingsScreen> {
         elevation: 0,
         title: const Text("settings"),
         titleSpacing: -4,
-        backgroundColor: Colors.white,
+        backgroundColor: Themes.themeData.appBarTheme.backgroundColor,
         leading: AppBarButton(
           handler: () {
             Navigator.pop(context);
@@ -50,9 +50,9 @@ class _UserSettingsScreenState extends State<UserSettingsScreen> {
 
   Widget _getSettingsList() {
     return SettingsList(
-      lightTheme: const SettingsThemeData(
-        settingsListBackground: Colors.white,
-        settingsSectionBackground: Colors.white,
+      lightTheme: SettingsThemeData(
+        settingsListBackground: Themes.themeData.scaffoldBackgroundColor,
+        settingsSectionBackground: Themes.themeData.scaffoldBackgroundColor,
         dividerColor: Colors.black,
       ),
       sections: [
