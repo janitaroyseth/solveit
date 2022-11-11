@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:project/firebase_options.dart';
 import 'package:project/screens/create_profile_screen.dart';
 import 'package:project/screens/create_project_screen.dart';
+import 'package:project/screens/create_task_screen.dart';
 import 'package:project/screens/profile_screen.dart';
 import 'package:project/screens/project_overview_screen.dart';
 import 'package:project/screens/project_preview_screen.dart';
@@ -50,6 +51,7 @@ class MyApp extends StatelessWidget {
         CreateProfileScreen.routeName: (context) => const CreateProfileScreen(),
         UserSettingsScreen.routeName: (context) => const UserSettingsScreen(),
         CreateProjectScreen.routeName: (context) => const CreateProjectScreen(),
+        CreateTaskScreen.routeName: (context) => const CreateTaskScreen(),
       },
     );
   }
