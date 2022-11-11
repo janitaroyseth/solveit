@@ -242,9 +242,7 @@ class __SignInFormState extends State<_SignInForm> {
   Future<void> _signInAnonymously() async {
     try {
       final userCredentials = await FirebaseAuth.instance.signInAnonymously();
-      if (kDebugMode) {
-        print("${userCredentials.user?.uid}");
-      }
+      print("${userCredentials.user?.uid}");
     } catch (e) {
       print(e.toString());
     }
