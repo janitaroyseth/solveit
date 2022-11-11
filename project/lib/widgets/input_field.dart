@@ -8,9 +8,13 @@ class InputField extends StatelessWidget {
   /// [String] (an enum) text giving hint to what the content of the field should be.
   final String placeholderText;
 
-  /// [TextInputAction] what kind of keyboard should be used on the device
-  /// for the input field.
-  final TextInputAction keyboardType;
+  /// [TextInputAction] what the action on the keyboard should display.
+  final TextInputAction? keyboardAction;
+
+  /// [TextInputType] what type of text input should the keyboard be tailored to.
+  final TextInputType? keyboardType;
+
+  final bool isPassword;
 
   /// [Function] to invoke when the field is submitted.
   final Function? onSubmit;
@@ -22,20 +26,24 @@ class InputField extends StatelessWidget {
     super.key,
     required this.label,
     required this.placeholderText,
-    required this.keyboardType,
+    this.keyboardAction,
+    this.keyboardType,
+    this.isPassword = false,
     this.onSubmit,
   });
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-      textInputAction: keyboardType,
+      keyboardType: keyboardType,
+      textInputAction: keyboardAction,
       validator: (value) {
         if (value == null || value.isEmpty) {
           return 'Please enter $label';
         }
         return null;
       },
+      obscureText: isPassword,
       decoration: InputDecoration(
         labelStyle: Theme.of(context).textTheme.labelLarge,
         label: Text(label, style: const TextStyle(color: Colors.black)),

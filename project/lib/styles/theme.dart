@@ -9,10 +9,10 @@ class Themes {
   static const MaterialColor primaryColor = MaterialColor(
     0xff5C00F1,
     <int, Color>{
-      50: Color(0xff5C00F1), //10%
-      100: Color.fromRGBO(92, 0, 241, 1),
-      200: Color.fromRGBO(92, 0, 241, 1),
-      300: Color.fromRGBO(92, 0, 241, 1),
+      50: Color.fromRGBO(92, 0, 241, 0.2),
+      100: Color.fromRGBO(92, 0, 241, 0.4),
+      200: Color.fromRGBO(92, 0, 241, 0.6),
+      300: Color.fromRGBO(92, 0, 241, 0.8),
       400: Color.fromRGBO(92, 0, 241, 1),
       500: Color.fromRGBO(92, 0, 241, 1),
       600: Color.fromRGBO(92, 0, 241, 1),
@@ -26,7 +26,6 @@ class Themes {
 
   static ThemeData themeData = ThemeData(
     primarySwatch: primaryColor,
-    // primaryColor: const Color.fromRGBO(92, 0, 241, 1),
     scaffoldBackgroundColor: Colors.white,
     fontFamily: "Comfortaa",
     indicatorColor: Colors.black,
@@ -47,11 +46,11 @@ class Themes {
 
   static CalendarStyle calendarTheme = CalendarStyle(
     markerDecoration: BoxDecoration(
-      color: Colors.blue.shade900,
+      color: primaryColor.shade900,
       shape: BoxShape.circle,
     ),
     selectedDecoration: BoxDecoration(
-      color: Colors.blue.shade400,
+      color: primaryColor.shade300,
       shape: BoxShape.circle,
     ),
     todayDecoration: const BoxDecoration(
@@ -137,9 +136,19 @@ class Themes {
     ),
   );
 
+  static ButtonStyle circularButtonStyle = ButtonStyle(
+    padding: MaterialStateProperty.all<EdgeInsets>(
+      const EdgeInsets.all(11.0),
+    ),
+    elevation: MaterialStateProperty.all<double>(0),
+    shape: MaterialStateProperty.all<OutlinedBorder>(
+      const CircleBorder(),
+    ),
+  );
+
   static ButtonStyle textButtonStyle = ButtonStyle(
     textStyle: MaterialStateProperty.all<TextStyle>(
-      const TextStyle(fontSize: 16, fontFamily: Themes.fontFamily),
+      const TextStyle(fontSize: 14, fontFamily: Themes.fontFamily),
     ),
   );
 }
