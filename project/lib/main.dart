@@ -9,6 +9,7 @@ import 'package:project/screens/project_overview_screen.dart';
 import 'package:project/screens/project_preview_screen.dart';
 import 'package:project/data/example_data.dart';
 import 'package:project/screens/project_calendar_screen.dart';
+import 'package:project/screens/sign_in_screen.dart';
 import 'package:project/styles/theme.dart';
 import 'package:project/screens/task_detail_screen.dart';
 import 'package:project/screens/task_overview_screen.dart';
@@ -29,12 +30,15 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: "solveIt",
       theme: Themes.themeData,
-      initialRoute: SignInScreen.routeName,
+      initialRoute: LandingScreen.routeName,
+
+      // initalRoute: _user != null ? HomeScreen.routeName : SignInScreen.routeName
       //Was old initial route.
       //initialRoute: '/landingscreen',
       routes: {
         //TODO: Update route names.
-        '/landingscreen': (context) => const LandingScreen(),
+        LandingScreen.routeName: (context) => const LandingScreen(),
+        SignInScreen.routeName: (context) => SignInScreen(),
         HomeScreen.routeName: (context) => const HomeScreen(),
         '/project/calendar': (context) => const ProjectCalendarScreen(),
         TaskOverviewScreen.routeName: (context) => const TaskOverviewScreen(),
