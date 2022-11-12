@@ -16,8 +16,8 @@ class ProjectOverviewScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<Project> projects =
-        ModalRoute.of(context)!.settings.arguments as List<Project>;
+    final List<Project> projects = (ModalRoute.of(context)!.settings.arguments!
+        as Map)["projects"] as List<Project>;
     return Scaffold(
       appBar: AppBar(
         elevation: 0,

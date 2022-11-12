@@ -20,6 +20,7 @@ dependencies:
   firebase_auth: ^4.0.2
   image_picker: ^0.8.6
   jiffy: ^5.0.0
+  animated_toggle_switch: ^0.5.2
 
 dev_dependencies:
   flutter_test:

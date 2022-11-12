@@ -26,15 +26,16 @@ class Themes {
 
   static ThemeData themeData = ThemeData(
     primarySwatch: primaryColor,
+
+    // TODO: set this up on screens
     // primaryColor: const Color.fromRGBO(92, 0, 241, 1),
     scaffoldBackgroundColor: Colors.white,
     fontFamily: "Comfortaa",
     indicatorColor: Colors.black,
     appBarTheme: const AppBarTheme(
-      color: Colors.white,
+      backgroundColor: Colors.white,
       foregroundColor: Colors.black,
-      shadowColor: Colors.black54,
-      elevation: 3,
+      elevation: 0,
     ),
     textTheme: textTheme,
   );
@@ -74,7 +75,11 @@ class Themes {
       color: textColor,
     ),
     bodySmall: const TextStyle(
-      fontSize: 11,
+      fontSize: 12,
+    ),
+    bodyMedium: const TextStyle(
+      fontSize: 13,
+      fontWeight: FontWeight.w300,
     ),
     bodyLarge: const TextStyle(
       fontSize: 12,
@@ -83,6 +88,10 @@ class Themes {
     labelLarge: const TextStyle(
       fontSize: 18,
       overflow: TextOverflow.ellipsis,
+    ),
+    labelMedium: const TextStyle(
+      fontSize: 14,
+      fontWeight: FontWeight.w600,
     ),
     labelSmall: TextStyle(
       color: textColor.withOpacity(0.54),

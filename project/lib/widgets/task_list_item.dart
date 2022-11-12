@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:jiffy/jiffy.dart';
+import 'package:project/screens/task_details_screen.dart';
 import '../models/task.dart';
 
 import 'tags_list.dart';
@@ -21,7 +23,11 @@ class TaskListItem extends StatelessWidget {
         const Divider(),
         InkWell(
           onTap: () {
-            Navigator.pushNamed(context, '/task', arguments: task);
+            Navigator.pushNamed(
+              context,
+              TaskDetailsScreen.routeName,
+              arguments: task,
+            );
           },
           child: Padding(
             padding: const EdgeInsets.all(8.0),
@@ -41,7 +47,7 @@ class TaskListItem extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        task.deadline!,
+                        Jiffy(task.deadline!).format("dd/MM/yyyy"),
                         style: Theme.of(context).textTheme.labelSmall,
                       )
                     ],
@@ -61,8 +67,12 @@ class TaskListItem extends StatelessWidget {
                 const SizedBox(
                   height: 10.0,
                 ),
-                TagsList(
-                  tags: task.tags,
+                Row(
+                  children: [
+                    TagsList(
+                      tags: task.tags,
+                    ),
+                  ],
                 ),
               ],
             ),

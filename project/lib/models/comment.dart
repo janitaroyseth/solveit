@@ -1,9 +1,11 @@
+import 'package:project/models/user.dart';
+
 /// The data content of a comment in a task.
 class Comment {
   // The text content (body) of the comment.
   String text;
   // The author of the comment.
-  String author;
+  User author;
   // The date on which the comment was made.
   String date;
 
@@ -15,11 +17,12 @@ class Comment {
     final String text = data['text'];
     final String author = data['author'];
     final String date = data['date'];
-    return Comment(text: text, author: author, date: date);
+    // TODO: fix this
+    //return Comment(text: text, author: author, date: date);
   }
 
   Comment(
       {this.text = "comment text",
-      this.author = "author",
+      required this.author,
       this.date = "01.01.2001"});
 }

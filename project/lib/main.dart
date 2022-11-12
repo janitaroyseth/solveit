@@ -10,7 +10,7 @@ import 'package:project/data/example_data.dart';
 import 'package:project/screens/project_calendar_screen.dart';
 import 'package:project/screens/sign_in_screen.dart';
 import 'package:project/styles/theme.dart';
-import 'package:project/screens/task_detail_screen.dart';
+import 'package:project/screens/task_details_screen.dart';
 import 'package:project/screens/task_overview_screen.dart';
 import 'package:project/screens/home_screen.dart';
 import './models/project.dart';
@@ -32,11 +32,11 @@ class MyApp extends StatelessWidget {
       initialRoute: SignInScreen.routeName,
       routes: {
         //TODO: Update route names.
-        '/': (context) => const SignInScreen(),
+        SignInScreen.routeName: (context) => const SignInScreen(),
         HomeScreen.routeName: (context) => const HomeScreen(),
         '/project/calendar': (context) => const ProjectCalendarScreen(),
         TaskOverviewScreen.routeName: (context) => const TaskOverviewScreen(),
-        '/task': (context) => const TaskDetailScreen(),
+        TaskDetailsScreen.routeName: (context) => const TaskDetailsScreen(),
         ProfileScreen.routeName: (context) => const ProfileScreen(),
         ProjectPreviewScreen.routeName: (context) =>
             const ProjectPreviewScreen(),

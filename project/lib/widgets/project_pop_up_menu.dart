@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/models/project.dart';
-import 'package:project/screens/project_overview_screen.dart';
+import 'package:project/screens/home_screen.dart';
 import 'package:project/screens/project_preview_screen.dart';
 import 'package:project/screens/task_overview_screen.dart';
 
@@ -52,10 +52,9 @@ class __ProjectPopUpMenuState extends State<ProjectPopUpMenu> {
                         arguments: widget.project,
                       )
                   : () {
-                      // TODO: set to HomeScreen.routeName when is updated in dev.
                       Navigator.of(context).pushNamedAndRemoveUntil(
                         TaskOverviewScreen.routeName,
-                        ModalRoute.withName(ProjectOverviewScreen.routeName),
+                        ModalRoute.withName(HomeScreen.routeName),
                         arguments: widget.project,
                       );
                     },
