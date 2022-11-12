@@ -7,6 +7,7 @@ import 'package:project/screens/project_preview_screen.dart';
 import 'package:project/screens/sign_in_screen.dart';
 import 'package:project/styles/curve_clipper.dart';
 import 'package:project/styles/theme.dart';
+import 'package:project/screens/user_settings_screen.dart';
 import 'package:project/widgets/appbar_button.dart';
 import 'package:project/widgets/modal_list_item.dart';
 
@@ -89,7 +90,11 @@ class ProfileScreen extends StatelessWidget {
                       ModalListItem(
                         icon: PhosphorIcons.gearSixLight,
                         label: "settings",
-                        handler: () {},
+                        handler: () {
+                          Navigator.of(context).pushNamed(
+                            UserSettingsScreen.routeName,
+                          );
+                        },
                       ),
                       ModalListItem(
                         icon: PhosphorIcons.signOutLight,

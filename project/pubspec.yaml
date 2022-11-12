@@ -21,6 +21,8 @@ dependencies:
   image_picker: ^0.8.6
   jiffy: ^5.0.0
   animated_toggle_switch: ^0.5.2
+  shared_preferences: ^2.0.15
+  settings_ui: ^2.0.2
 
 dev_dependencies:
   flutter_test:

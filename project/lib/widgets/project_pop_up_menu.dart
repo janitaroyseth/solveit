@@ -46,7 +46,7 @@ class __ProjectPopUpMenuState extends State<ProjectPopUpMenu> {
           onTap: () {
             Future.delayed(
               const Duration(seconds: 0),
-              widget.currentRouteName == TaskOverviewScreen.routeName
+              widget.currentRouteName != ProjectPreviewScreen.routeName
                   ? () => Navigator.of(context).pushNamed(
                         ProjectPreviewScreen.routeName,
                         arguments: widget.project,
@@ -61,9 +61,9 @@ class __ProjectPopUpMenuState extends State<ProjectPopUpMenu> {
             );
           },
           child: Text(
-            widget.currentRouteName == TaskOverviewScreen.routeName
-                ? "go to preview"
-                : "go to tasks",
+            widget.currentRouteName == ProjectPreviewScreen.routeName
+                ? "go to tasks"
+                : "go to preview",
           ),
         ),
         PopupMenuItem(
