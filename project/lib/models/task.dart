@@ -25,9 +25,9 @@ class Task {
     this.tags = const [],
     this.done = false,
     this.deadline,
-    this.comments = const [],
+    List<Comment>? comments,
     this.assigned = const [],
-  });
+  }) : comments = comments ?? [];
 
   /// Converts a [Map] object to a [Task] object.
   static Task? fromMap(Map<String, dynamic>? data) {

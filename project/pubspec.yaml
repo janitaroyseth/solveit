@@ -15,7 +15,6 @@ dependencies:
   cupertino_icons: ^1.0.2
   phosphor_flutter: ^1.4.0
   table_calendar: ^3.0.7
-  intl: ^0.17.0
   firebase_core: ^2.0.0
   firebase_auth: ^4.0.2
   image_picker: ^0.8.6
@@ -23,6 +22,9 @@ dependencies:
   animated_toggle_switch: ^0.5.2
   shared_preferences: ^2.0.15
   settings_ui: ^2.0.2
+  flutter_sound: ^9.2.13
+  giphy_get: ^3.1.1
+  flutter_dotenv: ^5.0.2
 
 dev_dependencies:
   flutter_test:
@@ -34,6 +36,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/
+    - variables.env
 
   fonts:
     - family: Comfortaa

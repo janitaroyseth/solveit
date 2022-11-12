@@ -10,10 +10,7 @@ class TaskListItem extends StatelessWidget {
   /// The [task] to be converted.
   final Task task;
 
-  /// Creates an instance of task list item where [task.title] is the name of the
-  /// task, [task.description] is the description of the task, [task.deadline] is the
-  /// deadline of the task and [task.tags] is a list containing type Tag connected
-  /// to the task.
+  /// Creates an instance of [TaskListItem].
   const TaskListItem({super.key, required this.task});
 
   @override
@@ -67,12 +64,8 @@ class TaskListItem extends StatelessWidget {
                 const SizedBox(
                   height: 10.0,
                 ),
-                Row(
-                  children: [
-                    TagsList(
-                      tags: task.tags,
-                    ),
-                  ],
+                TagsList(
+                  tags: task.tags,
                 ),
               ],
             ),

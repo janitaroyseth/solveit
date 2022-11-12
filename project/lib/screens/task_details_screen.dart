@@ -1,8 +1,13 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:giphy_get/giphy_get.dart';
+import 'package:jiffy/jiffy.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:project/data/example_data.dart';
+import 'package:project/models/comment.dart';
 import 'package:project/models/project.dart';
 import 'package:project/models/task.dart';
 import 'package:project/screens/profile_screen.dart';
@@ -11,6 +16,7 @@ import 'package:project/widgets/appbar_button.dart';
 import 'package:project/widgets/comment_list.dart';
 import 'package:project/widgets/message_input_field.dart';
 import 'package:project/widgets/tag_widget.dart';
+import 'package:project/widgets/tags_list.dart';
 import 'package:project/widgets/toggle_task_status_button.dart';
 import 'package:project/widgets/user_list_item.dart';
 
@@ -44,62 +50,7 @@ class TaskDetailsScreen extends StatelessWidget {
             icon: PhosphorIcons.caretLeftLight,
           ),
           actions: <Widget>[
-            PopupMenuButton(
-              icon: const Icon(
-                PhosphorIcons.dotsThreeVertical,
-                size: 34,
-              ),
-              itemBuilder: (context) => [
-                PopupMenuItem(
-                  value: 1,
-                  height: 48,
-                  onTap: () {},
-                  child: const Text("edit task"),
-                ),
-                PopupMenuItem(
-                  value: 2,
-                  height: 48,
-                  onTap: () {
-                    Future.delayed(
-                      const Duration(seconds: 0),
-                      () => showDialog(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                          title: const Text(
-                            "deleting task",
-                          ),
-                          content: Text(
-                            "Are you sure you want to delete this task \"${task.title.toLowerCase()}\"",
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.of(context).pop(),
-                              child: const Text("no"),
-                            ),
-                            TextButton(
-                              onPressed: () {
-                                Navigator.of(context).pop(); // pop the dialog
-                                Navigator.of(context).pop(); // pop the screen
-                              },
-                              child: Text(
-                                "yes",
-                                style: TextStyle(
-                                  color: Colors.red.shade900,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                  child: Text(
-                    "delete task",
-                    style: TextStyle(color: Colors.red.shade900),
-                  ),
-                ),
-              ],
-            ),
+            _TaskPopUpMenu(task: task),
           ],
           bottom: const TabBar(
             labelColor: Colors.black,
@@ -114,7 +65,7 @@ class TaskDetailsScreen extends StatelessWidget {
           onTap: () => focusNode.unfocus(),
           child: TabBarView(
             children: [
-              OverviewTabView(task: task),
+              _OverviewTabView(task: task),
               CommentTabView(task: task, focusNode: focusNode),
             ],
           ),
@@ -125,15 +76,38 @@ class TaskDetailsScreen extends StatelessWidget {
 }
 
 /// Body content for overview tab.
-class OverviewTabView extends StatelessWidget {
+class _OverviewTabView extends StatelessWidget {
   /// The task to display overview for.
   final Task task;
 
   /// Creates an instance [OverviewTabView].
-  const OverviewTabView({
-    super.key,
-    required this.task,
-  });
+  const _OverviewTabView({required this.task});
+
+  Widget assignedList(BuildContext context) {
+    return Column(
+      children: [
+        ...task.assigned
+            .map(
+              (e) => UserListItem(
+                handler: () => Navigator.of(context).pushNamed(
+                  ProfileScreen.routeName,
+                  arguments: {
+                    "user": e,
+                    "projects": <Project>[],
+                  },
+                ),
+                user: e,
+                size: UserListItemSize.small,
+              ),
+            )
+            .toList(),
+      ],
+    );
+  }
+
+  String deadlineFormatted() {
+    return Jiffy(DateTime.parse(task.deadline!)).format("dd/MM/yyyy");
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -155,37 +129,18 @@ class OverviewTabView extends StatelessWidget {
                 children: <Widget>[
                   Text("tags", style: Themes.textTheme.labelMedium),
                   const SizedBox(height: 8),
-                  Row(
-                    children:
-                        task.tags.map((e) => TagWidget.fromTag(e)).toList(),
+                  TagsList(
+                    tags: task.tags,
+                    size: TagSize.large,
                   ),
                   const SizedBox(height: 24),
                   Text("deadline", style: Themes.textTheme.labelMedium),
                   const SizedBox(height: 8),
-                  Text(DateFormat("dd/MM/yyyy")
-                      .format(DateTime.parse(task.deadline!))),
+                  Text(deadlineFormatted()),
                   const SizedBox(height: 24.0),
                   Text("assigned", style: Themes.textTheme.labelMedium),
                   const SizedBox(height: 8),
-                  Column(
-                    children: [
-                      ...task.assigned
-                          .map(
-                            (e) => UserListItem(
-                              handler: () => Navigator.of(context).pushNamed(
-                                ProfileScreen.routeName,
-                                arguments: {
-                                  "user": e,
-                                  "projects": <Project>[],
-                                },
-                              ),
-                              user: e,
-                              size: UserListItemSize.small,
-                            ),
-                          )
-                          .toList(),
-                    ],
-                  ),
+                  assignedList(context),
                   const SizedBox(height: 24),
                   Text("description", style: Themes.textTheme.labelMedium),
                   const SizedBox(height: 8),
@@ -201,7 +156,7 @@ class OverviewTabView extends StatelessWidget {
 }
 
 /// Body content for the comment tab.
-class CommentTabView extends StatelessWidget {
+class CommentTabView extends StatefulWidget {
   /// The task to display it's comments for.
   final Task task;
 
@@ -216,50 +171,209 @@ class CommentTabView extends StatelessWidget {
   });
 
   @override
+  State<CommentTabView> createState() => _CommentTabViewState();
+}
+
+class _CommentTabViewState extends State<CommentTabView> {
+  /// [ScrollController] for the [CommentList].
+  final ScrollController controller = ScrollController();
+
+  /// Api key for using giphy.
+  String? giphyApiKey = dotenv.env["GIPHY_API_KEY"];
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.task.comments.isNotEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        controller.jumpTo(controller.position.maxScrollExtent);
+      });
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (widget.task.comments.isNotEmpty) {
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        controller.jumpTo(controller.position.maxScrollExtent);
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
+  }
+
+  /// Waits `200` milliseconds and then scroll to the bottom of the comment
+  /// list.
+  void scrollToBottom() {
+    Timer(const Duration(milliseconds: 200), () {
+      controller.animateTo(
+        controller.position.maxScrollExtent,
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeInOut,
+      );
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding:
-          EdgeInsets.fromLTRB(8.0, 16.0, 8.0, Platform.isIOS ? 30.0 : 20.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Expanded(
+    return GiphyGetWrapper(
+        giphy_api_key: giphyApiKey!,
+        builder: (stream, giphyGetWrapper) {
+          stream.listen((gif) {
+            setState(() {
+              widget.task.comments.add(GiphyComment(
+                author: ExampleData.user2,
+                url: "https://i.giphy.com/media/${gif.id}/200.gif",
+              ));
+            });
+            scrollToBottom();
+          });
+
+          return Padding(
+            padding: EdgeInsets.fromLTRB(
+              8.0,
+              16.0,
+              8.0,
+              Platform.isIOS ? 30.0 : 20.0,
+            ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  task.title.toLowerCase(),
-                  style: const TextStyle(
-                      fontSize: 18, fontWeight: FontWeight.w500),
-                ),
-                const SizedBox(height: 16.0),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text("comments", style: Themes.textTheme.labelMedium),
-                      const SizedBox(height: 8),
-                      task.comments.isEmpty
-                          ? const Text("No comments...")
-                          : CommentList(
-                              comments: task.comments,
-                            )
+                    children: [
+                      Text(
+                        widget.task.title.toLowerCase(),
+                        style: const TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.w500),
+                      ),
+                      const SizedBox(height: 16.0),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text("comments",
+                                  style: Themes.textTheme.labelMedium),
+                              const SizedBox(height: 8),
+                              if (widget.task.comments.isEmpty)
+                                const Text("No comments..."),
+                              Expanded(
+                                child: CommentList(
+                                  comments: widget.task.comments,
+                                  controller: controller,
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
                     ],
                   ),
                 ),
+                MessageInputField(
+                  handler: (content) async {
+                    if (content is String) {
+                      widget.task.comments.add(TextComment(
+                        author: ExampleData.user1,
+                        text: content,
+                      ));
+                    } else if (content is File) {
+                      widget.task.comments.add(ImageComment(
+                        author: ExampleData.user2,
+                        image: content,
+                      ));
+                    }
+
+                    setState(() {});
+                    scrollToBottom();
+                  },
+                  focusNode: widget.focusNode,
+                  camera: true,
+                  gallery: true,
+                  gif: true,
+                  giphyGetWrapper: giphyGetWrapper,
+                ),
               ],
             ),
-          ),
-          MessageInputField(
-            focusNode: focusNode,
-            camera: true,
-            gallery: true,
-            gif: true,
-          ),
-        ],
+          );
+        });
+  }
+}
+
+/// Pop up menu for tasks.
+class _TaskPopUpMenu extends StatelessWidget {
+  /// Creates an instance of [_TaskPopUpMenu].
+  const _TaskPopUpMenu({required this.task});
+
+  /// The task to show the pop up menu for.
+  final Task task;
+
+  @override
+  Widget build(BuildContext context) {
+    return PopupMenuButton(
+      icon: const Icon(
+        PhosphorIcons.dotsThreeVertical,
+        size: 34,
       ),
+      itemBuilder: (context) => [
+        PopupMenuItem(
+          value: 1,
+          height: 48,
+          onTap: () {},
+          child: const Text("edit task"),
+        ),
+        PopupMenuItem(
+          value: 2,
+          height: 48,
+          onTap: () {
+            Future.delayed(
+              const Duration(seconds: 0),
+              () => showDialog(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text(
+                    "deleting task",
+                  ),
+                  content: Text(
+                    "Are you sure you want to delete this task \"${task.title.toLowerCase()}\"",
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      child: const Text("no"),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop(); // pop the dialog
+                        Navigator.of(context).pop(); // pop the screen
+                      },
+                      child: Text(
+                        "yes",
+                        style: TextStyle(
+                          color: Colors.red.shade900,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+          child: Text(
+            "delete task",
+            style: TextStyle(color: Colors.red.shade900),
+          ),
+        ),
+      ],
     );
   }
 }

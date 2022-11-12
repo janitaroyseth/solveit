@@ -2,15 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:project/models/comment.dart';
 import 'package:project/widgets/comment_list_item.dart';
 
-/// The list of comments in the task.
+/// Presents a list of comments in a [ListView].
 class CommentList extends StatelessWidget {
+  /// Creates an instance of [CommentList].
+  const CommentList({
+    super.key,
+    required this.comments,
+    required this.controller,
+  });
+
+  /// The `comments` to display in the [CommentList].
   final List<Comment> comments;
-  const CommentList({Key? key, required this.comments}) : super(key: key);
+
+  /// [ScrollController] for the [ListView].
+  final ScrollController controller;
 
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-      shrinkWrap: true,
+      controller: controller,
       itemCount: comments.length,
       itemBuilder: (context, index) => CommentListItem(
         comment: comments[index],

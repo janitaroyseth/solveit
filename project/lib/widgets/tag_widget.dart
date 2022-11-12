@@ -2,12 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:project/models/tag.dart';
 
 /// Options for sizing of tags.
-enum Size { small, large }
+enum TagSize { small, large }
 
 /// Represents a tag which descibes a task.
 class TagWidget extends StatelessWidget {
   /// The [size] of the tag, of type enum [Size].
-  final Size size;
+  final TagSize size;
 
   /// The [color] of the tag, of type [Color].
   final Color color;
@@ -23,7 +23,7 @@ class TagWidget extends StatelessWidget {
     required this.tagText,
   });
 
-  TagWidget.fromTag(Tag tag, {super.key, this.size = Size.large})
+  TagWidget.fromTag(Tag tag, {super.key, this.size = TagSize.large})
       : tagText = tag.text,
         color = tag.color.length > 7
             ? Color(int.parse(tag.color.substring(1), radix: 16))
@@ -41,7 +41,7 @@ class TagWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return size == Size.small
+    return size == TagSize.small
         ? Padding(
             padding: const EdgeInsets.symmetric(horizontal: 1.2),
             child: ClipRRect(

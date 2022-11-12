@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:project/firebase_options.dart';
 import 'package:project/screens/create_profile_screen.dart';
 import 'package:project/screens/create_project_screen.dart';
@@ -18,6 +19,7 @@ import 'package:project/screens/home_screen.dart';
 import './models/project.dart';
 
 Future<void> main() async {
+  await dotenv.load(fileName: "variables.env");
   WidgetsFlutterBinding.ensureInitialized();
   // initialize the preferences service.
   PreferencesService();
@@ -31,11 +33,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: "solveIt",
+      title: "solveit",
       theme: Themes.themeData,
       initialRoute: SignInScreen.routeName,
       routes: {
-        //TODO: Update route names.
         SignInScreen.routeName: (context) => const SignInScreen(),
         HomeScreen.routeName: (context) => const HomeScreen(),
         ProjectCalendarScreen.routeName: (context) =>

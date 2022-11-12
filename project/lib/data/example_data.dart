@@ -51,13 +51,13 @@ class ExampleData {
               user1
             ],
             comments: [
-              Comment(
+              TextComment(
                   author: user1,
                   date: DateFormat("dd.MM.yyyy")
                       .parse("18.10.2022")
                       .toIso8601String(),
                   text: "Only had time to vacuum the living room and hallway."),
-              Comment(
+              TextComment(
                   author: user2,
                   date: DateFormat("dd.MM.yyyy")
                       .parse("19.10.2022")
@@ -66,6 +66,46 @@ class ExampleData {
                       "That's okay, your mother and I still love you. You can do the rest tomorrow."),
             ],
             tags: [
+              Tag(
+                text: "urgent",
+                color: "#FFFF0000",
+              ),
+              Tag(
+                text: "urgent",
+                color: "#FFFF0000",
+              ),
+              Tag(
+                text: "urgent",
+                color: "#FFFF0000",
+              ),
+              Tag(
+                text: "urgent",
+                color: "#FFFF0000",
+              ),
+              Tag(
+                text: "urgent",
+                color: "#FFFF0000",
+              ),
+              Tag(
+                text: "urgent",
+                color: "#FFFF0000",
+              ),
+              Tag(
+                text: "urgent",
+                color: "#FFFF0000",
+              ),
+              Tag(
+                text: "urgent",
+                color: "#FFFF0000",
+              ),
+              Tag(
+                text: "urgent",
+                color: "#FFFF0000",
+              ),
+              Tag(
+                text: "urgent",
+                color: "#FFFF0000",
+              ),
               Tag(
                 text: "urgent",
                 color: "#FFFF0000",
@@ -114,13 +154,13 @@ class ExampleData {
               user1
             ],
             comments: [
-              Comment(
+              TextComment(
                   author: user1,
                   date: DateFormat("dd.MM.yyyy")
                       .parse("18.11.2022")
                       .toIso8601String(),
                   text: "Only had time to vacuum the living room and hallway."),
-              Comment(
+              TextComment(
                   author: user2,
                   date: DateFormat("dd.MM.yyyy")
                       .parse("19.11.2022")
@@ -177,13 +217,13 @@ class ExampleData {
               user1
             ],
             comments: [
-              Comment(
+              TextComment(
                   author: user1,
                   date: DateFormat("dd.MM.yyyy")
                       .parse("18.11.2022")
                       .toIso8601String(),
                   text: "Only had time to vacuum the living room and hallway."),
-              Comment(
+              TextComment(
                   author: user2,
                   date: DateFormat("dd.MM.yyyy")
                       .parse("19.11.2022")
@@ -240,11 +280,11 @@ class ExampleData {
               user1
             ],
             comments: [
-              Comment(
+              TextComment(
                   author: user1,
                   date: "18.10.2022",
                   text: "Only had time to vacuum the living room and hallway."),
-              Comment(
+              TextComment(
                   author: user2,
                   date: DateFormat("dd.MM.yyyy")
                       .parse("19.11.2022")

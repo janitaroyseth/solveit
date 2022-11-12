@@ -1,33 +1,41 @@
 import 'package:flutter/material.dart';
+import 'package:project/models/tag.dart' as model;
 import 'package:project/widgets/tag_widget.dart';
-import '../models/tag.dart';
 
 /// Represents a list containing [TagWidget].
 class TagsList extends StatelessWidget {
   /// The [tags] in the [TagList].
-  final List<Tag> tags;
-  final Size size;
+  final List<model.Tag> tags;
+
+  /// The [Size] of
+  final TagSize size;
 
   /// Creates an instance of tag list, where [tags] is the list of tags represented in the list.
-  const TagsList({super.key, required this.tags, this.size = Size.small});
+  const TagsList({
+    super.key,
+    this.size = TagSize.small,
+    required this.tags,
+  });
 
   @override
   Widget build(BuildContext context) {
-    List<Widget> newTags = [];
-    for (Tag tag in tags) {
-      newTags.add(TagWidget.fromTag(tag, size: size));
-    }
-    return Wrap(
-      spacing: 1.0,
-
-      /// horizontal gap
-      runSpacing: 1.0,
-
-      /// vertical gap
-      alignment: WrapAlignment.start,
-
-      /// How the children within a run should be placed in the main axis.
-      children: newTags,
+    return Row(
+      children: [
+        Flexible(
+          child: Wrap(
+            spacing: 2.0,
+            runSpacing: 4.0,
+            direction: Axis.horizontal,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            alignment: WrapAlignment.start,
+            children: tags
+                .map(
+                  (e) => TagWidget.fromTag(e, size: size),
+                )
+                .toList(),
+          ),
+        ),
+      ],
     );
   }
 }
