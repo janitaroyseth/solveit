@@ -50,6 +50,7 @@ class _MessageInputFieldState extends State<MessageInputField> {
   late FocusNode focusNode;
   late bool isFocused;
   late TextEditingController textEditingController;
+  bool displayOption = true;
 
   @override
   void initState() {
@@ -67,7 +68,7 @@ class _MessageInputFieldState extends State<MessageInputField> {
       children: [
         Visibility(
           visible: widget.camera || widget.gallery || widget.recording,
-          child: isFocused &&
+          child: (isFocused && !displayOption) &&
                   ((widget.camera && widget.gallery) ||
                       (widget.gallery && widget.recording))
               ? IconButton(
@@ -76,7 +77,11 @@ class _MessageInputFieldState extends State<MessageInputField> {
                     horizontal: 6.0,
                     vertical: 10.0,
                   ),
-                  onPressed: () {},
+                  onPressed: () {
+                    setState(() {
+                      displayOption = !displayOption;
+                    });
+                  },
                   icon: Icon(
                     PhosphorIcons.plusCircleFill,
                     size: 40,
@@ -109,6 +114,9 @@ class _MessageInputFieldState extends State<MessageInputField> {
       child: Padding(
         padding: const EdgeInsets.only(left: 8.0),
         child: TextField(
+          onTap: () => setState(() {
+            displayOption = false;
+          }),
           focusNode: focusNode,
           minLines: 1,
           maxLines: 5,
