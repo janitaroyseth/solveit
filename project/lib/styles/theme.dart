@@ -158,7 +158,7 @@ class Themes {
 
   static ButtonStyle textButtonStyle = ButtonStyle(
     textStyle: MaterialStateProperty.all<TextStyle>(
-      const TextStyle(fontSize: 14, fontFamily: Themes.fontFamily),
+      const TextStyle(fontSize: 16, fontFamily: Themes.fontFamily),
     ),
   );
 }

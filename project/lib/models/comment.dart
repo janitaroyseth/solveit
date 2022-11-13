@@ -15,10 +15,10 @@ abstract class Comment {
       return null;
     }
 
-    final String author = data['author'];
+    final User author = data['author'];
     final String date = data['date'];
     // TODO: fix this
-    //return Comment(text: text, author: author, date: date);
+    //return Comment(author: author, date: date);
   }
 
   Comment({
@@ -39,6 +39,23 @@ class ImageComment extends Comment {
     super.date,
     required this.image,
   });
+
+  /// Creates an instance of [ImageComment] from the given [Map].
+  static ImageComment? fromMap(Map<String, dynamic>? data) {
+    if (data == null) {
+      return null;
+    }
+
+    final User author = data["author"];
+    final String date = data["date"];
+    final File image = data["image"];
+
+    return ImageComment(
+      author: author,
+      date: date,
+      image: image,
+    );
+  }
 }
 
 /// Comment where the content is a [String].
@@ -53,14 +70,51 @@ class TextComment extends Comment {
     super.date,
     required this.text,
   });
+
+  /// Creates an instance of [TextComment] from the given [Map].
+  static TextComment? fromMap(Map<String, dynamic>? data) {
+    if (data == null) {
+      return null;
+    }
+
+    final User author = data["author"];
+    final String date = data["date"];
+    final String text = data["text"];
+
+    return TextComment(
+      author: author,
+      date: date,
+      text: text,
+    );
+  }
 }
 
+/// Comment where the content is a string url.
 class GiphyComment extends Comment {
+  /// The url of the giphy in the comment.
   String url;
 
+  /// Creates an instance of [GiphyComment].
   GiphyComment({
     required super.author,
     super.date,
     required this.url,
   });
+
+  /// Creates an instance of [GiphyComment] from the given [Map].
+  static GiphyComment? fromMap(Map<String, dynamic>? data) {
+    if (data == null) {
+      return null;
+    }
+
+    final User author = data["author"];
+    final String date = data["date"];
+    final String url = data["url"];
+
+    return GiphyComment(
+      author: author,
+      date: date,
+      url: url,
+    );
+  }
 }

@@ -210,7 +210,7 @@ class _CommentTabViewState extends State<CommentTabView> {
   /// Waits `200` milliseconds and then scroll to the bottom of the comment
   /// list.
   void scrollToBottom() {
-    Timer(const Duration(milliseconds: 200), () {
+    Timer(const Duration(milliseconds: 300), () {
       controller.animateTo(
         controller.position.maxScrollExtent,
         duration: const Duration(milliseconds: 200),
@@ -222,7 +222,7 @@ class _CommentTabViewState extends State<CommentTabView> {
   @override
   Widget build(BuildContext context) {
     return GiphyGetWrapper(
-        giphy_api_key: giphyApiKey!,
+        giphy_api_key: giphyApiKey ?? "",
         builder: (stream, giphyGetWrapper) {
           stream.listen((gif) {
             setState(() {

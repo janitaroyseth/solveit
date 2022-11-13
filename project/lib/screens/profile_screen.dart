@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/models/project.dart';
 import 'package:project/models/user.dart';
@@ -283,6 +282,7 @@ class _ProfileProjectListState extends State<_ProfileProjectList> {
                         child: Text(projects),
                       )
                     : TextButton(
+                        style: Themes.textButtonStyle,
                         onPressed: () {
                           setState(() {
                             isSelected = projects;
