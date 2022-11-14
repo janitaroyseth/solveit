@@ -10,6 +10,7 @@ import 'package:project/screens/project_preview_screen.dart';
 import 'package:project/data/example_data.dart';
 import 'package:project/screens/project_calendar_screen.dart';
 import 'package:project/screens/sign_in_screen.dart';
+import 'package:project/services/auth.dart';
 import 'package:project/styles/theme.dart';
 import 'package:project/screens/task_detail_screen.dart';
 import 'package:project/screens/task_overview_screen.dart';
@@ -18,7 +19,9 @@ import './models/project.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const MyApp());
 }
 
@@ -38,7 +41,9 @@ class MyApp extends StatelessWidget {
       routes: {
         //TODO: Update route names.
         LandingScreen.routeName: (context) => const LandingScreen(),
-        SignInScreen.routeName: (context) => SignInScreen(),
+        SignInScreen.routeName: (context) => SignInScreen(
+              auth: Auth(),
+            ),
         HomeScreen.routeName: (context) => const HomeScreen(),
         ProjectCalendarScreen.routeName: (context) =>
             const ProjectCalendarScreen(),

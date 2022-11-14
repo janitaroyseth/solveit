@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/screens/create_profile_screen.dart';
 import 'package:project/screens/home_screen.dart';
+import 'package:project/services/auth.dart';
 import 'package:project/styles/theme.dart';
 import 'package:project/widgets/input_field.dart';
 
@@ -11,21 +12,24 @@ import '../data/example_data.dart';
 
 /// Screen/Scaffold for signing in and signing up .
 class SignInScreen extends StatelessWidget {
+  SignInScreen({super.key, required this.auth});
+
   /// Named route for this screen.
   static const routeName = "/signin";
+  final AuthBase auth;
 
   /// Creates an instance of [SignInScreen].
   List<Project> projects = ExampleData.projects;
+
   // const SignInScreen({Key? key, required this.onSignIn}) : super(key: key);
 
-  Future<void> _signInAnonymously() async {
-    try {
-      final userCredentials = await FirebaseAuth.instance.signInAnonymously();
-      print(userCredentials.user?.uid);
-    } catch (e) {
-      print(e.toString());
-    }
-  }
+  //  Future<void> _signInAnonymously() async {
+  //   try {
+  //     await auth.signInAnonymously();
+  //   } catch (e) {
+  //     print(e.toString());
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -241,8 +245,7 @@ class __SignInFormState extends State<_SignInForm> {
 
   Future<void> _signInAnonymously() async {
     try {
-      final userCredentials = await FirebaseAuth.instance.signInAnonymously();
-      print("${userCredentials.user?.uid}");
+      await auth.signInAnonymously();
     } catch (e) {
       print(e.toString());
     }

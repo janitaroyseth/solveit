@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:project/screens/home_screen.dart';
 import 'package:project/screens/sign_in_screen.dart';
+import 'package:project/services/auth.dart';
 
 class LandingScreen extends StatefulWidget {
   static const routeName = "/landingscreen";
@@ -16,7 +17,9 @@ class _LandingScreenState extends State<LandingScreen> {
   @override
   Widget build(BuildContext context) {
     if (_user == null) {
-      return SignInScreen();
+      return SignInScreen(
+        auth: Auth(),
+      );
       // return const HomeScreen();
     }
     // return SignInScreen();
