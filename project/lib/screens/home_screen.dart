@@ -7,13 +7,12 @@ import 'package:project/styles/theme.dart';
 /// Screen/[Scaffold] the user first sees when logging on or finishing signing up.
 /// Displays a bottom tab bar for navigating to other screens.
 class HomeScreen extends StatefulWidget {
+  /// Creates an instance of home screen. A [Scaffold] displaying a
+  /// bottom tab bar for other screens.
   const HomeScreen({super.key});
 
   /// Named route for this screen.
   static const routeName = "/index";
-
-  /// Creates an instance of home screen. A [Scaffold] displaying a
-  /// bottom tab bar for other screens.
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();

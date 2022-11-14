@@ -13,12 +13,12 @@ import '../data/example_data.dart';
 
 /// Screen/Scaffold for signing in and signing up .
 class SignInScreen extends StatelessWidget {
+  /// Creates an instance of [SignInScreen].
   SignInScreen({super.key});
 
   /// Named route for this screen.
   static const routeName = "/signin";
 
-  /// Creates an instance of [SignInScreen].
   final List<Project> projects = ExampleData.projects;
 
   @override
