@@ -7,6 +7,7 @@ import 'package:project/providers/auth_provider.dart';
 import 'package:project/screens/project_preview_screen.dart';
 import 'package:project/styles/curve_clipper.dart';
 import 'package:project/styles/theme.dart';
+import 'package:project/screens/user_settings_screen.dart';
 import 'package:project/widgets/appbar_button.dart';
 import 'package:project/widgets/modal_list_item.dart';
 
@@ -48,7 +49,6 @@ class ProfileScreen extends ConsumerWidget {
           ],
         ),
         actions: [
-          // TODO: Add action to button.
           AppBarButton(
             handler: () => showModalBottomSheet(
               shape: const RoundedRectangleBorder(
@@ -89,7 +89,11 @@ class ProfileScreen extends ConsumerWidget {
                       ModalListItem(
                         icon: PhosphorIcons.gearSixLight,
                         label: "settings",
-                        handler: () {},
+                        handler: () {
+                          Navigator.of(context).pushNamed(
+                            UserSettingsScreen.routeName,
+                          );
+                        },
                       ),
                       ModalListItem(
                         icon: PhosphorIcons.signOutLight,

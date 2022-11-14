@@ -11,6 +11,8 @@ import 'package:project/screens/project_preview_screen.dart';
 import 'package:project/data/example_data.dart';
 import 'package:project/screens/project_calendar_screen.dart';
 import 'package:project/screens/sign_in_screen.dart';
+import 'package:project/screens/user_settings_screen.dart';
+import 'package:project/services/preferences_service.dart';
 import 'package:project/styles/theme.dart';
 import 'package:project/screens/task_detail_screen.dart';
 import 'package:project/screens/task_overview_screen.dart';
@@ -19,6 +21,8 @@ import './models/project.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // initialize the preferences service.
+  PreferencesService();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -69,6 +73,8 @@ class MyApp extends StatelessWidget {
                 const ProjectOverviewScreen(),
             CreateProfileScreen.routeName: (context) =>
                 const CreateProfileScreen(),
+            UserSettingsScreen.routeName: (context) =>
+                const UserSettingsScreen(),
             CreateProjectScreen.routeName: (context) =>
                 const CreateProjectScreen(),
           },
