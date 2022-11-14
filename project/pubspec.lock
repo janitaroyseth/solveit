@@ -324,6 +324,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.2.4"
+  riverpod:
+    dependency: transitive
+    description:
+      name: riverpod
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.1.1"
   settings_ui:
     dependency: "direct main"
     description:
@@ -384,13 +391,6 @@ packages:
     dependency: transitive
     description:
       name: shared_preferences_windows
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.1.1"
-  riverpod:
-    dependency: transitive
-    description:
-      name: riverpod
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.1"
