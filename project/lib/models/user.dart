@@ -2,7 +2,6 @@ class User {
   String firstname;
   String lastname;
   String email;
-  String? password;
   String imageUrl;
   String bio;
 
@@ -10,7 +9,6 @@ class User {
     required this.firstname,
     required this.lastname,
     required this.email,
-    this.password,
     this.imageUrl = "assets/images/empty_profile_pic_large.png",
     this.bio = "",
   });
@@ -31,7 +29,6 @@ class User {
       firstname: firstname,
       lastname: lastname,
       email: email,
-      password: password,
       imageUrl: imageUrl,
       bio: bio,
     );

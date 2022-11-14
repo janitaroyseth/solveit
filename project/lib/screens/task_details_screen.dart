@@ -207,10 +207,10 @@ class _CommentTabViewState extends State<CommentTabView> {
     super.dispose();
   }
 
-  /// Waits `200` milliseconds and then scroll to the bottom of the comment
+  /// Waits the given `wait` milliseconds and then scroll to the bottom of the comment
   /// list.
-  void scrollToBottom() {
-    Timer(const Duration(milliseconds: 300), () {
+  void scrollToBottom(wait) {
+    Timer(Duration(milliseconds: wait), () {
       controller.animateTo(
         controller.position.maxScrollExtent,
         duration: const Duration(milliseconds: 200),
@@ -231,7 +231,7 @@ class _CommentTabViewState extends State<CommentTabView> {
                 url: "https://i.giphy.com/media/${gif.id}/200.gif",
               ));
             });
-            scrollToBottom();
+            scrollToBottom(500);
           });
 
           return Padding(
@@ -294,7 +294,7 @@ class _CommentTabViewState extends State<CommentTabView> {
                     }
 
                     setState(() {});
-                    scrollToBottom();
+                    scrollToBottom(300);
                   },
                   focusNode: widget.focusNode,
                   camera: true,

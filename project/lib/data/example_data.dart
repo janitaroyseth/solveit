@@ -12,8 +12,7 @@ class ExampleData {
     firstname: "Espen",
     lastname: "Otlo",
     email: "eo@example.com",
-    password: "FlutterIsTheBest!",
-    bio: "Hard working student ready for that 13-21 grind!",
+    bio: "My goal is to be a fulltime Flutter developers",
     imageUrl: "assets/images/leslie_alexander.png",
   );
 
@@ -21,8 +20,7 @@ class ExampleData {
     firstname: "Sakarias",
     lastname: "Sæterstøl",
     email: "ss@example.com",
-    password: "PineappleOnPizzaIsYummy!",
-    bio: "Hard working student ready for that 8-16 grind!",
+    bio: "Pineapple on pizza is the way to go",
     imageUrl: "assets/images/guy_hawkins.png",
   );
 
