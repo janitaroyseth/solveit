@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:project/data/example_data.dart';
 import 'package:project/models/project.dart';
+import 'package:project/providers/auth_provider.dart';
 import 'package:project/screens/project_preview_screen.dart';
-import 'package:project/screens/sign_in_screen.dart';
 import 'package:project/styles/curve_clipper.dart';
 import 'package:project/styles/theme.dart';
 import 'package:project/widgets/appbar_button.dart';
@@ -12,14 +13,15 @@ import 'package:project/widgets/modal_list_item.dart';
 import '../widgets/project_card.dart';
 
 /// Screen/Scaffold for the profile of the user.
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends ConsumerWidget {
   static const routeName = "/user";
   const ProfileScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final List<Project> projects =
-        ModalRoute.of(context)!.settings.arguments as List<Project>;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final projects = ExampleData.projects;
+    // final List<Project> projects =
+    //     ModalRoute.of(context)!.settings.arguments as List<Project>;
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -93,10 +95,8 @@ class ProfileScreen extends StatelessWidget {
                         icon: PhosphorIcons.signOutLight,
                         label: "log out",
                         handler: () {
-                          Navigator.of(context).pushNamedAndRemoveUntil(
-                            SignInScreen.routeName,
-                            ModalRoute.withName(ProfileScreen.routeName),
-                          );
+                          Navigator.of(context).pop();
+                          _logout(ref);
                         },
                       ),
                       ModalListItem(
@@ -236,6 +236,12 @@ class ProfileScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  /// Logging the user out.
+  void _logout(WidgetRef ref) {
+    final auth = ref.read(authProvider);
+    auth.signOut();
   }
 }
 

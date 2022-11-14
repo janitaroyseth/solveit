@@ -1,9 +1,10 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:project/providers/auth_provider.dart';
 import 'package:project/screens/create_profile_screen.dart';
 import 'package:project/screens/home_screen.dart';
-import 'package:project/services/auth.dart';
+import 'package:project/services/auth_service.dart';
 import 'package:project/styles/theme.dart';
 import 'package:project/widgets/input_field.dart';
 
@@ -12,24 +13,13 @@ import '../data/example_data.dart';
 
 /// Screen/Scaffold for signing in and signing up .
 class SignInScreen extends StatelessWidget {
-  SignInScreen({super.key, required this.auth});
+  SignInScreen({super.key});
 
   /// Named route for this screen.
   static const routeName = "/signin";
-  final AuthBase auth;
 
   /// Creates an instance of [SignInScreen].
-  List<Project> projects = ExampleData.projects;
-
-  // const SignInScreen({Key? key, required this.onSignIn}) : super(key: key);
-
-  //  Future<void> _signInAnonymously() async {
-  //   try {
-  //     await auth.signInAnonymously();
-  //   } catch (e) {
-  //     print(e.toString());
-  //   }
-  // }
+  final List<Project> projects = ExampleData.projects;
 
   @override
   Widget build(BuildContext context) {
@@ -81,17 +71,18 @@ class SignInScreen extends StatelessWidget {
 }
 
 /// Sign in and sign up form.
-class _SignInForm extends StatefulWidget {
+class _SignInForm extends ConsumerStatefulWidget {
   /// Creates an instance of [SignInForm].
   const _SignInForm();
 
   @override
-  State<_SignInForm> createState() => __SignInFormState();
+  ConsumerState<_SignInForm> createState() => __SignInFormState();
 }
 
-class __SignInFormState extends State<_SignInForm> {
+class __SignInFormState extends ConsumerState<_SignInForm> {
   List<Project> projects = ExampleData.projects;
   bool signupForm = false;
+  late AuthService auth;
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -243,11 +234,9 @@ class __SignInFormState extends State<_SignInForm> {
     );
   }
 
+  /// Signing the user in anonymously.
   Future<void> _signInAnonymously() async {
-    try {
-      await auth.signInAnonymously();
-    } catch (e) {
-      print(e.toString());
-    }
+    final auth = ref.read(authProvider);
+    auth.signInAnonymously();
   }
 }

@@ -1,19 +1,22 @@
 import 'package:firebase_auth/firebase_auth.dart';
 // import 'package:google_sign_in/google_sign_in.dart';
 
-abstract class AuthBase {
+abstract class AuthService {
   User? get currentUser;
-  Stream<User?> authStateChanges();
+
+  /// Signing in anonymously.
   Future<User?> signInAnonymously();
+
+  /// Signing in with Google.
   // Future<User?> signInWithGoogle();
+
+  /// Sign out.
   Future<void> signOut();
 }
 
-class Auth implements AuthBase {
+/// The implemitasjon of the authentication service.
+class Auth implements AuthService {
   final _fireBaseAuth = FirebaseAuth.instance;
-
-  @override
-  Stream<User?> authStateChanges() => _fireBaseAuth.authStateChanges();
 
   @override
   User? get currentUser => _fireBaseAuth.currentUser;
