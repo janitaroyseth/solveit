@@ -10,6 +10,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import 'package:project/main.dart';
+// import 'package:project/widgets/sign_in_button.dart';
 
 void main() {
   testWidgets('SignInButton is displayed and functions correctly',
@@ -18,13 +19,13 @@ void main() {
     await tester.pumpWidget(const MyApp());
     // expect(find.widgetWithText(SignInButton, 'Continue with Google'),
     //     findsOneWidget);
-    // expect(find.byIcon(PhosphorIcons.googleLogo), findsOneWidget);
+    expect(find.byIcon(PhosphorIcons.googleLogo), findsOneWidget);
     // expect(find.widgetWithText(SignInButton, 'Continue with Facebook'),
     //     findsOneWidget);
-    // expect(find.byIcon(PhosphorIcons.facebookLogo), findsOneWidget);
+    expect(find.byIcon(PhosphorIcons.facebookLogo), findsOneWidget);
     // expect(find.widgetWithText(SignInButton, 'Continue with Apple'),
     //     findsOneWidget);
-    // expect(find.byIcon(PhosphorIcons.appleLogo), findsOneWidget);
+    expect(find.byIcon(PhosphorIcons.appleLogo), findsOneWidget);
 
     //await tester.tap(find.widgetWithText(SignInButton, 'Continue with Google'));
     //expect(find.byType(BottomAppBar), findsOneWidget);

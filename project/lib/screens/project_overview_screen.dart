@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:project/data/example_data.dart';
 import 'package:project/screens/create_project_screen.dart';
 import 'package:project/screens/task_overview_screen.dart';
 import 'package:project/styles/theme.dart';
 import 'package:project/widgets/appbar_button.dart';
 import 'package:project/widgets/project_card.dart';
 import 'package:project/widgets/search_bar.dart';
-import 'package:project/models/project.dart';
 
 /// Screen/Scaffold for the overview of projects the user have access to.
 class ProjectOverviewScreen extends StatelessWidget {
@@ -16,8 +16,11 @@ class ProjectOverviewScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<Project> projects =
-        ModalRoute.of(context)!.settings.arguments as List<Project>;
+    final projects = ExampleData.projects;
+
+    // final List<Project> projects =
+    //     ModalRoute.of(context)!.settings.arguments as List<Project>;
+
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
