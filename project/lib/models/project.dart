@@ -1,6 +1,7 @@
 import 'package:project/data/project_avatar_options.dart';
 import 'package:project/models/tag.dart';
 import 'package:project/models/task.dart';
+import 'package:project/models/user.dart';
 
 /// The data content of a project in the application.
 class Project {
@@ -12,6 +13,12 @@ class Project {
 
   // The list of tags in the project.
   List<Tag> tags;
+
+  /// Owner of this project.
+  User owner;
+
+  /// List of collaborators on this project.
+  List<User> collaborators;
 
   /// Path to project avatar.
   String imageUrl;
@@ -41,6 +48,7 @@ class Project {
       Tag? tag = Tag.fromMap(map);
       if (tag != null) tags.add(tag);
     }
+    final User owner = data["owner"];
     final String imageUrl = data['imageUrl'];
     final String description = data['description'];
     final bool isPublic = data['isPublic'];
@@ -49,6 +57,7 @@ class Project {
         title: title,
         tasks: tasks,
         tags: tags,
+        owner: owner,
         imageUrl: imageUrl,
         description: description,
         isPublic: isPublic,
@@ -60,9 +69,12 @@ class Project {
     this.title = "project title",
     this.tasks = const [],
     this.tags = const [],
+    required this.owner,
+    List<User>? collaborators,
     String? imageUrl,
     this.description = "",
     this.lastUpdated,
     this.isPublic = false,
-  }) : imageUrl = imageUrl ?? projectAvatars[0];
+  })  : imageUrl = imageUrl ?? projectAvatars[0],
+        collaborators = collaborators ?? [];
 }

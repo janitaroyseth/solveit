@@ -1,26 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:project/models/comment.dart';
+import 'package:project/widgets/comment_list_item.dart';
 
-import '../models/comment.dart';
-import 'comment_list_item.dart';
+/// Presents a list of comments in a [ListView].
+class CommentList extends StatelessWidget {
+  /// Creates an instance of [CommentList].
+  const CommentList({
+    super.key,
+    required this.comments,
+    required this.controller,
+  });
 
-/// The list of comments in the task.
-class CommentList extends StatefulWidget {
+  /// The `comments` to display in the [CommentList].
   final List<Comment> comments;
-  const CommentList({Key? key, required this.comments}) : super(key: key);
 
-  @override
-  State<CommentList> createState() => _CommentListState();
-}
+  /// [ScrollController] for the [ListView].
+  final ScrollController controller;
 
-class _CommentListState extends State<CommentList> {
   @override
   Widget build(BuildContext context) {
-    List<Widget> commentWidgets = [];
-    for (Comment comment in widget.comments) {
-      commentWidgets.add(CommentListItem(comment: comment));
-    }
-    return Column(
-      children: commentWidgets,
+    return ListView.builder(
+      controller: controller,
+      itemCount: comments.length,
+      itemBuilder: (context, index) => CommentListItem(
+        comment: comments[index],
+      ),
     );
   }
 }

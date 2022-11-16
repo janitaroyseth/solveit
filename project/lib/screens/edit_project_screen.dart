@@ -35,7 +35,8 @@ class EditProjectScreen extends StatelessWidget {
         ? _EditProjectMode.create
         : _EditProjectMode.edit;
 
-    final Project project = existingProject ?? Project();
+    final Project project =
+        existingProject ?? Project(owner: ExampleData.user1);
 
     titleController.text = _EditProjectMode.edit == mode ? project.title : "";
 
@@ -195,20 +196,12 @@ class _CollaboratorsDialog extends StatelessWidget {
                     UserListItem(
                       handler: () => Navigator.of(context)
                           .pushNamed(ProfileScreen.routeName),
-                      name: "Jane Cooper",
-                      imageUrl: "assets/images/jane_cooper.png",
+                      user: ExampleData.user1,
                     ),
                     UserListItem(
                       handler: () => Navigator.of(context)
                           .pushNamed(ProfileScreen.routeName),
-                      name: "Leslie Alexander",
-                      imageUrl: "assets/images/leslie_alexander.png",
-                    ),
-                    UserListItem(
-                      handler: () => Navigator.of(context)
-                          .pushNamed(ProfileScreen.routeName),
-                      name: "Guy Hawkins",
-                      imageUrl: "assets/images/guy_hawkins.png",
+                      user: ExampleData.user2,
                     ),
                   ],
                 ),

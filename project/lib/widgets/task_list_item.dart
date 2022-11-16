@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:jiffy/jiffy.dart';
+import 'package:project/screens/task_details_screen.dart';
 import '../models/task.dart';
 
 import 'tags_list.dart';
@@ -8,10 +10,7 @@ class TaskListItem extends StatelessWidget {
   /// The [task] to be converted.
   final Task task;
 
-  /// Creates an instance of task list item where [task.title] is the name of the
-  /// task, [task.description] is the description of the task, [task.deadline] is the
-  /// deadline of the task and [task.tags] is a list containing type Tag connected
-  /// to the task.
+  /// Creates an instance of [TaskListItem].
   const TaskListItem({super.key, required this.task});
 
   @override
@@ -21,7 +20,11 @@ class TaskListItem extends StatelessWidget {
         const Divider(),
         InkWell(
           onTap: () {
-            Navigator.pushNamed(context, '/task', arguments: task);
+            Navigator.pushNamed(
+              context,
+              TaskDetailsScreen.routeName,
+              arguments: task,
+            );
           },
           child: Padding(
             padding: const EdgeInsets.all(8.0),
@@ -41,7 +44,7 @@ class TaskListItem extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        task.deadline!,
+                        Jiffy(task.deadline!).format("dd/MM/yyyy"),
                         style: Theme.of(context).textTheme.labelSmall,
                       )
                     ],

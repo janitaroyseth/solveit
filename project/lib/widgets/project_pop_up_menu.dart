@@ -4,7 +4,6 @@ import 'package:project/models/project.dart';
 import 'package:project/screens/create_profile_screen.dart';
 import 'package:project/screens/edit_project_screen.dart';
 import 'package:project/screens/home_screen.dart';
-import 'package:project/screens/project_overview_screen.dart';
 import 'package:project/screens/project_preview_screen.dart';
 import 'package:project/screens/task_overview_screen.dart';
 

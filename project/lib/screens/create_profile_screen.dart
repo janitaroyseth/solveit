@@ -122,8 +122,13 @@ class CreateProfileScreen extends StatelessWidget {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.of(context).pop();
-          Navigator.of(context).popAndPushNamed(HomeScreen.routeName,
-              arguments: ExampleData.projects);
+          Navigator.of(context).popAndPushNamed(
+            HomeScreen.routeName,
+            arguments: {
+              "user": ExampleData.user1,
+              "projects": ExampleData.projects
+            },
+          );
         },
         child: const Icon(
           PhosphorIcons.arrowRight,
