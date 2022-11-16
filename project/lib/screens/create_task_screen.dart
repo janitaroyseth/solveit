@@ -2,8 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/widgets/tag_widget.dart';
 
+import '../data/example_data.dart';
+import '../models/project.dart';
+import '../models/tag.dart';
+import '../models/task.dart';
+import '../models/user.dart';
 import '../styles/theme.dart';
 import '../widgets/appbar_button.dart';
+import '../widgets/search_bar.dart';
+import '../widgets/user_list_item.dart';
 
 class CreateTaskScreen extends StatelessWidget {
   static const routeName = "/new-task";
@@ -11,6 +18,8 @@ class CreateTaskScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Project project = ModalRoute.of(context)!.settings.arguments as Project;
+    Task task = Task();
     return Scaffold(
       appBar: AppBar(
         title: const Text("create task"),
@@ -27,26 +36,36 @@ class CreateTaskScreen extends StatelessWidget {
         foregroundColor: Themes.themeData.appBarTheme.foregroundColor,
         actions: [
           AppBarButton(
-            handler: () {},
+            handler: () {
+              project.tasks.add(task);
+              Navigator.of(context).pop();
+            },
             tooltip: "Save task",
             icon: PhosphorIcons.floppyDiskLight,
             color: Colors.black,
           ),
         ],
       ),
-      body:
-          Padding(padding: const EdgeInsets.all(20), child: _TaskScreenBody()),
+      body: Padding(
+          padding: const EdgeInsets.all(20), child: _TaskScreenBody(task)),
     );
   }
 }
 
 class _TaskScreenBody extends StatefulWidget {
+  Task task;
+  _TaskScreenBody(this.task);
   @override
   State<StatefulWidget> createState() => _TaskScreenBodyState();
 }
 
 class _TaskScreenBodyState extends State<_TaskScreenBody> {
+  _TaskScreenBodyState();
+  final Task task = Task(tags: [], assigned: [], deadline: null);
   final _formKey = GlobalKey<FormState>();
+  bool isTagPickerShown = false;
+  List<Tag> allTags = ExampleData.tags;
+  List<User> selectedUsers = [];
 
   @override
   Widget build(BuildContext context) {
@@ -90,6 +109,9 @@ class _TaskScreenBodyState extends State<_TaskScreenBody> {
           height: 5,
         ),
         TextFormField(
+          onFieldSubmitted: (String value) {
+            task.title = value;
+          },
           style: const TextStyle(fontSize: 12),
           decoration: const InputDecoration.collapsed(
             hintText: 'concise description of the task at hand...',
@@ -110,19 +132,102 @@ class _TaskScreenBodyState extends State<_TaskScreenBody> {
         const SizedBox(
           height: 5,
         ),
-        _createTagsDropdown(),
+        _createTagsList(),
+        _createAddTagList(),
       ],
     );
   }
 
-  Widget _createTagsDropdown() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: const [
-        TagWidget(
-            size: TagSize.small, color: Color(0xffffffff), tagText: "add +"),
-      ],
+  Widget _createTagsList() {
+    List<Widget> tagWidgets = [];
+    for (Tag tag in task.tags) {
+      tagWidgets.add(
+        InkWell(
+          onTap: () => {
+            setState(() {
+              task.tags.remove(tag);
+            })
+          },
+          borderRadius: BorderRadius.circular(50),
+          child: TagWidget.fromTag(tag),
+        ),
+      );
+    }
+
+    tagWidgets.add(
+      InkWell(
+        onTap: () {
+          setState(() {
+            isTagPickerShown = !isTagPickerShown;
+          });
+        },
+        borderRadius: BorderRadius.circular(50),
+        child: const TagWidget(
+            size: TagSize.large, color: Color(0xffffffff), tagText: "add +"),
+      ),
     );
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: tagWidgets,
+    );
+  }
+
+  Widget _createAddTagList() {
+    if (!isTagPickerShown) {
+      return Container();
+    } else {
+      List<Widget> tagWidgets = [];
+      for (Tag tag in allTags) {
+        if (!task.tags.contains(tag)) {
+          tagWidgets.add(Material(
+            elevation: 5,
+            borderRadius: BorderRadius.circular(50),
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: () {
+                setState(() {
+                  task.tags.add(tag);
+                });
+              },
+              borderRadius: BorderRadius.circular(50),
+              child: TagWidget.fromTag(tag),
+            ),
+          ));
+        }
+      }
+      // CREATION OF NEW TAGS IMPLEMENTED LATER.
+      // tagWidgets.add(
+      //   Material(
+      //     elevation: 5,
+      //     borderRadius: BorderRadius.circular(500),
+      //     color: Colors.transparent,
+      //     child: InkWell(
+      //       onTap: () {
+      //         // TODO: add new tag.
+      //       },
+      //       borderRadius: BorderRadius.circular(50),
+      //       child: const TagWidget(
+      //           size: TagSize.large,
+      //           color: Color(0xffffffff),
+      //           tagText: "new +"),
+      //     ),
+      //   ),
+      // );
+      return Row(
+        children: [
+          Flexible(
+            child: Wrap(
+                spacing: 2.0,
+                runSpacing: 4.0,
+                direction: Axis.horizontal,
+                crossAxisAlignment: WrapCrossAlignment.center,
+                alignment: WrapAlignment.start,
+                children: tagWidgets),
+          ),
+        ],
+      );
+    }
   }
 
   Widget _createDeadlineSection() {
@@ -138,23 +243,26 @@ class _TaskScreenBodyState extends State<_TaskScreenBody> {
         ),
         TextButton(
           style: Themes.datePickerButtonStyle,
-          child: const Text("click to pick a date.."),
-          onPressed: () => showDialog(
-            context: context,
-            builder: (context) => _showDeadlinePicker(),
-          ),
+          child: Text(task.deadline ?? "click to pick a date..."),
+          onPressed: () => _getDate(),
         ),
       ],
     );
   }
 
-  Widget _showDeadlinePicker() {
-    return DatePickerDialog(
-      helpText: "deadline",
-      initialDate: DateTime.now(),
-      firstDate: DateTime.now(),
-      lastDate: DateTime.parse("2032-12-31"),
-    );
+  void _getDate() async {
+    String deadline = task.deadline ?? "";
+    DateTime? pickedDate = await showDatePicker(
+        context: context,
+        initialDate:
+            task.deadline != null ? DateTime.parse(deadline) : DateTime.now(),
+        firstDate: DateTime.now(),
+        lastDate: DateTime.now().add(const Duration(days: 730)));
+    if (null == pickedDate) return;
+
+    setState(() {
+      task.deadline = pickedDate.toString().substring(0, 10);
+    });
   }
 
   Widget _createAssignedSection() {
@@ -165,13 +273,95 @@ class _TaskScreenBodyState extends State<_TaskScreenBody> {
           "assigned",
           style: Theme.of(context).textTheme.displayMedium,
         ),
-        _createAssignedList(),
+        _createAssignedList(context),
       ],
     );
   }
 
-  Widget _createAssignedList() {
-    return Column();
+  Widget _createAssignedList(BuildContext context) {
+    return Column(
+      children: [
+        ...task.assigned
+            .map(
+              (e) => UserListItem(
+                handler: () => {setState(() => task.assigned.remove(e))},
+                user: e,
+                size: UserListItemSize.small,
+              ),
+            )
+            .toList(),
+        TextButton(
+          onPressed: () => showDialog(
+            context: context,
+            builder: (context) => Dialog(
+              child: SizedBox(
+                width: double.infinity - 20,
+                height: 350,
+                child: Column(
+                  children: <Widget>[
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: SearchBar(
+                        placeholderText: "search for collaborators...",
+                        searchFunction: () {},
+                        textEditingController: TextEditingController(),
+                      ),
+                    ),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16.0,
+                          vertical: 0.0,
+                        ),
+                        child: ListView(
+                          children: [
+                            UserListItem(
+                              handler: () =>
+                                  Navigator.of(context, rootNavigator: true)
+                                      .pop(ExampleData.user1),
+                              user: ExampleData.user1,
+                            ),
+                            UserListItem(
+                              handler: () =>
+                                  Navigator.of(context, rootNavigator: true)
+                                      .pop(ExampleData.user2),
+                              user: ExampleData.user2,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ).then((value) => setState((() {
+                task.assigned.add(value);
+              }))),
+          child: Row(
+            children: <Widget>[
+              CircleAvatar(
+                radius: 15,
+                backgroundColor: Themes.primaryColor.shade100,
+                backgroundImage: const AssetImage(
+                    "assets/images/empty_profile_pic_large.png"),
+              ),
+              const SizedBox(
+                width: 8,
+              ),
+              Text(
+                "add collaborator...",
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                  color: Themes.textColor,
+                ),
+              )
+            ],
+          ),
+        ),
+      ],
+    );
   }
 
   Widget _createDescriptionSection() {
@@ -195,91 +385,3 @@ class _TaskScreenBodyState extends State<_TaskScreenBody> {
     );
   }
 }
-
-// class _TaskNameSection extends StatefulWidget {
-//   @override
-//   State<StatefulWidget> createState() => _TaskNameSectionState();
-// }
-
-// class _TaskNameSectionState extends State<_TaskNameSection> {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Column(
-//       children: const <Widget>[
-//         Text("task"),
-//         InputField(label: "", placeholderText: ""),
-//       ],
-//     );
-//   }
-// }
-
-// class _TaskTagsSection extends StatefulWidget {
-//   @override
-//   State<StatefulWidget> createState() => _TaskTagsSectionState();
-// }
-
-// class _TaskTagsSectionState extends State<_TaskTagsSection> {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Column(
-//       children: const <Widget>[
-//         Text("tags"),
-//         InputField(label: "", placeholderText: ""),
-//       ],
-//     );
-//   }
-// }
-
-// class _TaskDeadlineSection extends StatefulWidget {
-//   @override
-//   State<StatefulWidget> createState() => _TaskDeadlineSectionState();
-// }
-
-// class _TaskDeadlineSectionState extends State<_TaskDeadlineSection> {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Column(
-//       children: const <Widget>[
-//         Text("tags"),
-//         InputField(label: "", placeholderText: ""),
-//       ],
-//     );
-//   }
-// }
-
-// class _TaskAssignedSection extends StatefulWidget {
-//   @override
-//   State<StatefulWidget> createState() => _TaskAssignedSectionState();
-// }
-
-// class _TaskAssignedSectionState extends State<_TaskAssignedSection> {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Column(
-//       children: const <Widget>[
-//         Text("tags"),
-//         InputField(label: "", placeholderText: ""),
-//       ],
-//     );
-//   }
-// }
-
-// class _TaskDescriptionSection extends StatefulWidget {
-//   @override
-//   State<StatefulWidget> createState() => _TaskDescriptionSectionState();
-// }
-
-// class _TaskDescriptionSectionState extends State<_TaskDescriptionSection> {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Column(
-//       children: const <Widget>[
-//         Text("tags"),
-//         InputField(
-//           label: "",
-//           placeholderText: "",
-//         ),
-//       ],
-//     );
-//   }
-// }

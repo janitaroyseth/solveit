@@ -74,8 +74,9 @@ class TaskOverviewScreen extends StatelessWidget {
         child: _TaskOverviewBody(project: project),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () =>
-            Navigator.pushNamed(context, CreateTaskScreen.routeName),
+        onPressed: () => Navigator.pushNamed(
+            context, CreateTaskScreen.routeName,
+            arguments: project),
         child: const Icon(
           PhosphorIcons.plus,
           color: Colors.white,
