@@ -20,11 +20,9 @@ class ProfileScreen extends ConsumerWidget {
   const ProfileScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final List<Project> projects = (ModalRoute.of(context)!.settings.arguments!
-        as Map)["projects"] as List<Project>;
-    final User user =
-        (ModalRoute.of(context)!.settings.arguments! as Map)["user"] as User;
+  Widget build(BuildContext context, WidgetRef ref) {
+    final List<Project> projects = ExampleData.projects;
+    final User user = ExampleData.user1;
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,

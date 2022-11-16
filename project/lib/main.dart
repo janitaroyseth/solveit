@@ -53,26 +53,30 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: "solveit",
-      theme: Themes.themeData,
-      initialRoute: SignInScreen.routeName,
-      routes: {
-        SignInScreen.routeName: (context) => const SignInScreen(),
-        HomeScreen.routeName: (context) => const HomeScreen(),
-        ProjectCalendarScreen.routeName: (context) =>
-            const ProjectCalendarScreen(),
-        TaskOverviewScreen.routeName: (context) => const TaskOverviewScreen(),
-        TaskDetailsScreen.routeName: (context) => const TaskDetailsScreen(),
-        ProfileScreen.routeName: (context) => const ProfileScreen(),
-        ProjectPreviewScreen.routeName: (context) =>
-            const ProjectPreviewScreen(),
-        ProjectOverviewScreen.routeName: (context) =>
-            const ProjectOverviewScreen(),
-        CreateProfileScreen.routeName: (context) => const CreateProfileScreen(),
-        UserSettingsScreen.routeName: (context) => const UserSettingsScreen(),
-        CreateProjectScreen.routeName: (context) => const CreateProjectScreen(),
-      },
+    return Consumer(
+      builder: (context, ref, child) => MaterialApp(
+        title: "solveit",
+        theme: Themes.themeData,
+        home: initialScreenCheck(ref),
+        routes: {
+          SignInScreen.routeName: (context) => SignInScreen(),
+          HomeScreen.routeName: (context) => const HomeScreen(),
+          ProjectCalendarScreen.routeName: (context) =>
+              const ProjectCalendarScreen(),
+          TaskOverviewScreen.routeName: (context) => const TaskOverviewScreen(),
+          TaskDetailsScreen.routeName: (context) => const TaskDetailsScreen(),
+          ProfileScreen.routeName: (context) => const ProfileScreen(),
+          ProjectPreviewScreen.routeName: (context) =>
+              const ProjectPreviewScreen(),
+          ProjectOverviewScreen.routeName: (context) =>
+              const ProjectOverviewScreen(),
+          CreateProfileScreen.routeName: (context) =>
+              const CreateProfileScreen(),
+          UserSettingsScreen.routeName: (context) => const UserSettingsScreen(),
+          CreateProjectScreen.routeName: (context) =>
+              const CreateProjectScreen(),
+        },
+      ),
     );
   }
 }
