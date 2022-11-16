@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:project/data/example_data.dart';
+import 'package:project/models/project.dart';
+import 'package:project/models/user.dart' as app;
 import 'package:project/providers/auth_provider.dart';
 import 'package:project/screens/create_profile_screen.dart';
 import 'package:project/screens/home_screen.dart';
 import 'package:project/services/auth_service.dart';
 import 'package:project/styles/theme.dart';
 import 'package:project/widgets/input_field.dart';
-
-import '../models/project.dart';
-import '../data/example_data.dart';
 
 /// Screen/Scaffold for signing in and signing up .
 class SignInScreen extends StatelessWidget {
@@ -25,17 +25,13 @@ class SignInScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.fromLTRB(
-          32.0,
-          70.0,
-          32.0,
-          0,
-        ),
+        padding: const EdgeInsets.fromLTRB(32.0, 70.0, 32.0, 0),
         child: SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
+              SizedBox(height: MediaQuery.of(context).size.height / 8),
               FittedBox(
                 fit: BoxFit.scaleDown,
                 child: Row(
@@ -81,6 +77,7 @@ class _SignInForm extends ConsumerStatefulWidget {
 
 class __SignInFormState extends ConsumerState<_SignInForm> {
   List<Project> projects = ExampleData.projects;
+  app.User user = ExampleData.user2;
   bool signupForm = false;
   late AuthService auth;
   @override
@@ -146,7 +143,10 @@ class __SignInFormState extends ConsumerState<_SignInForm> {
                   Navigator.of(context).pushNamed(CreateProfileScreen.routeName)
               : () => Navigator.of(context).popAndPushNamed(
                     HomeScreen.routeName,
-                    arguments: projects,
+                    arguments: {
+                      "user": user,
+                      "projects": projects,
+                    },
                   ),
           style: Themes.primaryElevatedButtonStyle,
           child: Text(signupForm ? "sign up" : "sign in"),
@@ -187,7 +187,10 @@ class __SignInFormState extends ConsumerState<_SignInForm> {
                       .pushNamed(CreateProfileScreen.routeName)
                   : () => Navigator.of(context).popAndPushNamed(
                         HomeScreen.routeName,
-                        arguments: projects,
+                        arguments: {
+                          "user": user,
+                          "projects": projects,
+                        },
                       ),
               style: Themes.circularButtonStyle,
               child: const Icon(

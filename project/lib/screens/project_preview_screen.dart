@@ -94,31 +94,17 @@ class ProjectPreviewScreen extends StatelessWidget {
                   const SizedBox(
                     height: 12.0,
                   ),
-                  UserListItem(
-                    handler: () => Navigator.of(context).pushNamed(
-                      ProfileScreen.routeName,
-                      arguments: ExampleData.projects,
-                    ),
-                    name: "Jane Cooper",
-                    imageUrl: "assets/images/jane_cooper.png",
-                    isOwner: true,
-                  ),
-                  UserListItem(
-                    handler: () => Navigator.of(context).pushNamed(
-                      ProfileScreen.routeName,
-                      arguments: ExampleData.projects,
-                    ),
-                    name: "Leslie Alexander",
-                    imageUrl: "assets/images/leslie_alexander.png",
-                  ),
-                  UserListItem(
-                    handler: () => Navigator.of(context).pushNamed(
-                      ProfileScreen.routeName,
-                      arguments: ExampleData.projects,
-                    ),
-                    name: "Guy Hawkins",
-                    imageUrl: "assets/images/guy_hawkins.png",
-                  ),
+                  ...project.collaborators.map((user) => UserListItem(
+                        user: user,
+                        isOwner: project.owner == user,
+                        handler: () => Navigator.of(context).pushNamed(
+                          ProfileScreen.routeName,
+                          arguments: {
+                            "user": user,
+                            "projects": <Project>[],
+                          },
+                        ),
+                      )),
                   const SizedBox(
                     height: 24.0,
                   ),

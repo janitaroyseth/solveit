@@ -1,7 +1,6 @@
 import 'dart:collection';
 
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:project/models/project.dart';
 import 'package:project/models/task.dart';
@@ -47,12 +46,11 @@ class _CalendarState extends State<Calendar> {
     Map<DateTime, dynamic> groupTasks() {
       Map<DateTime, dynamic> groupedTasks = {};
       for (var task in widget.project.tasks) {
-        DateTime key = DateFormat("dd/MM/yyyy").parse(task.deadline as String);
+        DateTime key = DateTime.parse(task.deadline as String);
 
         List<Task> values = widget.project.tasks
-            .where((element) =>
-                DateFormat("dd/MM/yyyy").parse(element.deadline as String) ==
-                key)
+            .where(
+                (element) => DateTime.parse(element.deadline as String) == key)
             .toList();
         groupedTasks[key] = values;
       }

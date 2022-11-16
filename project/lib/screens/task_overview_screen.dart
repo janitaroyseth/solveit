@@ -133,31 +133,15 @@ class _TaskOverviewBodyState extends State<_TaskOverviewBody> {
   /// [String] attribute - Name of the attribute by which to sort.
   /// [bool] descending - Whether or not the list should be sorted descending.
   void sortByVariable(String attribute, bool descending) {
-    List<Map> sortResults = [];
-    for (Task task in items) {
-      sortResults.add(task.asMap());
-    }
     if (descending) {
-      sortResults.sort((a, b) => (a[attribute] as String).compareTo(
-            (b[attribute] as String),
-          ));
+      items.sort((b, a) => (a.asMap()[attribute] as String)
+          .compareTo(b.asMap()[attribute] as String));
     } else {
-      sortResults.sort((a, b) => (b[attribute] as String).compareTo(
-            (a[attribute] as String),
-          ));
+      items.sort((a, b) => (a.asMap()[attribute] as String)
+          .compareTo(b.asMap()[attribute] as String));
     }
-    setState(() {
-      items.clear();
-      for (Map map in sortResults) {
-        items.add(Task(
-            title: map["title"],
-            description: map["description"],
-            tags: map["tags"],
-            deadline: map["deadline"],
-            done: map["done"],
-            comments: map["comments"]));
-      }
-    });
+
+    setState(() {});
   }
 
   /// Filters the task list by the selected tags.
@@ -242,9 +226,9 @@ class _TaskOverviewBodyState extends State<_TaskOverviewBody> {
                   FilterOption(
                       description: SortingMethods.dateAsc, filterBy: false),
                   FilterOption(
-                      description: SortingMethods.titleDesc, filterBy: false),
-                  FilterOption(
                       description: SortingMethods.titleAsc, filterBy: false),
+                  FilterOption(
+                      description: SortingMethods.titleDesc, filterBy: false),
                 ],
                 filterHandler: onSortChange,
                 filterType: FilterType.sort,

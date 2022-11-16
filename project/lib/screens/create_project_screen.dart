@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:project/data/example_data.dart';
 import 'package:project/data/project_avatar_options.dart';
 import 'package:project/screens/profile_screen.dart';
 import 'package:project/styles/theme.dart';
@@ -70,7 +71,7 @@ class CreateProjectScreen extends StatelessWidget {
                       width: double.infinity - 20,
                       height: 350,
                       child: Column(
-                        children: [
+                        children: <Widget>[
                           Padding(
                             padding: const EdgeInsets.only(top: 8.0),
                             child: SearchBar(
@@ -90,21 +91,12 @@ class CreateProjectScreen extends StatelessWidget {
                                   UserListItem(
                                     handler: () => Navigator.of(context)
                                         .pushNamed(ProfileScreen.routeName),
-                                    name: "Jane Cooper",
-                                    imageUrl: "assets/images/jane_cooper.png",
+                                    user: ExampleData.user1,
                                   ),
                                   UserListItem(
                                     handler: () => Navigator.of(context)
                                         .pushNamed(ProfileScreen.routeName),
-                                    name: "Leslie Alexander",
-                                    imageUrl:
-                                        "assets/images/leslie_alexander.png",
-                                  ),
-                                  UserListItem(
-                                    handler: () => Navigator.of(context)
-                                        .pushNamed(ProfileScreen.routeName),
-                                    name: "Guy Hawkins",
-                                    imageUrl: "assets/images/guy_hawkins.png",
+                                    user: ExampleData.user2,
                                   ),
                                 ],
                               ),

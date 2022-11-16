@@ -4,6 +4,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/data/example_data.dart';
 import 'package:project/models/project.dart';
 import 'package:project/providers/auth_provider.dart';
+import 'package:project/models/user.dart';
 import 'package:project/screens/project_preview_screen.dart';
 import 'package:project/styles/curve_clipper.dart';
 import 'package:project/styles/theme.dart';
@@ -20,9 +21,8 @@ class ProfileScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final projects = ExampleData.projects;
-    // final List<Project> projects =
-    //     ModalRoute.of(context)!.settings.arguments as List<Project>;
+    final List<Project> projects = ExampleData.projects;
+    final User user = ExampleData.user1;
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -147,9 +147,7 @@ class ProfileScreen extends ConsumerWidget {
                   children: <Widget>[
                     CircleAvatar(
                       radius: MediaQuery.of(context).size.width / 6,
-                      backgroundImage: const AssetImage(
-                        "assets/images/jane_cooper.png",
-                      ),
+                      backgroundImage: AssetImage(user.imageUrl),
                     ),
                     const SizedBox(width: 16.0),
                     Expanded(
@@ -157,19 +155,19 @@ class ProfileScreen extends ConsumerWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          const Text(
-                            "Jane Cooper",
-                            style: TextStyle(
+                          Text(
+                            "${user.firstname} ${user.lastname}",
+                            style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600),
                           ),
                           const SizedBox(height: 4.0),
-                          const Flexible(
+                          Flexible(
                             child: Text(
-                              "Hard working student ready for that 8-16 grind!",
+                              user.bio,
                               overflow: TextOverflow.clip,
-                              style: TextStyle(
+                              style: const TextStyle(
                                 overflow: TextOverflow.clip,
                                 color: Colors.white,
                                 fontSize: 14,
@@ -288,6 +286,7 @@ class _ProfileProjectListState extends State<_ProfileProjectList> {
                         child: Text(projects),
                       )
                     : TextButton(
+                        style: Themes.textButtonStyle,
                         onPressed: () {
                           setState(() {
                             isSelected = projects;
