@@ -1,38 +1,37 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:project/data/example_data.dart';
+import 'package:project/models/project.dart';
+import 'package:project/models/user.dart' as app;
+import 'package:project/providers/auth_provider.dart';
 import 'package:project/screens/create_profile_screen.dart';
 import 'package:project/screens/home_screen.dart';
+import 'package:project/services/auth_service.dart';
 import 'package:project/styles/theme.dart';
 import 'package:project/widgets/input_field.dart';
 
-import '../models/project.dart';
-import '../data/example_data.dart';
-
 /// Screen/Scaffold for signing in and signing up .
 class SignInScreen extends StatelessWidget {
-  /// Named route for this screen.
-  static const routeName = "/";
-
   /// Creates an instance of [SignInScreen].
-  const SignInScreen({super.key});
+  SignInScreen({super.key});
+
+  /// Named route for this screen.
+  static const routeName = "/signin";
+
+  final List<Project> projects = ExampleData.projects;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Padding(
-        padding: const EdgeInsets.fromLTRB(
-          32.0,
-          70.0,
-          32.0,
-          0,
-        ),
+        padding: const EdgeInsets.fromLTRB(32.0, 70.0, 32.0, 0),
         child: SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
+              SizedBox(height: MediaQuery.of(context).size.height / 8),
               FittedBox(
                 fit: BoxFit.scaleDown,
                 child: Row(
@@ -68,17 +67,19 @@ class SignInScreen extends StatelessWidget {
 }
 
 /// Sign in and sign up form.
-class _SignInForm extends StatefulWidget {
+class _SignInForm extends ConsumerStatefulWidget {
   /// Creates an instance of [SignInForm].
-  const _SignInForm({super.key});
+  const _SignInForm();
 
   @override
-  State<_SignInForm> createState() => __SignInFormState();
+  ConsumerState<_SignInForm> createState() => __SignInFormState();
 }
 
-class __SignInFormState extends State<_SignInForm> {
+class __SignInFormState extends ConsumerState<_SignInForm> {
   List<Project> projects = ExampleData.projects;
+  app.User user = ExampleData.user2;
   bool signupForm = false;
+  late AuthService auth;
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -142,7 +143,10 @@ class __SignInFormState extends State<_SignInForm> {
                   Navigator.of(context).pushNamed(CreateProfileScreen.routeName)
               : () => Navigator.of(context).popAndPushNamed(
                     HomeScreen.routeName,
-                    arguments: projects,
+                    arguments: {
+                      "user": user,
+                      "projects": projects,
+                    },
                   ),
           style: Themes.primaryElevatedButtonStyle,
           child: Text(signupForm ? "sign up" : "sign in"),
@@ -170,13 +174,7 @@ class __SignInFormState extends State<_SignInForm> {
               ),
             ),
             ElevatedButton(
-              onPressed: signupForm
-                  ? () => Navigator.of(context)
-                      .pushNamed(CreateProfileScreen.routeName)
-                  : () => Navigator.of(context).popAndPushNamed(
-                        HomeScreen.routeName,
-                        arguments: projects,
-                      ),
+              onPressed: _signInWithGoogle,
               style: Themes.circularButtonStyle,
               child: const Icon(
                 PhosphorIcons.googleLogo,
@@ -189,7 +187,10 @@ class __SignInFormState extends State<_SignInForm> {
                       .pushNamed(CreateProfileScreen.routeName)
                   : () => Navigator.of(context).popAndPushNamed(
                         HomeScreen.routeName,
-                        arguments: projects,
+                        arguments: {
+                          "user": user,
+                          "projects": projects,
+                        },
                       ),
               style: Themes.circularButtonStyle,
               child: const Icon(
@@ -230,14 +231,15 @@ class __SignInFormState extends State<_SignInForm> {
     );
   }
 
+  /// Signing the user in anonymously.
   Future<void> _signInAnonymously() async {
-    try {
-      final userCredentials = await FirebaseAuth.instance.signInAnonymously();
-      if (kDebugMode) {
-        print("${userCredentials.user?.uid}");
-      }
-    } catch (e) {
-      print(e.toString());
-    }
+    final auth = ref.read(authProvider);
+    auth.signInAnonymously();
+  }
+
+  /// Signing the user in with Google.
+  Future<void> _signInWithGoogle() async {
+    final auth = ref.read(authProvider);
+    auth.signInWithGoogle();
   }
 }
