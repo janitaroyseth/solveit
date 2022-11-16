@@ -151,4 +151,14 @@ class Themes {
       const TextStyle(fontSize: 14, fontFamily: Themes.fontFamily),
     ),
   );
+
+  static ButtonStyle datePickerButtonStyle = ButtonStyle(
+    foregroundColor: MaterialStateProperty.all<Color>(const Color(0x80000000)),
+    textStyle: MaterialStateProperty.all<TextStyle>(
+      const TextStyle(
+        fontSize: 12,
+        fontFamily: Themes.fontFamily,
+      ),
+    ),
+  );
 }

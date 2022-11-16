@@ -1,7 +1,6 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
-import 'package:project/widgets/input_field.dart';
+import 'package:project/widgets/tag_widget.dart';
 
 import '../styles/theme.dart';
 import '../widgets/appbar_button.dart';
@@ -16,6 +15,7 @@ class CreateTaskScreen extends StatelessWidget {
       appBar: AppBar(
         title: const Text("create task"),
         centerTitle: false,
+        elevation: 0,
         titleSpacing: -4,
         leading: AppBarButton(
           handler: () => Navigator.of(context).pop(),
@@ -34,72 +34,162 @@ class CreateTaskScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: _createTaskScreenBody(),
+      body:
+          Padding(padding: const EdgeInsets.all(20), child: _TaskScreenBody()),
     );
   }
+}
 
-  Widget _createTaskScreenBody() {
-    return Column(
-      children: <Widget>[
-        _createTaskNameSection(),
-        _createTagsSection(),
-        _createDeadlineSection(),
-        _createAssignedSection(),
-        _createDescriptionSection(),
-      ],
+class _TaskScreenBody extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() => _TaskScreenBodyState();
+}
+
+class _TaskScreenBodyState extends State<_TaskScreenBody> {
+  final _formKey = GlobalKey<FormState>();
+
+  @override
+  Widget build(BuildContext context) {
+    return Form(
+      key: _formKey,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          _createTaskNameSection(),
+          const SizedBox(
+            height: 20,
+          ),
+          _createTagsSection(),
+          const SizedBox(
+            height: 20,
+          ),
+          _createDeadlineSection(),
+          const SizedBox(
+            height: 20,
+          ),
+          _createAssignedSection(),
+          const SizedBox(
+            height: 20,
+          ),
+          _createDescriptionSection(),
+        ],
+      ),
     );
   }
 
   Widget _createTaskNameSection() {
     return Column(
-      children: const <Widget>[
-        Text("task"),
-        InputField(label: "", placeholderText: ""),
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          "task",
+          style: Theme.of(context).textTheme.displayMedium,
+        ),
+        const SizedBox(
+          height: 5,
+        ),
+        TextFormField(
+          style: const TextStyle(fontSize: 12),
+          decoration: const InputDecoration.collapsed(
+            hintText: 'concise description of the task at hand...',
+          ),
+        ),
       ],
     );
   }
 
   Widget _createTagsSection() {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        const Text("tags"),
+        Text(
+          "tags",
+          style: Theme.of(context).textTheme.displayMedium,
+        ),
+        const SizedBox(
+          height: 5,
+        ),
         _createTagsDropdown(),
       ],
     );
   }
 
   Widget _createTagsDropdown() {
-    return Column();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: const [
+        TagWidget(size: Size.small, color: Color(0xffffffff), tagText: "add +"),
+      ],
+    );
   }
 
   Widget _createDeadlineSection() {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        const Text("deadline"),
+        Text(
+          "deadline",
+          style: Theme.of(context).textTheme.displayMedium,
+        ),
+        const SizedBox(
+          height: 5,
+        ),
         TextButton(
+          style: Themes.datePickerButtonStyle,
           child: const Text("click to pick a date.."),
-          onPressed: () => _showDeadlinePicker(),
+          onPressed: () => showDialog(
+            context: context,
+            builder: (context) => _showDeadlinePicker(),
+          ),
         ),
       ],
     );
   }
 
-  void _showDeadlinePicker() {
-    DatePickerDialog(
-        initialDate: DateTime.now(),
-        firstDate: DateTime.now(),
-        lastDate: DateTime.parse("2032-12-31"));
+  Widget _showDeadlinePicker() {
+    return DatePickerDialog(
+      helpText: "deadline",
+      initialDate: DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime.parse("2032-12-31"),
+    );
   }
 
   Widget _createAssignedSection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          "assigned",
+          style: Theme.of(context).textTheme.displayMedium,
+        ),
+        _createAssignedList(),
+      ],
+    );
+  }
+
+  Widget _createAssignedList() {
     return Column();
   }
 
   Widget _createDescriptionSection() {
     return Column(
-      children: const <Widget>[
-        Text("description"),
-        InputField(label: "", placeholderText: ""),
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Text(
+          "description",
+          style: Theme.of(context).textTheme.displayMedium,
+        ),
+        const SizedBox(
+          height: 5,
+        ),
+        TextFormField(
+          style: const TextStyle(fontSize: 12),
+          decoration: const InputDecoration.collapsed(
+            hintText: 'detailed description of the task at hand...',
+          ),
+        ),
       ],
     );
   }
