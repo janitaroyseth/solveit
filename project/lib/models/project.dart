@@ -1,3 +1,4 @@
+import 'package:project/data/project_avatar_options.dart';
 import 'package:project/models/tag.dart';
 import 'package:project/models/task.dart';
 import 'package:project/models/user.dart';
@@ -69,10 +70,11 @@ class Project {
     this.tasks = const [],
     this.tags = const [],
     required this.owner,
-    this.collaborators = const [],
-    this.imageUrl = "",
+    List<User>? collaborators,
+    String? imageUrl,
     this.description = "",
     this.lastUpdated,
     this.isPublic = false,
-  });
+  })  : imageUrl = imageUrl ?? projectAvatars[0],
+        collaborators = collaborators ?? [];
 }

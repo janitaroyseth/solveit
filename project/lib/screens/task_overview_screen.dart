@@ -38,7 +38,17 @@ class TaskOverviewScreen extends StatelessWidget {
               project.imageUrl,
               height: 90,
             ),
-            Text(project.title.toLowerCase()),
+            Expanded(
+              child: Text(
+                project.title.toLowerCase(),
+                overflow: TextOverflow.fade,
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.w300,
+                ),
+              ),
+            ),
+            const SizedBox(width: 8.0)
           ],
         ),
         titleSpacing: -4,
@@ -323,6 +333,7 @@ class __ProjectPopUpMenuState extends State<_ProjectPopUpMenu> {
                 arguments: widget.project,
               ),
             );
+            setState(() {});
           },
           child: const Text("go to tasks"),
         ),
