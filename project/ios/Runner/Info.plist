@@ -49,5 +49,14 @@
 	<string>Permission to take a photo by camera</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Permission to pick a photo</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.339135253031-qgfooj4sdnl3me1rn5edlg52uagdf12p</string>
+			</array>
+		</dict>
+	</array>
 </dict>
 </plist>

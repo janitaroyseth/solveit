@@ -174,16 +174,7 @@ class __SignInFormState extends ConsumerState<_SignInForm> {
               ),
             ),
             ElevatedButton(
-              onPressed: signupForm
-                  ? () => Navigator.of(context)
-                      .pushNamed(CreateProfileScreen.routeName)
-                  : () => Navigator.of(context).popAndPushNamed(
-                        HomeScreen.routeName,
-                        arguments: {
-                          "user": user,
-                          "projects": projects,
-                        },
-                      ),
+              onPressed: _signInWithGoogle,
               style: Themes.circularButtonStyle,
               child: const Icon(
                 PhosphorIcons.googleLogo,
@@ -244,5 +235,11 @@ class __SignInFormState extends ConsumerState<_SignInForm> {
   Future<void> _signInAnonymously() async {
     final auth = ref.read(authProvider);
     auth.signInAnonymously();
+  }
+
+  /// Signing the user in with Google.
+  Future<void> _signInWithGoogle() async {
+    final auth = ref.read(authProvider);
+    auth.signInWithGoogle();
   }
 }
