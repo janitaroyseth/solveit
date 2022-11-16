@@ -18,6 +18,8 @@ abstract class AuthService {
 class Auth implements AuthService {
   final _fireBaseAuth = FirebaseAuth.instance;
 
+  GoogleSignIn? _googleSignIn;
+
   @override
   User? get currentUser => _fireBaseAuth.currentUser;
 
@@ -29,8 +31,8 @@ class Auth implements AuthService {
 
   @override
   Future<User?> signInWithGoogle() async {
-    final googleSignIn = GoogleSignIn();
-    final googleUser = await googleSignIn.signIn();
+    _googleSignIn = GoogleSignIn();
+    final googleUser = await _googleSignIn?.signIn();
     if (googleUser != null) {
       final googleAuth = await googleUser.authentication;
       if (googleAuth.idToken != null) {
@@ -56,8 +58,7 @@ class Auth implements AuthService {
 
   @override
   Future<void> signOut() async {
-    // final googleSignIn = GoogleSignIn();
-    // await googleSignIn.signOut();
+    await _googleSignIn?.signOut();
     await _fireBaseAuth.signOut();
   }
 }
