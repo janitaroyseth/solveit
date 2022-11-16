@@ -1,7 +1,9 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:project/firebase_options.dart';
+import 'package:project/providers/user_provider.dart';
 import 'package:project/screens/create_profile_screen.dart';
 import 'package:project/screens/create_project_screen.dart';
 import 'package:project/screens/profile_screen.dart';
@@ -23,13 +25,32 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // initialize the preferences service.
   PreferencesService();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
-  runApp(const MyApp());
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
   static List<Project> projects = ExampleData.projects;
+
+  /// Check if the user is logged in.
+  /// They get send to the [HomeScreen] if logged in and [SignInScreen] if not.
+  Widget initialScreenCheck(WidgetRef ref) {
+    final userAsyncData = ref.watch(userProvider);
+
+    return userAsyncData.when(
+      data: (user) {
+        String userId = user != null ? user.uid : "<unknown>";
+        print("User = $userId");
+        return user != null ? const HomeScreen() : SignInScreen();
+      },
+      error: (err, stack) => Text("Error in auth stream: $err"),
+      loading: () => const CircularProgressIndicator(),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
