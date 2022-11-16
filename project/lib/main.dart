@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:project/firebase_options.dart';
 import 'package:project/providers/user_provider.dart';
 import 'package:project/screens/create_profile_screen.dart';
-import 'package:project/screens/create_project_screen.dart';
+import 'package:project/screens/edit_project_screen.dart';
 import 'package:project/screens/profile_screen.dart';
 import 'package:project/screens/project_overview_screen.dart';
 import 'package:project/screens/project_preview_screen.dart';
@@ -54,11 +54,10 @@ class MyApp extends StatelessWidget {
     return Consumer(
       builder: (BuildContext context, WidgetRef ref, Widget? child) {
         return MaterialApp(
-          title: "solveIt",
+          title: "solveit",
           theme: Themes.themeData,
           home: initialScreenCheck(ref),
           routes: {
-            //TODO: Update route names.
             SignInScreen.routeName: (context) => SignInScreen(),
             HomeScreen.routeName: (context) => const HomeScreen(),
             ProjectCalendarScreen.routeName: (context) =>
@@ -75,8 +74,7 @@ class MyApp extends StatelessWidget {
                 const CreateProfileScreen(),
             UserSettingsScreen.routeName: (context) =>
                 const UserSettingsScreen(),
-            CreateProjectScreen.routeName: (context) =>
-                const CreateProjectScreen(),
+            EditProjectScreen.routeName: (context) => const EditProjectScreen(),
           },
         );
       },

@@ -19,6 +19,8 @@ class InputField extends StatelessWidget {
   /// [Function] to invoke when the field is submitted.
   final Function? onSubmit;
 
+  final TextEditingController? textEditingController;
+
   /// Creates an instance of [InputField] with the given [String] label,
   /// [String] placeholder text, [TextInputAction] keyboard type and [Function]
   /// submit function.
@@ -30,6 +32,7 @@ class InputField extends StatelessWidget {
     this.keyboardType,
     this.isPassword = false,
     this.onSubmit,
+    this.textEditingController,
   });
 
   @override
@@ -37,6 +40,7 @@ class InputField extends StatelessWidget {
     return TextFormField(
       keyboardType: keyboardType,
       textInputAction: keyboardAction,
+      controller: textEditingController,
       validator: (value) {
         if (value == null || value.isEmpty) {
           return 'Please enter $label';
