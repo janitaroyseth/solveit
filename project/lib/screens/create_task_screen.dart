@@ -119,7 +119,8 @@ class _TaskScreenBodyState extends State<_TaskScreenBody> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: const [
-        TagWidget(size: Size.small, color: Color(0xffffffff), tagText: "add +"),
+        TagWidget(
+            size: TagSize.small, color: Color(0xffffffff), tagText: "add +"),
       ],
     );
   }

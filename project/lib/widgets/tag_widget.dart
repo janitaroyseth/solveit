@@ -45,7 +45,7 @@ class TagWidget extends StatelessWidget {
         color.computeLuminance() * color.alpha.clamp(0, 1) < 0.5
             ? Colors.white
             : Colors.black;
-    return size == Size.small
+    return size == TagSize.small
         ? Padding(
             padding: const EdgeInsets.symmetric(horizontal: 1.2),
             child: Container(
