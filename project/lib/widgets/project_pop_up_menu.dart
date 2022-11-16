@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/models/project.dart';
+import 'package:project/screens/create_profile_screen.dart';
+import 'package:project/screens/edit_project_screen.dart';
 import 'package:project/screens/home_screen.dart';
 import 'package:project/screens/project_preview_screen.dart';
 import 'package:project/screens/task_overview_screen.dart';
@@ -35,10 +37,19 @@ class __ProjectPopUpMenuState extends State<ProjectPopUpMenu> {
       ),
       tooltip: "Menu for project",
       itemBuilder: (context) => [
-        const PopupMenuItem(
+        PopupMenuItem(
+          onTap: () {
+            Future.delayed(
+              const Duration(seconds: 0),
+              () => Navigator.of(context).pushNamed(
+                EditProjectScreen.routeName,
+                arguments: widget.project,
+              ),
+            );
+          },
           value: 0,
           height: 48,
-          child: Text("edit project"),
+          child: const Text("edit project"),
         ),
         PopupMenuItem(
           value: 1,

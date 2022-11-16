@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:project/firebase_options.dart';
 import 'package:project/providers/user_provider.dart';
 import 'package:project/screens/create_profile_screen.dart';
-import 'package:project/screens/create_project_screen.dart';
+import 'package:project/screens/edit_project_screen.dart';
 import 'package:project/screens/profile_screen.dart';
 import 'package:project/screens/project_overview_screen.dart';
 import 'package:project/screens/project_preview_screen.dart';
@@ -73,8 +73,7 @@ class MyApp extends StatelessWidget {
           CreateProfileScreen.routeName: (context) =>
               const CreateProfileScreen(),
           UserSettingsScreen.routeName: (context) => const UserSettingsScreen(),
-          CreateProjectScreen.routeName: (context) =>
-              const CreateProjectScreen(),
+          EditProjectScreen.routeName: (context) => const EditProjectScreen(),
         },
       ),
     );

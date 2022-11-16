@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/data/example_data.dart';
-import 'package:project/screens/create_project_screen.dart';
+import 'package:project/screens/edit_project_screen.dart';
 import 'package:project/screens/task_overview_screen.dart';
 import 'package:project/styles/theme.dart';
 import 'package:project/widgets/appbar_button.dart';
@@ -46,13 +46,7 @@ class ProjectOverviewScreen extends StatelessWidget {
             )
           ],
         ),
-        actions: [
-          AppBarButton(
-              handler: () => Navigator.of(context)
-                  .pushNamed(CreateProjectScreen.routeName),
-              tooltip: "Add new project",
-              icon: PhosphorIcons.plus)
-        ],
+        actions: const [CreateProjectButton()],
       ),
       body: Padding(
         padding: const EdgeInsets.all(0),
@@ -86,6 +80,29 @@ class ProjectOverviewScreen extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class CreateProjectButton extends StatefulWidget {
+  const CreateProjectButton({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  State<CreateProjectButton> createState() => _CreateProjectButtonState();
+}
+
+class _CreateProjectButtonState extends State<CreateProjectButton> {
+  @override
+  Widget build(BuildContext context) {
+    return AppBarButton(
+      handler: () {
+        Navigator.of(context).pushNamed(EditProjectScreen.routeName);
+        setState(() {});
+      },
+      tooltip: "Add new project",
+      icon: PhosphorIcons.plus,
     );
   }
 }

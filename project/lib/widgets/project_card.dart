@@ -43,6 +43,8 @@ class ProjectCard extends StatelessWidget {
                     Text(
                       project.title.toLowerCase(),
                       textAlign: TextAlign.left,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
                       style: const TextStyle(
                         color: Colors.white,
                         fontSize: 14,
