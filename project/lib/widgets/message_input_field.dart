@@ -1,10 +1,16 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:giphy_get/giphy_get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/styles/theme.dart';
+import 'package:project/widgets/gif_picker.dart';
+
+enum MessageType {
+  text,
+  image,
+  gif,
+}
 
 /// Input field tailored for messages such as comments or inbox.
 class MessageInputField extends StatefulWidget {
@@ -27,9 +33,6 @@ class MessageInputField extends StatefulWidget {
   /// Whether to include a gif picker.
   final bool gif;
 
-  /// The giphy modal widget, or [GiphyGetWrapper].
-  final GiphyGetWrapper? giphyGetWrapper;
-
   /// Creates an instance of [MessageInputField].
   const MessageInputField({
     super.key,
@@ -39,7 +42,6 @@ class MessageInputField extends StatefulWidget {
     this.gallery = false,
     this.recording = false,
     this.gif = false,
-    this.giphyGetWrapper,
   });
 
   @override
@@ -187,7 +189,8 @@ class _SendButtonState extends State<_SendButton> {
       onPressed: widget.textEditingController.text.isEmpty
           ? null
           : () {
-              widget.widget.handler(widget.textEditingController.text);
+              widget.widget
+                  .handler(widget.textEditingController.text, MessageType.text);
               widget.textEditingController.clear();
               setState(() {});
             },
@@ -215,7 +218,10 @@ class _GifButton extends StatelessWidget {
     return IconButton(
       padding: const EdgeInsets.all(6.0),
       constraints: const BoxConstraints(),
-      onPressed: () async => await widget.giphyGetWrapper!.getGif('', context),
+      onPressed: () => showModalBottomSheet(
+          isScrollControlled: true,
+          context: context,
+          builder: (context) => GifPicker(handler: widget.handler)),
       icon: Icon(
         PhosphorIcons.gifFill,
         color: Themes.primaryColor.withOpacity(0.8),
@@ -266,7 +272,7 @@ class _CameraButton extends StatelessWidget {
 
         if (pickedImage == null) return;
 
-        widget.handler(File(pickedImage.path));
+        widget.handler(File(pickedImage.path), MessageType.image);
       },
       icon: Icon(
         PhosphorIcons.cameraFill,
@@ -299,7 +305,7 @@ class _GalleryButton extends StatelessWidget {
 
         if (pickedImage == null) return;
 
-        widget.handler(File(pickedImage.path));
+        widget.handler(File(pickedImage.path), MessageType.image);
       },
       icon: Icon(
         PhosphorIcons.imageFill,

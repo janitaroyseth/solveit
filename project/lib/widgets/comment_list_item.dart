@@ -56,7 +56,7 @@ class CommentListItem extends StatelessWidget {
                   _TextComment(comment: comment),
                 if (comment is model.ImageComment)
                   _ImageComment(comment: comment),
-                if (comment is model.GiphyComment)
+                if (comment is model.GifComment)
                   _GiphyComment(comment: comment),
                 const SizedBox(height: 4.0),
                 Text(
@@ -128,7 +128,7 @@ class _GiphyComment extends StatelessWidget {
     return ClipRRect(
       borderRadius: BorderRadius.circular(15.0),
       child: Image.network(
-        (comment as model.GiphyComment).url,
+        (comment as model.GifComment).url,
         width: MediaQuery.of(context).size.width / 2,
         fit: BoxFit.contain,
       ),

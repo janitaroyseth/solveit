@@ -32,6 +32,15 @@ class Themes {
     scaffoldBackgroundColor: Colors.white,
     fontFamily: "Comfortaa",
     indicatorColor: Colors.black,
+    // TODO: Fix this.
+    bottomSheetTheme: const BottomSheetThemeData(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(20.0),
+          topRight: Radius.circular(20.0),
+        ),
+      ),
+    ),
     appBarTheme: const AppBarTheme(
       backgroundColor: Colors.white,
       foregroundColor: Colors.black,

@@ -90,19 +90,19 @@ class TextComment extends Comment {
 }
 
 /// Comment where the content is a string url.
-class GiphyComment extends Comment {
+class GifComment extends Comment {
   /// The url of the giphy in the comment.
   String url;
 
-  /// Creates an instance of [GiphyComment].
-  GiphyComment({
+  /// Creates an instance of [GifComment].
+  GifComment({
     required super.author,
     super.date,
     required this.url,
   });
 
-  /// Creates an instance of [GiphyComment] from the given [Map].
-  static GiphyComment? fromMap(Map<String, dynamic>? data) {
+  /// Creates an instance of [GifComment] from the given [Map].
+  static GifComment? fromMap(Map<String, dynamic>? data) {
     if (data == null) {
       return null;
     }
@@ -111,7 +111,7 @@ class GiphyComment extends Comment {
     final String date = data["date"];
     final String url = data["url"];
 
-    return GiphyComment(
+    return GifComment(
       author: author,
       date: date,
       url: url,

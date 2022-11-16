@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:giphy_get/giphy_get.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/data/example_data.dart';
@@ -66,7 +65,7 @@ class TaskDetailsScreen extends StatelessWidget {
           child: TabBarView(
             children: [
               _OverviewTabView(task: task),
-              CommentTabView(task: task, focusNode: focusNode),
+              _CommentTabView(task: task, focusNode: focusNode),
             ],
           ),
         ),
@@ -156,25 +155,25 @@ class _OverviewTabView extends StatelessWidget {
 }
 
 /// Body content for the comment tab.
-class CommentTabView extends StatefulWidget {
+class _CommentTabView extends StatefulWidget {
   /// The task to display it's comments for.
   final Task task;
 
   /// FocusNode to use for the comment text field.
   final FocusNode focusNode;
 
-  /// Creates an instance of [CommentTabView],
-  const CommentTabView({
+  /// Creates an instance of [_CommentTabView],
+  const _CommentTabView({
     super.key,
     required this.task,
     required this.focusNode,
   });
 
   @override
-  State<CommentTabView> createState() => _CommentTabViewState();
+  State<_CommentTabView> createState() => _CommentTabViewState();
 }
 
-class _CommentTabViewState extends State<CommentTabView> {
+class _CommentTabViewState extends State<_CommentTabView> {
   /// [ScrollController] for the [CommentList].
   final ScrollController controller = ScrollController();
 
@@ -221,91 +220,91 @@ class _CommentTabViewState extends State<CommentTabView> {
 
   @override
   Widget build(BuildContext context) {
-    return GiphyGetWrapper(
-        giphy_api_key: giphyApiKey ?? "",
-        builder: (stream, giphyGetWrapper) {
-          stream.listen((gif) {
-            setState(() {
-              widget.task.comments.add(GiphyComment(
-                author: ExampleData.user2,
-                url: "https://i.giphy.com/media/${gif.id}/200.gif",
-              ));
-            });
-            scrollToBottom(500);
-          });
-
-          return Padding(
-            padding: EdgeInsets.fromLTRB(
-              8.0,
-              16.0,
-              8.0,
-              Platform.isIOS ? 30.0 : 20.0,
-            ),
+    return Padding(
+      padding: EdgeInsets.fromLTRB(
+        8.0,
+        16.0,
+        8.0,
+        Platform.isIOS ? 30.0 : 20.0,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        widget.task.title.toLowerCase(),
-                        style: const TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.w500),
-                      ),
-                      const SizedBox(height: 16.0),
-                      Expanded(
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text("comments",
-                                  style: Themes.textTheme.labelMedium),
-                              const SizedBox(height: 8),
-                              if (widget.task.comments.isEmpty)
-                                const Text("No comments..."),
-                              Expanded(
-                                child: CommentList(
-                                  comments: widget.task.comments,
-                                  controller: controller,
-                                ),
-                              )
-                            ],
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                MessageInputField(
-                  handler: (content) async {
-                    if (content is String) {
-                      widget.task.comments.add(TextComment(
-                        author: ExampleData.user1,
-                        text: content,
-                      ));
-                    } else if (content is File) {
-                      widget.task.comments.add(ImageComment(
-                        author: ExampleData.user2,
-                        image: content,
-                      ));
-                    }
-
-                    setState(() {});
-                    scrollToBottom(300);
-                  },
-                  focusNode: widget.focusNode,
-                  camera: true,
-                  gallery: true,
-                  gif: true,
-                  giphyGetWrapper: giphyGetWrapper,
-                ),
+              children: [
+                taskTitle(),
+                const SizedBox(height: 16.0),
+                commentListView(),
               ],
             ),
-          );
-        });
+          ),
+          MessageInputField(
+            handler: (content, MessageType type) async {
+              switch (type) {
+                case MessageType.text:
+                  widget.task.comments.add(TextComment(
+                    author: ExampleData.user1,
+                    text: content,
+                  ));
+                  break;
+                case MessageType.image:
+                  widget.task.comments.add(ImageComment(
+                    author: ExampleData.user2,
+                    image: content,
+                  ));
+                  break;
+                case MessageType.gif:
+                  widget.task.comments.add(GifComment(
+                    author: ExampleData.user2,
+                    url: content,
+                  ));
+                  break;
+                default:
+              }
+
+              setState(() {});
+              scrollToBottom(300);
+            },
+            focusNode: widget.focusNode,
+            camera: true,
+            gallery: true,
+            gif: true,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Text taskTitle() {
+    return Text(
+      widget.task.title.toLowerCase(),
+      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+    );
+  }
+
+  Expanded commentListView() {
+    return Expanded(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Text("comments", style: Themes.textTheme.labelMedium),
+            const SizedBox(height: 8),
+            if (widget.task.comments.isEmpty) const Text("No comments..."),
+            Expanded(
+              child: CommentList(
+                comments: widget.task.comments,
+                controller: controller,
+              ),
+            )
+          ],
+        ),
+      ),
+    );
   }
 }
 
