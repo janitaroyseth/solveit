@@ -1,28 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/services/preferences_service.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:project/styles/theme.dart';
+import 'package:project/providers/settings_provider.dart';
 
 import '../models/settings.dart';
 import '../widgets/appbar_button.dart';
 
 /// Scaffold/Screen for viewing and editing user settings.
-class UserSettingsScreen extends StatefulWidget {
+class UserSettingsScreen extends ConsumerStatefulWidget {
   static const routeName = "/settings";
   const UserSettingsScreen({super.key});
 
   @override
-  State<UserSettingsScreen> createState() => _UserSettingsScreenState();
+  ConsumerState<UserSettingsScreen> createState() => _UserSettingsScreenState();
 }
 
-class _UserSettingsScreenState extends State<UserSettingsScreen> {
-  final PreferencesService _preferencesService = PreferencesService();
+class _UserSettingsScreenState extends ConsumerState<UserSettingsScreen> {
   late Settings settings;
 
   @override
   void initState() {
-    settings = _preferencesService.getSettings();
+    settings = ref.read(settingsProvider).getSettings();
     super.initState();
   }
 
@@ -82,6 +83,6 @@ class _UserSettingsScreenState extends State<UserSettingsScreen> {
   }
 
   void _saveSettings() {
-    _preferencesService.saveSettings(settings);
+    ref.read(settingsProvider).saveSettings(settings);
   }
 }
