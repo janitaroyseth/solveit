@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:jiffy/jiffy.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/widgets/tag_widget.dart';
 
@@ -12,17 +13,25 @@ import '../widgets/appbar_button.dart';
 import '../widgets/search_bar.dart';
 import '../widgets/user_list_item.dart';
 
-class CreateTaskScreen extends StatelessWidget {
-  static const routeName = "/new-task";
-  const CreateTaskScreen({super.key});
+class ConfigureTaskScreen extends StatelessWidget {
+  static const routeName = "/configure-task";
+  const ConfigureTaskScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    Project project = ModalRoute.of(context)!.settings.arguments as Project;
+    var args = ModalRoute.of(context)?.settings.arguments;
+    Project? project;
     Task task = Task();
+    if (args != null) {
+      if (args is Project) {
+        project = args;
+      } else if (args is Task) {
+        task = args;
+      }
+    }
     return Scaffold(
       appBar: AppBar(
-        title: const Text("create task"),
+        title: Text(project != null ? "create task" : "edit task"),
         centerTitle: false,
         elevation: 0,
         titleSpacing: -4,
@@ -37,7 +46,7 @@ class CreateTaskScreen extends StatelessWidget {
         actions: [
           AppBarButton(
             handler: () {
-              project.tasks.add(task);
+              project != null ? project.tasks.add(task) : {};
               Navigator.of(context).pop();
             },
             tooltip: "Save task",
@@ -58,12 +67,12 @@ class _TaskScreenBody extends StatefulWidget {
   Task task;
   _TaskScreenBody(this.task);
   @override
-  State<StatefulWidget> createState() => _TaskScreenBodyState();
+  State<StatefulWidget> createState() => _TaskScreenBodyState(task);
 }
 
 class _TaskScreenBodyState extends State<_TaskScreenBody> {
-  _TaskScreenBodyState();
-  final Task task = Task(tags: [], assigned: [], deadline: null);
+  _TaskScreenBodyState(this.task);
+  final Task task;
   final _formKey = GlobalKey<FormState>();
   bool isTagPickerShown = false;
   List<Tag> allTags = ExampleData.tags;
@@ -111,6 +120,7 @@ class _TaskScreenBodyState extends State<_TaskScreenBody> {
           height: 5,
         ),
         TextFormField(
+          initialValue: task.title,
           onFieldSubmitted: (String value) {
             task.title = value;
           },
@@ -193,11 +203,22 @@ class _TaskScreenBodyState extends State<_TaskScreenBody> {
     );
 
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: tagWidgets,
+      children: [
+        Flexible(
+          child: Wrap(
+            spacing: 2.0,
+            runSpacing: 4.0,
+            direction: Axis.horizontal,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            alignment: WrapAlignment.start,
+            children: tagWidgets,
+          ),
+        ),
+      ],
     );
   }
 
+  // TODO: Temporary
   Widget _createAddTagList() {
     if (!isTagPickerShown) {
       return Container();
@@ -268,7 +289,9 @@ class _TaskScreenBodyState extends State<_TaskScreenBody> {
         ),
         TextButton(
           style: Themes.datePickerButtonStyle,
-          child: Text(task.deadline ?? "click to pick a date..."),
+          child: Text(task.deadline != null
+              ? Jiffy(DateTime.parse(task.deadline!)).format("dd/MM/yyyy")
+              : "click to pick a date..."),
           onPressed: () => _getDate(),
         ),
       ],
@@ -286,7 +309,7 @@ class _TaskScreenBodyState extends State<_TaskScreenBody> {
     if (null == pickedDate) return;
 
     setState(() {
-      task.deadline = pickedDate.toString().substring(0, 10);
+      task.deadline = pickedDate.toIso8601String();
     });
   }
 
@@ -401,6 +424,7 @@ class _TaskScreenBodyState extends State<_TaskScreenBody> {
           height: 5,
         ),
         TextFormField(
+          initialValue: task.description,
           maxLines: 8,
           style: const TextStyle(fontSize: 12),
           decoration: const InputDecoration.collapsed(

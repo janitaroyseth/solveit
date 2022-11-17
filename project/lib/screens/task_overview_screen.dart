@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/models/filter.dart';
 import 'package:project/models/filter_option.dart';
-import 'package:project/screens/create_task_screen.dart';
+import 'package:project/screens/configure_task_screen.dart';
 import 'package:project/screens/project_calendar_screen.dart';
 import 'package:project/styles/curve_clipper.dart';
 import 'package:project/styles/theme.dart';
@@ -85,7 +85,7 @@ class TaskOverviewScreen extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => Navigator.pushNamed(
-            context, CreateTaskScreen.routeName,
+            context, ConfigureTaskScreen.routeName,
             arguments: project),
         child: const Icon(
           PhosphorIcons.plus,
