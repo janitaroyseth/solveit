@@ -42,7 +42,7 @@ class TagWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Color contrastColor =
-        color.computeLuminance() * color.alpha.clamp(0, 1) < 0.5
+        color.computeLuminance() * color.alpha.clamp(0, 1) < 0.45
             ? Colors.white
             : Colors.black;
     return size == TagSize.small
@@ -55,7 +55,7 @@ class TagWidget extends StatelessWidget {
               ),
               decoration: BoxDecoration(
                 color: color,
-                border: Border.all(color: contrastColor, width: 0.5),
+                //border: Border.all(color: contrastColor, width: 0.5),
                 borderRadius: const BorderRadius.all(
                   Radius.circular(50),
                 ),
@@ -78,7 +78,7 @@ class TagWidget extends StatelessWidget {
               ),
               decoration: BoxDecoration(
                 color: color,
-                border: Border.all(color: contrastColor, width: 0.5),
+                //border: Border.all(color: contrastColor, width: 0.5),
                 borderRadius: const BorderRadius.all(
                   Radius.circular(50),
                 ),

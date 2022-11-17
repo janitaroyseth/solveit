@@ -46,8 +46,10 @@ class CreateTaskScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: Padding(
-          padding: const EdgeInsets.all(20), child: _TaskScreenBody(task)),
+      body: SingleChildScrollView(
+        child: Padding(
+            padding: const EdgeInsets.all(20), child: _TaskScreenBody(task)),
+      ),
     );
   }
 }
@@ -162,8 +164,31 @@ class _TaskScreenBodyState extends State<_TaskScreenBody> {
           });
         },
         borderRadius: BorderRadius.circular(50),
-        child: const TagWidget(
-            size: TagSize.large, color: Color(0xffffffff), tagText: "add +"),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 1.8),
+          child: Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 5.0,
+              vertical: 3.5,
+            ),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              border: Border.all(color: const Color(0x80000000), width: 0.5),
+              borderRadius: const BorderRadius.all(
+                Radius.circular(50),
+              ),
+            ),
+            child: const Text(
+              "add +",
+              style: TextStyle(
+                color: Color(0x80000000),
+                fontSize: 12,
+              ),
+            ),
+          ),
+        ),
+        // child: const TagWidget(
+        //     size: TagSize.large, color: Color(0xffffffff), tagText: "add +"),
       ),
     );
 
@@ -376,6 +401,7 @@ class _TaskScreenBodyState extends State<_TaskScreenBody> {
           height: 5,
         ),
         TextFormField(
+          maxLines: 8,
           style: const TextStyle(fontSize: 12),
           decoration: const InputDecoration.collapsed(
             hintText: 'detailed description of the task at hand...',
