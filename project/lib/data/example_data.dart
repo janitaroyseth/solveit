@@ -9,16 +9,16 @@ import '../models/task.dart';
 /// Temp list for testing.
 class ExampleData {
   static User user1 = User(
-    firstname: "Espen",
-    lastname: "Otlo",
+    userId: "",
+    username: "Espen Otlo",
     email: "eo@example.com",
     bio: "My goal is to be a fulltime Flutter developers",
     imageUrl: "assets/images/leslie_alexander.png",
   );
 
   static User user2 = User(
-    firstname: "Sakarias",
-    lastname: "Sæterstøl",
+    userId: "",
+    username: "Sakarias Sæterstøl",
     email: "ss@example.com",
     bio: "Pineapple on pizza is the way to go",
     imageUrl: "assets/images/guy_hawkins.png",

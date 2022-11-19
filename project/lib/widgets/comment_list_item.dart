@@ -15,7 +15,7 @@ class CommentListItem extends StatelessWidget {
 
   /// Returns a [String] of the authors first name and last name.
   String _authorName() {
-    return "${comment.author.firstname} ${comment.author.lastname}";
+    return comment.author.username;
   }
 
   /// Returns a [Widget] of the authors profile picture.

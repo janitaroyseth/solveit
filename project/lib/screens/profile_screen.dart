@@ -156,7 +156,7 @@ class ProfileScreen extends ConsumerWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
                           Text(
-                            "${user.firstname} ${user.lastname}",
+                            "$user.username",
                             style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 16,

@@ -1,8 +1,11 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/data/example_data.dart';
+import 'package:project/models/user.dart';
+import 'package:project/providers/user_provider.dart';
 import 'package:project/styles/curve_clipper.dart';
 import 'package:project/styles/theme.dart';
 import 'package:project/widgets/appbar_button.dart';
@@ -10,14 +13,29 @@ import 'package:project/screens/home_screen.dart';
 import 'package:project/widgets/image_picker_modal.dart';
 
 /// Scaffold/Screen for creating profile after signing up.
-class CreateProfileScreen extends StatelessWidget {
+class CreateProfileScreen extends ConsumerWidget {
   static const routeName = "/create-profile";
 
   /// Creates an instance of create-profile-screen.
   const CreateProfileScreen({super.key});
 
+  Future<User?> getNewUser(String userId, WidgetRef ref) async {
+    ref.watch(userProvider).getUser(userId);
+  }
+
+  void updateNewUser(
+      WidgetRef ref, String userId, String email, String username, String bio) {
+    User user =
+        User(userId: userId, username: username, email: email, bio: bio);
+    ref.read(userProvider).updateUser(userId, user);
+  }
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    String userId = ModalRoute.of(context)!.settings.arguments as String;
+    User? user;
+    // User? user = ref.watch(userProvider).getUser(userId);
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Themes.primaryColor,
@@ -32,71 +50,59 @@ class CreateProfileScreen extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: <Widget>[
-            ClipPath(
-              clipper: CurveClipper(),
-              child: Container(
-                height: 400,
-                color: const Color.fromRGBO(92, 0, 241, 1),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: <Widget>[
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: <Widget>[
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: const <Widget>[
-                            Text(
-                              "solve",
-                              style: TextStyle(
-                                fontSize: 40,
-                                color: Colors.white,
-                                fontWeight: FontWeight.w300,
-                              ),
-                            ),
-                            Text(
-                              "it",
-                              style: TextStyle(
-                                fontSize: 40,
-                                color: Colors.white,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: RichText(
-                            textAlign: TextAlign.center,
-                            softWrap: true,
-                            text: const TextSpan(
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontFamily: Themes.fontFamily,
-                              ),
-                              children: <InlineSpan>[
-                                TextSpan(text: "hi "),
-                                TextSpan(
-                                  text: "Jane, ",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
+            FutureBuilder(
+                future: ref.watch(userProvider).getUser(userId),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    user = snapshot.data as User?;
+                  }
+                  return ClipPath(
+                    clipper: CurveClipper(),
+                    child: Container(
+                      height: 400,
+                      color: const Color.fromRGBO(92, 0, 241, 1),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: <Widget>[
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: <Widget>[
+                              appTitle(),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: RichText(
+                                  textAlign: TextAlign.center,
+                                  softWrap: true,
+                                  text: TextSpan(
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontFamily: Themes.fontFamily,
+                                    ),
+                                    children: <InlineSpan>[
+                                      const TextSpan(text: "hi "),
+                                      TextSpan(
+                                        text: "${user!.username}, ",
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      const TextSpan(
+                                        text:
+                                            "here you can set up your profile",
+                                      ),
+                                    ],
                                   ),
                                 ),
-                                TextSpan(
-                                  text: "here you can set up your profile",
-                                ),
-                              ],
-                            ),
+                              ),
+                              const SizedBox(height: 16),
+                              const _PickProfilePicture(),
+                            ],
                           ),
-                        ),
-                        const SizedBox(height: 16),
-                        const _PickProfilePicture(),
-                      ],
+                        ],
+                      ),
                     ),
-                  ],
-                ),
-              ),
-            ),
+                  );
+                }),
             const Padding(
               padding: EdgeInsets.all(8.0),
               child: TextField(
@@ -121,7 +127,8 @@ class CreateProfileScreen extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.of(context).pop();
+          updateNewUser(ref, userId, user!.email, user!.username, user!.bio);
+          //Navigator.of(context).pop();
           Navigator.of(context).popAndPushNamed(
             HomeScreen.routeName,
             arguments: {
@@ -135,6 +142,30 @@ class CreateProfileScreen extends StatelessWidget {
           color: Colors.white,
         ),
       ),
+    );
+  }
+
+  Row appTitle() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: const <Widget>[
+        Text(
+          "solve",
+          style: TextStyle(
+            fontSize: 40,
+            color: Colors.white,
+            fontWeight: FontWeight.w300,
+          ),
+        ),
+        Text(
+          "it",
+          style: TextStyle(
+            fontSize: 40,
+            color: Colors.white,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ],
     );
   }
 }
@@ -167,7 +198,7 @@ class _PickProfilePictureState extends State<_PickProfilePicture> {
       children: <Widget>[
         image == null
             ? Image.asset(
-                "assets/images/empty_profile_pic_large.png",
+                "assets/images/profile_placeholder.png",
                 height: 200,
               )
             : CircleAvatar(
