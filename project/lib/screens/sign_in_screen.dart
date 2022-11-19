@@ -264,14 +264,16 @@ class __SignInFormState extends ConsumerState<_SignInForm> {
   Future<void> _signInWithGoogle() async {
     final auth = ref.read(authProvider);
     auth.signInWithGoogle().then((value) {
-      if (signupMode) {
-        String userId = value!.uid;
+      if (value != null &&
+          value.user != null &&
+          value.additionalUserInfo!.isNewUser) {
+        String userId = value.user!.uid;
         ref.read(userProvider).addUser(
               userId: userId,
-              username: value.displayName!,
-              email: value.email!,
+              username: value.user!.displayName!,
+              email: value.user!.email!,
             );
-        Navigator.of(context).popAndPushNamed(
+        Navigator.of(context).pushNamed(
           CreateProfileScreen.routeName,
           arguments: userId,
         );
