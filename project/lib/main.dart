@@ -6,6 +6,7 @@ import 'package:project/firebase_options.dart';
 import 'package:project/providers/user_provider.dart';
 import 'package:project/screens/create_profile_screen.dart';
 import 'package:project/screens/edit_project_screen.dart';
+import 'package:project/screens/configure_task_screen.dart';
 import 'package:project/screens/profile_screen.dart';
 import 'package:project/screens/project_overview_screen.dart';
 import 'package:project/screens/project_preview_screen.dart';
@@ -74,6 +75,8 @@ class MyApp extends StatelessWidget {
               const CreateProfileScreen(),
           UserSettingsScreen.routeName: (context) => const UserSettingsScreen(),
           EditProjectScreen.routeName: (context) => const EditProjectScreen(),
+          ConfigureTaskScreen.routeName: (context) =>
+              const ConfigureTaskScreen(),
         },
       ),
     );

@@ -41,47 +41,53 @@ class TagWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Color contrastColor =
+        color.computeLuminance() * color.alpha.clamp(0, 1) < 0.45
+            ? Colors.white
+            : Colors.black;
     return size == TagSize.small
         ? Padding(
             padding: const EdgeInsets.symmetric(horizontal: 1.2),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(50.0),
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 3.0,
-                  vertical: 1.5,
+            child: Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 3.0,
+                vertical: 1.5,
+              ),
+              decoration: BoxDecoration(
+                color: color,
+                //border: Border.all(color: contrastColor, width: 0.5),
+                borderRadius: const BorderRadius.all(
+                  Radius.circular(50),
                 ),
-                decoration: BoxDecoration(
-                  color: color,
-                ),
-                child: Text(
-                  tagText,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 9.5,
-                  ),
+              ),
+              child: Text(
+                tagText,
+                style: TextStyle(
+                  color: contrastColor,
+                  fontSize: 9.5,
                 ),
               ),
             ),
           )
         : Padding(
             padding: const EdgeInsets.symmetric(horizontal: 1.8),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(50.0),
-              child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 5.0,
-                  vertical: 3.5,
+            child: Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 5.0,
+                vertical: 3.5,
+              ),
+              decoration: BoxDecoration(
+                color: color,
+                //border: Border.all(color: contrastColor, width: 0.5),
+                borderRadius: const BorderRadius.all(
+                  Radius.circular(50),
                 ),
-                decoration: BoxDecoration(
-                  color: color,
-                ),
-                child: Text(
-                  tagText,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 12,
-                  ),
+              ),
+              child: Text(
+                tagText,
+                style: TextStyle(
+                  color: contrastColor,
+                  fontSize: 12,
                 ),
               ),
             ),

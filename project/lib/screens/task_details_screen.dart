@@ -19,6 +19,8 @@ import 'package:project/widgets/tags_list.dart';
 import 'package:project/widgets/toggle_task_status_button.dart';
 import 'package:project/widgets/user_list_item.dart';
 
+import 'configure_task_screen.dart';
+
 /// Screen/Scaffold for the details of a task in a project
 class TaskDetailsScreen extends StatelessWidget {
   /// Named route for this screen.
@@ -327,7 +329,13 @@ class _TaskPopUpMenu extends StatelessWidget {
         PopupMenuItem(
           value: 1,
           height: 48,
-          onTap: () {},
+          onTap: () {
+            Future.delayed(
+              const Duration(seconds: 0),
+              () => Navigator.of(context)
+                  .pushNamed(ConfigureTaskScreen.routeName, arguments: task),
+            );
+          },
           child: const Text("edit task"),
         ),
         PopupMenuItem(
