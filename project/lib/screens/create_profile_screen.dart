@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/data/example_data.dart';
 import 'package:project/models/user.dart';
+import 'package:project/providers/user_images_provider.dart';
 import 'package:project/providers/user_provider.dart';
 import 'package:project/styles/curve_clipper.dart';
 import 'package:project/styles/theme.dart';
@@ -44,7 +45,8 @@ class CreateProfileScreen extends ConsumerWidget {
 
         if (image != null) {
           user.imageUrl =
-              await ref.read(userProvider).addProfilePictre(userId, image!);
+              await ref.read(userImageProvider).updateUserImage(userId, image!);
+          //await ref.read(userProvider).addProfilePictre(userId, image!);
         }
 
         return ref.read(userProvider).updateUser(userId, user);
@@ -147,13 +149,9 @@ class CreateProfileScreen extends ConsumerWidget {
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           SchedulerBinding.instance.addPostFrameCallback((_) {
-            updateNewUser(ref, userId).then((value) =>
-                //bioController.dispose();
-                //Navigator.of(context).pop();
-                Navigator.of(context).popAndPushNamed(
-                  HomeScreen.routeName,
-                  arguments: {"user": user, "projects": ExampleData.projects},
-                ));
+            updateNewUser(ref, userId).then((value) {
+              Navigator.of(context).pop();
+            });
           });
         },
         child: const Icon(

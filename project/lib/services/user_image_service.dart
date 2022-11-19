@@ -2,16 +2,21 @@ import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:path/path.dart';
 
+/// Business logic for user images.
 abstract class UserImageService {
-  Future<String> addUserImage(String userId, File image);
+  /// Adds the given [File image] for the user with the given [userId].
+  /// Returns a [String] containing link to the added picture.
+  Future<String?> addUserImage(String userId, File image);
 
-  Future<String> getUserImage(String userId);
+  /// Updates the image of the user with the given [UserId] with the given
+  /// [File image]. Returns the [String] link for the updated image.
+  Future<String?> updateUserImage(String userId, File image);
 
-  Future<String> updateUserImage(String userId, File image);
-
+  /// Deletes the user image for the user with the given [UserId].
   Future<void> deleteUserImage(String userId);
 }
 
+/// Firebase implementation of [UserImageService].
 class FirebaseUserImageService implements UserImageService {
   final Reference userImagesReference =
       FirebaseStorage.instance.ref().child("user_images");
@@ -20,32 +25,14 @@ class FirebaseUserImageService implements UserImageService {
   Future<String> addUserImage(String userId, File? image) {
     if (image != null) {
       String imageExtension = extension(image.path);
-      return FirebaseStorage.instance
-          .ref()
-          .child("profile_pictures")
+      return userImagesReference
           .child("$userId$imageExtension")
           .putFile(image)
           .then((value) => value.ref.getDownloadURL());
     } else {
-      return FirebaseStorage.instance
-          .ref()
-          .child("profile_pictures")
-          .child("profile_placeholder.png")
-          .getDownloadURL();
+      return Future<String>.value(
+          "https://firebasestorage.googleapis.com/v0/b/solveit-1337.appspot.com/o/user_images%2Fprofile_placeholder.png?alt=media&token=892934b3-c3ad-48d5-a946-4c153aefbbbe");
     }
-  }
-
-  @override
-  Future<String> getUserImage(String userId) {
-    userImagesReference.listAll().then((userImages) {
-      for (Reference userImageReference in userImages.items) {
-        if (userImageReference.name.contains(userId)) {
-          return userImageReference.getDownloadURL();
-        }
-      }
-    }, onError: (error) => print(error));
-
-    return Future<String>.error("no image found");
   }
 
   @override
