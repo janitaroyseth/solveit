@@ -5,7 +5,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:project/models/user.dart';
 
 abstract class UserService {
-  User? addUser({
+  Future<User?> addUser({
     required String userId,
     required String username,
     required String email,
@@ -15,38 +15,40 @@ abstract class UserService {
 
   Future<User?> getUser(String userId);
 
-  User? updateUser(String userId, User user);
+  Future<void> updateUser(String userId, User user);
 
   User? deleteUser(User user);
+
+  Future<String> addProfilePictre(String userId, File image);
 }
 
 class FirebaseUserService implements UserService {
   final userCollection = FirebaseFirestore.instance.collection("users");
 
   @override
-  User? addUser({
+  Future<User?> addUser({
     required String userId,
     required String username,
     required String email,
     String bio = "",
     File? image,
-  }) {
+  }) async {
     String imageUrl = "";
+
     if (image != null) {
-      FirebaseStorage.instance
-          .ref()
-          .child("profile_pictures")
-          .child("$userId.jpg")
-          .putFile(image)
-          .then((value) =>
-              value.ref.getDownloadURL().then((value) => imageUrl = value));
+      imageUrl = await (await FirebaseStorage.instance
+              .ref()
+              .child("profile_pictures")
+              .child("$userId.jpg")
+              .putFile(image))
+          .ref
+          .getDownloadURL();
     } else {
-      FirebaseStorage.instance
+      imageUrl = await FirebaseStorage.instance
           .ref()
           .child("profile_pictures")
           .child("profile_placeholder.png")
-          .getDownloadURL()
-          .then((value) => imageUrl = value);
+          .getDownloadURL();
     }
 
     User user = User(
@@ -57,34 +59,47 @@ class FirebaseUserService implements UserService {
       imageUrl: imageUrl,
     );
 
-    userCollection.add(User.toMap(user));
+    userCollection.doc(userId).set(User.toMap(user));
     return user;
   }
 
   @override
   Future<User?> getUser(String userId) async {
-    return User.fromMap(
-      (await userCollection.where("userId", isEqualTo: userId).get())
+    return User.fromMap((await userCollection.doc(userId).get())
+        .data()); /* where("userId", isEqualTo: userId).get())
           .docs[0]
           .data(),
-    );
+    ); */
   }
 
   @override
-  User? updateUser(String userId, User user) {
-    Map<String, dynamic>? userMap;
-    userCollection.doc(user.userId).set(User.toMap(user)).then((value) =>
-        userCollection
-            .doc(user.userId)
-            .get()
-            .then((value) => userMap = value.data()));
-
-    return User.fromMap(userMap);
+  Future<void> updateUser(String userId, User user) async {
+    // String documentId =
+    //     (await userCollection.where("userId", isEqualTo: userId).get())
+    //         .docs
+    //         .first
+    //         .id;
+    await userCollection.doc(userId).set(User.toMap(user));
   }
 
   @override
   User? deleteUser(User user) {
     userCollection.doc(user.userId).delete();
     return user;
+  }
+
+  @override
+  Future<String> addProfilePictre(String userId, File image) async {
+    String imageUrl;
+
+    imageUrl = await (await FirebaseStorage.instance
+            .ref()
+            .child("profile_pictures")
+            .child("$userId.jpg")
+            .putFile(image))
+        .ref
+        .getDownloadURL();
+
+    return imageUrl;
   }
 }

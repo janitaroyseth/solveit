@@ -21,7 +21,7 @@ class CommentListItem extends StatelessWidget {
   /// Returns a [Widget] of the authors profile picture.
   Widget _authorImage() {
     return CircleAvatar(
-      backgroundImage: AssetImage(comment.author.imageUrl),
+      backgroundImage: AssetImage(comment.author.imageUrl!),
       radius: 20,
     );
   }

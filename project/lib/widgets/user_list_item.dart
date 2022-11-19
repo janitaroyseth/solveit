@@ -38,7 +38,7 @@ class UserListItem extends StatelessWidget {
           children: <Widget>[
             CircleAvatar(
               radius: size == UserListItemSize.large ? 20 : 15,
-              backgroundImage: AssetImage(user.imageUrl),
+              backgroundImage: AssetImage(user.imageUrl!),
             ),
             const SizedBox(width: 8.0),
             Text(

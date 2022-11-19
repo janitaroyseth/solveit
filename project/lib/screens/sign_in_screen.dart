@@ -5,6 +5,7 @@ import 'package:project/data/example_data.dart';
 import 'package:project/models/project.dart';
 import 'package:project/models/user.dart' as app;
 import 'package:project/providers/auth_provider.dart';
+import 'package:project/providers/user_provider.dart';
 import 'package:project/screens/create_profile_screen.dart';
 import 'package:project/screens/home_screen.dart';
 import 'package:project/services/auth_service.dart';
@@ -32,35 +33,39 @@ class SignInScreen extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
               SizedBox(height: MediaQuery.of(context).size.height / 8),
-              FittedBox(
-                fit: BoxFit.scaleDown,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: const <Widget>[
-                    Text(
-                      "solve",
-                      style: TextStyle(
-                        fontSize: 40,
-                        color: Colors.black,
-                        fontWeight: FontWeight.w300,
-                      ),
-                    ),
-                    Text(
-                      "it",
-                      style: TextStyle(
-                        fontSize: 40,
-                        color: Themes.primaryColor,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              appTitle(),
               const SizedBox(height: 60),
               const _SignInForm(),
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  FittedBox appTitle() {
+    return FittedBox(
+      fit: BoxFit.scaleDown,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: const <Widget>[
+          Text(
+            "solve",
+            style: TextStyle(
+              fontSize: 40,
+              color: Colors.black,
+              fontWeight: FontWeight.w300,
+            ),
+          ),
+          Text(
+            "it",
+            style: TextStyle(
+              fontSize: 40,
+              color: Themes.primaryColor,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -78,7 +83,7 @@ class _SignInForm extends ConsumerStatefulWidget {
 class __SignInFormState extends ConsumerState<_SignInForm> {
   List<Project> projects = ExampleData.projects;
   app.User user = ExampleData.user2;
-  bool signupForm = false;
+  bool signupMode = false;
   late AuthService auth;
   @override
   Widget build(BuildContext context) {
@@ -86,7 +91,7 @@ class __SignInFormState extends ConsumerState<_SignInForm> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
         Text(
-          signupForm ? "sign up" : "login",
+          signupMode ? "sign up" : "login",
           style: const TextStyle(
             fontSize: 20,
             color: Themes.primaryColor,
@@ -100,21 +105,20 @@ class __SignInFormState extends ConsumerState<_SignInForm> {
           keyboardAction: TextInputAction.next,
           keyboardType: TextInputType.emailAddress,
         ),
-        signupForm
-            ? Column(
-                children: const <Widget>[
-                  SizedBox(height: 6),
-                  InputField(
-                    label: "name",
-                    placeholderText: "john doe",
-                    isPassword: true,
-                    keyboardAction: TextInputAction.next,
-                    keyboardType: TextInputType.emailAddress,
-                  ),
-                ],
-              )
-            : const SizedBox(),
-        const SizedBox(height: 6),
+        if (signupMode)
+          Column(
+            children: <Widget>[
+              inputFieldPadding(),
+              const InputField(
+                label: "name",
+                placeholderText: "john doe",
+                isPassword: true,
+                keyboardAction: TextInputAction.next,
+                keyboardType: TextInputType.emailAddress,
+              ),
+            ],
+          ),
+        inputFieldPadding(),
         const InputField(
           label: "password",
           placeholderText: "password",
@@ -122,37 +126,23 @@ class __SignInFormState extends ConsumerState<_SignInForm> {
           keyboardAction: TextInputAction.next,
           keyboardType: TextInputType.emailAddress,
         ),
-        signupForm
-            ? Column(
-                children: const <Widget>[
-                  SizedBox(height: 6),
-                  InputField(
-                    label: "confirm password",
-                    placeholderText: "confirm password",
-                    isPassword: true,
-                    keyboardAction: TextInputAction.next,
-                    keyboardType: TextInputType.emailAddress,
-                  ),
-                ],
-              )
-            : const SizedBox(),
+        if (signupMode)
+          Column(
+            children: <Widget>[
+              inputFieldPadding(),
+              const InputField(
+                label: "confirm password",
+                placeholderText: "confirm password",
+                isPassword: true,
+                keyboardAction: TextInputAction.next,
+                keyboardType: TextInputType.emailAddress,
+              ),
+            ],
+          ),
         const SizedBox(height: 24),
-        ElevatedButton(
-          onPressed: signupForm
-              ? () =>
-                  Navigator.of(context).pushNamed(CreateProfileScreen.routeName)
-              : () => Navigator.of(context).popAndPushNamed(
-                    HomeScreen.routeName,
-                    arguments: {
-                      "user": user,
-                      "projects": projects,
-                    },
-                  ),
-          style: Themes.primaryElevatedButtonStyle,
-          child: Text(signupForm ? "sign up" : "sign in"),
-        ),
+        signinButton(context),
         const SizedBox(height: 48),
-        signupForm
+        signupMode
             ? const Text(
                 "or sign up with",
                 textAlign: TextAlign.center,
@@ -165,69 +155,102 @@ class __SignInFormState extends ConsumerState<_SignInForm> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
-            ElevatedButton(
-              onPressed: _signInAnonymously,
-              style: Themes.circularButtonStyle,
-              child: const Icon(
-                PhosphorIcons.facebookLogo,
-                size: 36,
-              ),
-            ),
-            ElevatedButton(
-              onPressed: _signInWithGoogle,
-              style: Themes.circularButtonStyle,
-              child: const Icon(
-                PhosphorIcons.googleLogo,
-                size: 36,
-              ),
-            ),
-            ElevatedButton(
-              onPressed: signupForm
-                  ? () => Navigator.of(context)
-                      .pushNamed(CreateProfileScreen.routeName)
-                  : () => Navigator.of(context).popAndPushNamed(
-                        HomeScreen.routeName,
-                        arguments: {
-                          "user": user,
-                          "projects": projects,
-                        },
-                      ),
-              style: Themes.circularButtonStyle,
-              child: const Icon(
-                PhosphorIcons.appleLogo,
-                size: 36,
-              ),
-            ),
+            facebookLoginButton(),
+            googleLoginButton(),
+            appleLoginButton(context),
           ],
         ),
         const SizedBox(height: 20),
-        FittedBox(
-          fit: BoxFit.scaleDown,
-          child: signupForm
-              ? Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    const Text("already have an account?"),
-                    TextButton(
-                      style: Themes.textButtonStyle,
-                      child: const Text("sign in here >"),
-                      onPressed: () => setState(() => signupForm = false),
-                    ),
-                  ],
-                )
-              : Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    const Text("don't have an account?"),
-                    TextButton(
-                      style: Themes.textButtonStyle,
-                      child: const Text("sign up here >"),
-                      onPressed: () => setState(() => signupForm = true),
-                    ),
-                  ],
-                ),
-        ),
+        changeFormModeButton(),
       ],
+    );
+  }
+
+  SizedBox inputFieldPadding() => const SizedBox(height: 6);
+
+  ElevatedButton signinButton(BuildContext context) {
+    return ElevatedButton(
+      onPressed: signupMode
+          ? () => Navigator.of(context).pushNamed(CreateProfileScreen.routeName)
+          : () => Navigator.of(context).popAndPushNamed(
+                HomeScreen.routeName,
+                arguments: {
+                  "user": user,
+                  "projects": projects,
+                },
+              ),
+      style: Themes.primaryElevatedButtonStyle,
+      child: Text(signupMode ? "sign up" : "sign in"),
+    );
+  }
+
+  ElevatedButton facebookLoginButton() {
+    return ElevatedButton(
+      onPressed: _signInAnonymously,
+      style: Themes.circularButtonStyle,
+      child: const Icon(
+        PhosphorIcons.facebookLogo,
+        size: 36,
+      ),
+    );
+  }
+
+  ElevatedButton googleLoginButton() {
+    return ElevatedButton(
+      onPressed: _signInWithGoogle,
+      style: Themes.circularButtonStyle,
+      child: const Icon(
+        PhosphorIcons.googleLogo,
+        size: 36,
+      ),
+    );
+  }
+
+  ElevatedButton appleLoginButton(BuildContext context) {
+    return ElevatedButton(
+      onPressed: signupMode
+          ? () => Navigator.of(context).pushNamed(CreateProfileScreen.routeName)
+          : () => Navigator.of(context).popAndPushNamed(
+                HomeScreen.routeName,
+                arguments: {
+                  "user": user,
+                  "projects": projects,
+                },
+              ),
+      style: Themes.circularButtonStyle,
+      child: const Icon(
+        PhosphorIcons.appleLogo,
+        size: 36,
+      ),
+    );
+  }
+
+  FittedBox changeFormModeButton() {
+    return FittedBox(
+      fit: BoxFit.scaleDown,
+      child: signupMode
+          ? Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                const Text("already have an account?"),
+                TextButton(
+                  style: Themes.textButtonStyle,
+                  child: const Text("sign in here >"),
+                  onPressed: () => setState(() => signupMode = false),
+                ),
+              ],
+            )
+          : Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                const Text("don't have an account?"),
+                TextButton(
+                  style: Themes.textButtonStyle,
+                  child: const Text("sign up here >"),
+                  onPressed: () => setState(() => signupMode = true),
+                ),
+              ],
+            ),
     );
   }
 
@@ -240,6 +263,19 @@ class __SignInFormState extends ConsumerState<_SignInForm> {
   /// Signing the user in with Google.
   Future<void> _signInWithGoogle() async {
     final auth = ref.read(authProvider);
-    auth.signInWithGoogle();
+    auth.signInWithGoogle().then((value) {
+      if (signupMode) {
+        String userId = value!.uid;
+        ref.read(userProvider).addUser(
+              userId: userId,
+              username: value.displayName!,
+              email: value.email!,
+            );
+        Navigator.of(context).popAndPushNamed(
+          CreateProfileScreen.routeName,
+          arguments: userId,
+        );
+      }
+    });
   }
 }

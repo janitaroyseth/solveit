@@ -2,14 +2,14 @@ class User {
   String userId;
   String username;
   String email;
-  String imageUrl;
+  String? imageUrl;
   String bio;
 
   User({
     required this.userId,
     required this.username,
     required this.email,
-    this.imageUrl = "assets/images/empty_profile_pic_large.png",
+    this.imageUrl,
     this.bio = "",
   });
 

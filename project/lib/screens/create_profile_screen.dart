@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/data/example_data.dart';
@@ -19,22 +20,36 @@ class CreateProfileScreen extends ConsumerWidget {
   /// Creates an instance of create-profile-screen.
   const CreateProfileScreen({super.key});
 
-  Future<User?> getNewUser(String userId, WidgetRef ref) async {
-    ref.watch(userProvider).getUser(userId);
-  }
-
-  void updateNewUser(
-      WidgetRef ref, String userId, String email, String username, String bio) {
-    User user =
-        User(userId: userId, username: username, email: email, bio: bio);
-    ref.read(userProvider).updateUser(userId, user);
-  }
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    TextEditingController bioController = TextEditingController();
     String userId = ModalRoute.of(context)!.settings.arguments as String;
     User? user;
     // User? user = ref.watch(userProvider).getUser(userId);
+
+    File? image;
+
+    void imagePicker(File? pickedImage) {
+      image = pickedImage;
+    }
+
+    Future<void> updateNewUser(
+      WidgetRef ref,
+      String userId,
+    ) async {
+      User? user = await ref.watch(userProvider).getUser(userId);
+
+      if (user != null) {
+        user.bio = bioController.text;
+
+        if (image != null) {
+          user.imageUrl =
+              await ref.read(userProvider).addProfilePictre(userId, image!);
+        }
+
+        return ref.read(userProvider).updateUser(userId, user);
+      }
+    }
 
     return Scaffold(
       appBar: AppBar(
@@ -55,60 +70,64 @@ class CreateProfileScreen extends ConsumerWidget {
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     user = snapshot.data as User?;
-                  }
-                  return ClipPath(
-                    clipper: CurveClipper(),
-                    child: Container(
-                      height: 400,
-                      color: const Color.fromRGBO(92, 0, 241, 1),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: <Widget>[
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: <Widget>[
-                              appTitle(),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: RichText(
-                                  textAlign: TextAlign.center,
-                                  softWrap: true,
-                                  text: TextSpan(
-                                    style: const TextStyle(
-                                      fontSize: 16,
-                                      fontFamily: Themes.fontFamily,
-                                    ),
-                                    children: <InlineSpan>[
-                                      const TextSpan(text: "hi "),
-                                      TextSpan(
-                                        text: "${user!.username}, ",
-                                        style: const TextStyle(
-                                          fontWeight: FontWeight.bold,
+                    return ClipPath(
+                      clipper: CurveClipper(),
+                      child: Container(
+                        height: 400,
+                        color: const Color.fromRGBO(92, 0, 241, 1),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: <Widget>[
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: <Widget>[
+                                appTitle(),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: RichText(
+                                    textAlign: TextAlign.center,
+                                    softWrap: true,
+                                    text: TextSpan(
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        fontFamily: Themes.fontFamily,
+                                      ),
+                                      children: <InlineSpan>[
+                                        const TextSpan(text: "hi "),
+                                        TextSpan(
+                                          text: "${user!.username}, ",
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                          ),
                                         ),
-                                      ),
-                                      const TextSpan(
-                                        text:
-                                            "here you can set up your profile",
-                                      ),
-                                    ],
+                                        const TextSpan(
+                                          text:
+                                              "here you can set up your profile",
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
-                              ),
-                              const SizedBox(height: 16),
-                              const _PickProfilePicture(),
-                            ],
-                          ),
-                        ],
+                                const SizedBox(height: 16),
+                                _PickProfilePicture(imagePicker),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
+                    );
+                  }
+                  return const Center(
+                    child: CircularProgressIndicator(),
                   );
                 }),
-            const Padding(
-              padding: EdgeInsets.all(8.0),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
               child: TextField(
                 minLines: 4,
                 maxLines: 10,
-                decoration: InputDecoration(
+                controller: bioController,
+                decoration: const InputDecoration(
                   label: Text("bio"),
                   focusedBorder: UnderlineInputBorder(
                     borderSide: BorderSide(
@@ -127,15 +146,15 @@ class CreateProfileScreen extends ConsumerWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          updateNewUser(ref, userId, user!.email, user!.username, user!.bio);
-          //Navigator.of(context).pop();
-          Navigator.of(context).popAndPushNamed(
-            HomeScreen.routeName,
-            arguments: {
-              "user": ExampleData.user1,
-              "projects": ExampleData.projects
-            },
-          );
+          SchedulerBinding.instance.addPostFrameCallback((_) {
+            updateNewUser(ref, userId).then((value) =>
+                //bioController.dispose();
+                //Navigator.of(context).pop();
+                Navigator.of(context).popAndPushNamed(
+                  HomeScreen.routeName,
+                  arguments: {"user": user, "projects": ExampleData.projects},
+                ));
+          });
         },
         child: const Icon(
           PhosphorIcons.arrowRight,
@@ -175,7 +194,9 @@ class CreateProfileScreen extends ConsumerWidget {
 class _PickProfilePicture extends StatefulWidget {
   /// Creates in instance of [_PickProfilePicture] that displays the
   /// profile picture chosen and a button for changing profile picture.
-  const _PickProfilePicture();
+  const _PickProfilePicture(this.imageHandler);
+
+  final void Function(File? image) imageHandler;
 
   @override
   State<_PickProfilePicture> createState() => _PickProfilePictureState();
@@ -187,9 +208,18 @@ class _PickProfilePictureState extends State<_PickProfilePicture> {
 
   /// Sets the picked image to the profile picture image.
   void imageHandler(File pickedImage) {
-    setState(() {
-      image = pickedImage;
-    });
+    if (mounted) {
+      setState(() {
+        image = pickedImage;
+        widget.imageHandler(image);
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
   }
 
   @override
@@ -215,7 +245,7 @@ class _PickProfilePictureState extends State<_PickProfilePicture> {
               ),
             ),
             context: context,
-            builder: (context) => ImagePickerModal(
+            builder: (dialogContext) => ImagePickerModal(
               handler: imageHandler,
               buildContext: context,
             ),
