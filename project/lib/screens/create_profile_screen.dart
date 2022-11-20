@@ -38,7 +38,7 @@ class CreateProfileScreen extends ConsumerWidget {
       WidgetRef ref,
       String userId,
     ) async {
-      User? user = await ref.watch(userProvider).getUser(userId);
+      User? user = await ref.watch(userProvider).getUser(userId).first;
 
       if (user != null) {
         user.bio = bioController.text;
@@ -67,8 +67,8 @@ class CreateProfileScreen extends ConsumerWidget {
       body: SingleChildScrollView(
         child: Column(
           children: <Widget>[
-            FutureBuilder(
-                future: ref.watch(userProvider).getUser(userId),
+            StreamBuilder(
+                stream: ref.watch(userProvider).getUser(userId),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     user = snapshot.data as User?;

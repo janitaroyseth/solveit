@@ -23,25 +23,21 @@ class _EditProfileState extends ConsumerState {
     ref.read(userImageProvider).updateUserImage(userId, image!).then((value) {
       user.imageUrl = value;
       return ref.read(userProvider).updateUser(userId, user);
-    }).then(
+    }); /*.then(
       (value) => setState(() {}),
-    );
+    );*/
   }
 
   void saveUsername(String userId, User user, String username) {
     user.username = username;
-    ref
-        .read(userProvider)
-        .updateUser(userId, user)
-        .then((value) => setState(() {}));
+    ref.read(userProvider).updateUser(userId, user);
+    //.then((value) => setState(() {}));
   }
 
   void saveBio(String userId, User user, String bio) {
     user.bio = bio;
-    ref
-        .read(userProvider)
-        .updateUser(userId, user)
-        .then((value) => setState(() {}));
+    ref.read(userProvider).updateUser(userId, user);
+    //.then((value) => setState(() {}));
   }
 
   @override
@@ -69,8 +65,8 @@ class _EditProfileState extends ConsumerState {
           ),
         ),
       ),
-      body: FutureBuilder(
-        future: ref.watch(userProvider).getUser(userId),
+      body: StreamBuilder(
+        stream: ref.watch(userProvider).getUser(userId),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             User user = snapshot.data as User;
@@ -153,7 +149,7 @@ class _EditProfileState extends ConsumerState {
   }
 }
 
-class _EditFieldSceen extends StatelessWidget {
+class _EditFieldSceen extends StatefulWidget {
   _EditFieldSceen({
     required this.label,
     required this.value,
@@ -163,7 +159,18 @@ class _EditFieldSceen extends StatelessWidget {
   final String value;
   final Function onSave;
 
+  @override
+  State<_EditFieldSceen> createState() => _EditFieldSceenState();
+}
+
+class _EditFieldSceenState extends State<_EditFieldSceen> {
   final TextEditingController _fieldController = TextEditingController();
+
+  @override
+  void initState() {
+    _fieldController.text = widget.value;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -171,7 +178,7 @@ class _EditFieldSceen extends StatelessWidget {
       appBar: AppBar(
         centerTitle: true,
         title: Text(
-          label,
+          widget.label,
           style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w300,
@@ -187,7 +194,7 @@ class _EditFieldSceen extends StatelessWidget {
         actions: [
           AppBarButton(
             handler: () {
-              onSave(_fieldController.text);
+              widget.onSave(_fieldController.text);
               Navigator.of(context).pop();
             },
             tooltip: "Save",
@@ -198,8 +205,9 @@ class _EditFieldSceen extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.all(12.0),
         child: TextField(
-          onChanged: (value) => _fieldController.text = value,
-          decoration: Themes.textFieldStyle(label, value),
+          controller: _fieldController,
+          decoration:
+              Themes.textFieldStyle(widget.label, widget.value).copyWith(),
         ),
       ),
     );

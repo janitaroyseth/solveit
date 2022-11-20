@@ -16,7 +16,7 @@ abstract class UserService {
   });
 
   /// Returns a future with the user with the given [userId].
-  Future<User?> getUser(String userId);
+  Stream<User?> getUser(String userId);
 
   /// Updated the user with the given [UserId], with the given [User].
   Future<void> updateUser(String userId, User user);
@@ -52,8 +52,12 @@ class FirebaseUserService implements UserService {
   }
 
   @override
-  Future<User?> getUser(String userId) async {
-    return User.fromMap((await userCollection.doc(userId).get()).data());
+  Stream<User?> getUser(String userId) {
+    return userCollection
+        .doc(userId)
+        .snapshots()
+        .map((event) => event.data())
+        .map((event) => User.fromMap(event));
   }
 
   @override

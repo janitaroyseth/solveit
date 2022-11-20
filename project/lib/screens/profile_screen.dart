@@ -24,7 +24,7 @@ class ProfileScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final List<Project> projects = ExampleData.projects;
-    final Future<User?> user = ref
+    final Stream<User?> user = ref
         .watch(userProvider)
         .getUser(ref.watch(authProvider).currentUser!.uid);
 
@@ -52,8 +52,8 @@ class ProfileScreen extends ConsumerWidget {
                   right: 24.0,
                   bottom: 16.0,
                 ),
-                child: FutureBuilder<User?>(
-                  future: user,
+                child: StreamBuilder<User?>(
+                  stream: user,
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
                       return Row(
