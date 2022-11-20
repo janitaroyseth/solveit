@@ -29,6 +29,7 @@ dependencies:
   cloud_firestore: ^4.1.0
   firebase_storage: ^11.0.6
   path: ^1.8.2
+  http: ^0.13.5
 
 dev_dependencies:
   flutter_test:
