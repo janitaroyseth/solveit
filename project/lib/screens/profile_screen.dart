@@ -6,6 +6,7 @@ import 'package:project/models/project.dart';
 import 'package:project/providers/auth_provider.dart';
 import 'package:project/models/user.dart';
 import 'package:project/providers/user_provider.dart';
+import 'package:project/screens/edit_profile_screen.dart';
 import 'package:project/screens/project_preview_screen.dart';
 import 'package:project/styles/curve_clipper.dart';
 import 'package:project/styles/theme.dart';
@@ -194,7 +195,10 @@ class ProfileScreen extends ConsumerWidget {
                 ModalListItem(
                   icon: PhosphorIcons.userCircleGearLight,
                   label: "edit profile",
-                  handler: () {},
+                  handler: () {
+                    Navigator.of(context)
+                        .pushNamed(EditProfileScreen.routeName);
+                  },
                 ),
                 ModalListItem(
                   icon: PhosphorIcons.gearSixLight,
