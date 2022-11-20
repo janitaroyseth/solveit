@@ -196,6 +196,7 @@ class ProfileScreen extends ConsumerWidget {
                   icon: PhosphorIcons.userCircleGearLight,
                   label: "edit profile",
                   handler: () {
+                    Navigator.of(context).pop();
                     Navigator.of(context)
                         .pushNamed(EditProfileScreen.routeName);
                   },

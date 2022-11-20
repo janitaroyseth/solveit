@@ -73,6 +73,7 @@ class Themes {
   );
 
   static TextTheme textTheme = TextTheme(
+    displayLarge: const TextStyle(),
     displayMedium: TextStyle(
       fontWeight: FontWeight.w600,
       color: textColor,
@@ -83,30 +84,36 @@ class Themes {
       fontSize: 13,
       color: textColor,
     ),
-    bodySmall: const TextStyle(
-      fontSize: 12,
-    ),
-    bodyMedium: const TextStyle(
-      fontSize: 13,
-      fontWeight: FontWeight.w300,
-    ),
-    bodyLarge: const TextStyle(
-      fontSize: 12,
-      height: 1.5,
-    ),
+    headlineLarge: const TextStyle(),
+    headlineMedium: const TextStyle(),
+    headlineSmall: const TextStyle(),
+    titleLarge: const TextStyle(),
+    titleMedium: const TextStyle(),
+    titleSmall: const TextStyle(),
     labelLarge: const TextStyle(
       fontSize: 18,
       overflow: TextOverflow.ellipsis,
+      fontWeight: FontWeight.w400,
     ),
     labelMedium: const TextStyle(
       fontSize: 14,
-      fontWeight: FontWeight.w600,
     ),
     labelSmall: TextStyle(
       color: textColor.withOpacity(0.54),
       fontSize: 12,
       letterSpacing: 0,
       overflow: TextOverflow.ellipsis,
+    ),
+    bodyLarge: const TextStyle(
+      fontSize: 12,
+      height: 1.5,
+    ),
+    bodyMedium: const TextStyle(
+      fontSize: 13,
+      fontWeight: FontWeight.w300,
+    ),
+    bodySmall: const TextStyle(
+      fontSize: 12,
     ),
   );
 
