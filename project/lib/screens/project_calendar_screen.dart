@@ -1,5 +1,3 @@
-import 'dart:collection';
-
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/models/project.dart';
@@ -9,9 +7,6 @@ import 'package:project/styles/theme.dart';
 import 'package:project/widgets/appbar_button.dart';
 import 'package:project/widgets/calendar.dart';
 import 'package:project/widgets/project_pop_up_menu.dart';
-import 'package:project/widgets/tag_widget.dart';
-import 'package:table_calendar/table_calendar.dart';
-import 'package:intl/intl.dart';
 
 /// Represents a calnder view of a projects tasks.
 class ProjectCalendarScreen extends StatelessWidget {
@@ -27,7 +22,7 @@ class ProjectCalendarScreen extends StatelessWidget {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        toolbarHeight: 90,
+        toolbarHeight: 95,
         title: Row(
           children: [
             Image.asset(
@@ -71,7 +66,7 @@ class ProjectCalendarScreen extends StatelessWidget {
             clipper: CurveClipper(),
             child: Container(
               color: Themes.primaryColor,
-              height: 150,
+              height: 130,
             ),
           ),
           Expanded(child: Calendar(project: project)),

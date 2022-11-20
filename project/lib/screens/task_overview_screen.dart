@@ -31,7 +31,7 @@ class TaskOverviewScreen extends StatelessWidget {
       appBar: AppBar(
         foregroundColor: Colors.white,
         elevation: 0,
-        toolbarHeight: 90,
+        toolbarHeight: 95,
         title: Row(
           children: [
             Image.asset(
@@ -220,7 +220,7 @@ class _TaskOverviewBodyState extends State<_TaskOverviewBody> {
           clipper: CurveClipper(),
           child: Container(
             color: Themes.primaryColor,
-            height: 150,
+            height: 130,
           ),
         ),
         SearchBar(
