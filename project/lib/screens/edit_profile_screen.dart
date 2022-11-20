@@ -206,6 +206,9 @@ class _EditFieldSceenState extends State<_EditFieldSceen> {
         padding: const EdgeInsets.all(12.0),
         child: TextField(
           controller: _fieldController,
+          minLines: 1,
+          maxLines: 10,
+          style: TextStyle(fontSize: 14),
           decoration:
               Themes.textFieldStyle(widget.label, widget.value).copyWith(),
         ),

@@ -45,7 +45,7 @@ class CreateProfileScreen extends ConsumerWidget {
 
         if (image != null) {
           user.imageUrl =
-              await ref.read(userImageProvider).updateUserImage(userId, image!);
+              await ref.read(userImageProvider).addUserImage(userId, image!);
           //await ref.read(userProvider).addProfilePictre(userId, image!);
         }
 
