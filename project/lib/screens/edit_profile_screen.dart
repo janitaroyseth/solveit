@@ -3,26 +3,59 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/models/user.dart';
 import 'package:project/providers/auth_provider.dart';
+import 'package:project/providers/user_images_provider.dart';
 import 'package:project/providers/user_provider.dart';
 import 'package:project/screens/create_profile_screen.dart';
 import 'package:project/styles/curve_clipper.dart';
 import 'package:project/styles/theme.dart';
 import 'package:project/widgets/appbar_button.dart';
-import 'package:project/widgets/input_field.dart';
 
-class EditProfileScreen extends ConsumerWidget {
+class EditProfileScreen extends ConsumerStatefulWidget {
   static const String routeName = "/edit-profile";
   const EditProfileScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ConsumerStatefulWidget> createState() => _EditProfileState();
+}
+
+class _EditProfileState extends ConsumerState {
+  void saveUserImage(image, String userId, User user) {
+    ref.read(userImageProvider).updateUserImage(userId, image!).then((value) {
+      user.imageUrl = value;
+      return ref.read(userProvider).updateUser(userId, user);
+    }).then(
+      (value) => setState(() {}),
+    );
+  }
+
+  void saveUsername(String userId, User user, String username) {
+    user.username = username;
+    ref
+        .read(userProvider)
+        .updateUser(userId, user)
+        .then((value) => setState(() {}));
+  }
+
+  void saveBio(String userId, User user, String bio) {
+    user.bio = bio;
+    ref
+        .read(userProvider)
+        .updateUser(userId, user)
+        .then((value) => setState(() {}));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final String userId = ref.watch(authProvider).currentUser!.uid;
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
         elevation: 0,
         leading: AppBarButton(
           icon: PhosphorIcons.caretLeftLight,
-          handler: () => Navigator.of(context).pop(),
+          handler: () {
+            Navigator.of(context).pop();
+          },
           tooltip: "Go back",
           color: Colors.white,
         ),
@@ -37,49 +70,137 @@ class EditProfileScreen extends ConsumerWidget {
         ),
       ),
       body: FutureBuilder(
-        future: ref.watch(userProvider).getUser(
-              ref.watch(authProvider).currentUser!.uid,
-            ),
+        future: ref.watch(userProvider).getUser(userId),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             User user = snapshot.data as User;
-            return Column(
-              children: <Widget>[
-                ClipPath(
-                  clipper: CurveClipper(),
-                  child: Container(
-                    height: 300,
-                    color: Themes.primaryColor,
+            return SingleChildScrollView(
+              child: Column(
+                children: <Widget>[
+                  ClipPath(
+                    clipper: CurveClipper(),
+                    child: Container(
+                      height: 300,
+                      color: Themes.primaryColor,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: <Widget>[
+                          PickProfilePicture(
+                            (image) => saveUserImage(image, userId, user),
+                            imageUrl: user.imageUrl,
+                            label: "edit profile picture",
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(12.0),
                     child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: <Widget>[
-                        PickProfilePicture(
-                          (image) {},
-                          imageUrl: user.imageUrl,
-                          label: "edit profile picture",
+                        TextField(
+                          decoration: Themes.textFieldStyle(
+                            "username",
+                            user.username,
+                          ),
+                          readOnly: true,
+                          onTap: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => _EditFieldSceen(
+                                  label: "name",
+                                  value: user.username,
+                                  onSave: (newValue) =>
+                                      saveUsername(userId, user, newValue),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                        const SizedBox(height: 8.0),
+                        TextField(
+                          readOnly: true,
+                          decoration: Themes.textFieldStyle(
+                            "bio",
+                            user.bio,
+                          ),
+                          onTap: () {
+                            Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => _EditFieldSceen(
+                                  label: "bio",
+                                  value: user.bio,
+                                  onSave: (newValue) =>
+                                      saveBio(userId, user, newValue),
+                                ),
+                              ),
+                            );
+                          },
                         ),
                       ],
                     ),
                   ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: Column(
-                    children: [
-                      InputField(
-                          label: "username", placeholderText: user.username),
-                      const SizedBox(height: 8.0),
-                      InputField(label: "bio", placeholderText: user.bio),
-                    ],
-                  ),
-                ),
-              ],
+                ],
+              ),
             );
           }
           return const Center(
             child: CircularProgressIndicator(),
           );
         },
+      ),
+    );
+  }
+}
+
+class _EditFieldSceen extends StatelessWidget {
+  _EditFieldSceen({
+    required this.label,
+    required this.value,
+    required this.onSave,
+  });
+  final String label;
+  final String value;
+  final Function onSave;
+
+  final TextEditingController _fieldController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        centerTitle: true,
+        title: Text(
+          label,
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.w300,
+          ),
+        ),
+        leading: AppBarButton(
+          icon: PhosphorIcons.xLight,
+          handler: () {
+            Navigator.of(context).pop();
+          },
+          tooltip: "Cancel",
+        ),
+        actions: [
+          AppBarButton(
+            handler: () {
+              onSave(_fieldController.text);
+              Navigator.of(context).pop();
+            },
+            tooltip: "Save",
+            icon: PhosphorIcons.checkLight,
+          ),
+        ],
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(12.0),
+        child: TextField(
+          onChanged: (value) => _fieldController.text = value,
+          decoration: Themes.textFieldStyle(label, value),
+        ),
       ),
     );
   }

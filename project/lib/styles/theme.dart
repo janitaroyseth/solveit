@@ -110,6 +110,16 @@ class Themes {
     ),
   );
 
+  static InputDecoration textFieldStyle(label, placeholderText) {
+    return InputDecoration(
+      labelStyle: textTheme.labelLarge,
+      label: Text(label, style: const TextStyle(color: Colors.black)),
+      hintText: placeholderText,
+      hintStyle: textTheme.labelSmall,
+      floatingLabelBehavior: FloatingLabelBehavior.always,
+    );
+  }
+
   static ButtonStyle primaryElevatedButtonStyle = ButtonStyle(
     elevation: MaterialStateProperty.all<double>(0),
     foregroundColor: MaterialStateProperty.all<Color>(Colors.white),
