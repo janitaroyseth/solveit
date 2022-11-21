@@ -48,12 +48,12 @@ class __ProjectPopUpMenuState extends State<ProjectPopUpMenu> {
             );
           },
           value: 0,
-          height: 48,
+          height: 40,
           child: const Text("edit project"),
         ),
         PopupMenuItem(
           value: 1,
-          height: 48,
+          height: 40,
           onTap: () {
             Future.delayed(
               const Duration(seconds: 0),
@@ -79,7 +79,7 @@ class __ProjectPopUpMenuState extends State<ProjectPopUpMenu> {
         ),
         PopupMenuItem(
           value: 2,
-          height: 48,
+          height: 40,
           onTap: () {
             Future.delayed(
               const Duration(seconds: 0),
@@ -116,7 +116,9 @@ class __ProjectPopUpMenuState extends State<ProjectPopUpMenu> {
           },
           child: Text(
             "delete projext",
-            style: TextStyle(color: Colors.red.shade900),
+            style: TextStyle(
+              color: Theme.of(context).errorColor,
+            ),
           ),
         ),
       ],

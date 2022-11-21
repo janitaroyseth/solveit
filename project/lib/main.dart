@@ -1,8 +1,10 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:project/firebase_options.dart';
+import 'package:project/providers/settings_provider.dart';
 import 'package:project/providers/user_provider.dart';
 import 'package:project/screens/create_profile_screen.dart';
 import 'package:project/screens/edit_profile_screen.dart';
@@ -25,6 +27,7 @@ import './models/project.dart';
 Future<void> main() async {
   await dotenv.load(fileName: "variables.env");
   WidgetsFlutterBinding.ensureInitialized();
+
   // initialize the preferences service.
   PreferencesService();
   await Firebase.initializeApp(
@@ -58,7 +61,10 @@ class MyApp extends StatelessWidget {
     return Consumer(
       builder: (context, ref, child) => MaterialApp(
         title: "solveit",
-        theme: Themes.themeData,
+        theme: Themes.themeData(ref),
+        darkTheme: Themes.darkTheme(ref),
+        themeMode:
+            ref.watch(darkModeProvider) ? ThemeMode.dark : ThemeMode.light,
         home: initialScreenCheck(ref),
         routes: {
           SignInScreen.routeName: (context) => SignInScreen(),

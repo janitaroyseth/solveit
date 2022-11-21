@@ -40,11 +40,12 @@ class _ToggleTaskStatusButtonState extends State<ToggleTaskStatusButton> {
             color: Colors.white,
           );
         }
-        return const Icon(
+        return Icon(
           PhosphorIcons.check,
-          color: Themes.primaryColor,
+          color: Themes.primaryColor.shade100,
         );
       },
+      innerColor: Colors.white.withOpacity(0.1),
       textBuilder: (value) {
         if (value == true) {
           return const Text(
@@ -61,7 +62,7 @@ class _ToggleTaskStatusButtonState extends State<ToggleTaskStatusButton> {
         if (value == true) {
           return Themes.primaryColor;
         }
-        return Themes.primaryColor.withOpacity(0.1);
+        return Themes.primaryColor.shade100.withOpacity(0.3);
       },
     );
   }

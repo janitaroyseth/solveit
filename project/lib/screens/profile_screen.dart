@@ -34,8 +34,102 @@ class ProfileScreen extends ConsumerWidget {
         elevation: 0,
         foregroundColor: Colors.white,
         backgroundColor: Themes.primaryColor,
-        title: appBarTitle(),
-        actions: [profileMenuButton(context, ref)],
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text(
+              "solve",
+              style: Theme.of(context).appBarTheme.titleTextStyle!.copyWith(
+                    color: Colors.white,
+                  ),
+            ),
+            Text(
+              "it",
+              style: Theme.of(context).appBarTheme.titleTextStyle!.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                  ),
+            )
+          ],
+        ),
+        actions: [
+          AppBarButton(
+            handler: () => showModalBottomSheet(
+              shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(20.0),
+                  topRight: Radius.circular(20.0),
+                ),
+              ),
+              context: context,
+              builder: (context) => Container(
+                decoration: const BoxDecoration(
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(20.0),
+                    topRight: Radius.circular(20.0),
+                  ),
+                ),
+                height: 300,
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    children: <Widget>[
+                      Container(
+                        height: 3,
+                        width: 100,
+                        decoration: BoxDecoration(
+                          color: Themes.textColor(ref),
+                          borderRadius: const BorderRadius.all(
+                            Radius.circular(50.0),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 4.0),
+                      ModalListItem(
+                        icon: PhosphorIcons.userCircleGearLight,
+                        label: "edit profile",
+                        handler: () {},
+                      ),
+                      ModalListItem(
+                        icon: PhosphorIcons.gearSixLight,
+                        label: "settings",
+                        handler: () {
+                          Navigator.of(context).pushNamed(
+                            UserSettingsScreen.routeName,
+                          );
+                        },
+                      ),
+                      ModalListItem(
+                        icon: PhosphorIcons.signOutLight,
+                        label: "log out",
+                        handler: () {
+                          Navigator.of(context).pop();
+                          _logout(ref);
+                        },
+                      ),
+                      ModalListItem(
+                        handler: () => showDialog(
+                          context: context,
+                          builder: (context) => const AboutDialog(
+                            applicationLegalese:
+                                "Copyright © 2022 NTNU, IDATA2503 Group 3 - Espen, Sakarias and Janita",
+                            applicationVersion: "version 0.0.1",
+                            applicationName: "solveit",
+                          ),
+                        ),
+                        icon: PhosphorIcons.infoLight,
+                        label: "app info",
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            tooltip: "Settings",
+            icon: PhosphorIcons.list,
+            color: Colors.white,
+          )
+        ],
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -271,16 +365,17 @@ class ProfileScreen extends ConsumerWidget {
   }
 }
 
-class _ProfileProjectList extends StatefulWidget {
+class _ProfileProjectList extends ConsumerStatefulWidget {
   final List<Project> projects;
 
   const _ProfileProjectList({super.key, required this.projects});
 
   @override
-  State<_ProfileProjectList> createState() => _ProfileProjectListState();
+  ConsumerState<_ProfileProjectList> createState() =>
+      _ProfileProjectListState();
 }
 
-class _ProfileProjectListState extends State<_ProfileProjectList> {
+class _ProfileProjectListState extends ConsumerState<_ProfileProjectList> {
   String projects = "projects";
   String starred = "starred";
   late String isSelected;
@@ -310,7 +405,7 @@ class _ProfileProjectListState extends State<_ProfileProjectList> {
                         child: Text(projects),
                       )
                     : TextButton(
-                        style: Themes.textButtonStyle,
+                        style: Themes.textButtonStyle(ref),
                         onPressed: () {
                           setState(() {
                             isSelected = projects;
@@ -330,7 +425,7 @@ class _ProfileProjectListState extends State<_ProfileProjectList> {
                         child: Text(starred),
                       )
                     : TextButton(
-                        style: Themes.textButtonStyle,
+                        style: Themes.textButtonStyle(ref),
                         onPressed: () {
                           setState(() {
                             isSelected = starred;

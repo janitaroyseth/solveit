@@ -29,7 +29,12 @@ class ProjectCalendarScreen extends StatelessWidget {
               project.imageUrl,
               height: 90,
             ),
-            Text(project.title.toLowerCase()),
+            Text(
+              project.title.toLowerCase(),
+              style: Theme.of(context).appBarTheme.titleTextStyle!.copyWith(
+                    color: Colors.white,
+                  ),
+            ),
           ],
         ),
         centerTitle: false,
@@ -66,7 +71,7 @@ class ProjectCalendarScreen extends StatelessWidget {
             clipper: CurveClipper(),
             child: Container(
               color: Themes.primaryColor,
-              height: 130,
+              height: Platform.isIOS ? 150 : 130,
             ),
           ),
           Expanded(child: Calendar(project: project)),
