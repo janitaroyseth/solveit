@@ -40,7 +40,7 @@ class TaskListItem extends StatelessWidget {
                         child: Text(
                           task.title.toLowerCase(),
                           textAlign: TextAlign.start,
-                          style: Theme.of(context).textTheme.displaySmall,
+                          style: Theme.of(context).textTheme.titleMedium,
                         ),
                       ),
                       Text(

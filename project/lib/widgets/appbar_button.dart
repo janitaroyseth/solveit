@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:project/providers/settings_provider.dart';
 
 /// Respresents a widget to be used for appbar.
-class AppBarButton extends StatelessWidget {
+class AppBarButton extends ConsumerWidget {
   final VoidCallback handler;
   final String tooltip;
   final IconData icon;
@@ -17,7 +19,9 @@ class AppBarButton extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    bool darkMode = ref.watch(darkModeProvider.notifier).state;
+
     return IconButton(
       onPressed: handler,
       visualDensity: const VisualDensity(
@@ -28,7 +32,7 @@ class AppBarButton extends StatelessWidget {
       icon: Icon(
         icon,
         size: 30,
-        color: color,
+        color: color == Colors.black && darkMode ? Colors.white : color,
       ),
     );
   }

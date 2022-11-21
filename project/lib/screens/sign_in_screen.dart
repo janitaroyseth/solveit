@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -32,8 +34,14 @@ class SignInScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              SizedBox(height: MediaQuery.of(context).size.height / 8),
-              appTitle(),
+              SizedBox(
+                  height: Platform.isIOS
+                      ? MediaQuery.of(context).size.height / 8
+                      : MediaQuery.of(context).size.height / 16),
+              FittedBox(
+                fit: BoxFit.scaleDown,
+                child: _logo(context),
+              ),
               const SizedBox(height: 60),
               const _SignInForm(),
             ],
@@ -43,30 +51,19 @@ class SignInScreen extends StatelessWidget {
     );
   }
 
-  FittedBox appTitle() {
-    return FittedBox(
-      fit: BoxFit.scaleDown,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: const <Widget>[
-          Text(
-            "solve",
-            style: TextStyle(
-              fontSize: 40,
-              color: Colors.black,
-              fontWeight: FontWeight.w300,
-            ),
-          ),
-          Text(
-            "it",
-            style: TextStyle(
-              fontSize: 40,
-              color: Themes.primaryColor,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ],
-      ),
+  Row _logo(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        Text("solve", style: Theme.of(context).textTheme.displayLarge),
+        Text(
+          "it",
+          style: Theme.of(context).textTheme.displayLarge!.copyWith(
+                color: Themes.primaryColor.shade50,
+                fontWeight: FontWeight.w500,
+              ),
+        ),
+      ],
     );
   }
 }
@@ -92,11 +89,7 @@ class __SignInFormState extends ConsumerState<_SignInForm> {
       children: <Widget>[
         Text(
           signupMode ? "sign up" : "login",
-          style: const TextStyle(
-            fontSize: 20,
-            color: Themes.primaryColor,
-            fontWeight: FontWeight.w600,
-          ),
+          style: Theme.of(context).textTheme.displayMedium,
         ),
         const SizedBox(height: 16),
         const InputField(
@@ -234,7 +227,7 @@ class __SignInFormState extends ConsumerState<_SignInForm> {
               children: <Widget>[
                 const Text("already have an account?"),
                 TextButton(
-                  style: Themes.textButtonStyle,
+                  style: Themes.textButtonStyle(ref),
                   child: const Text("sign in here >"),
                   onPressed: () => setState(() => signupMode = false),
                 ),
@@ -245,7 +238,7 @@ class __SignInFormState extends ConsumerState<_SignInForm> {
               children: <Widget>[
                 const Text("don't have an account?"),
                 TextButton(
-                  style: Themes.textButtonStyle,
+                  style: Themes.textButtonStyle(ref),
                   child: const Text("sign up here >"),
                   onPressed: () => setState(() => signupMode = true),
                 ),

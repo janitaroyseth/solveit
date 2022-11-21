@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/widgets/tag_widget.dart';
@@ -32,17 +33,14 @@ class ConfigureTaskScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(project != null ? "create task" : "edit task"),
-        centerTitle: false,
+        backgroundColor: Colors.transparent,
         elevation: 0,
-        titleSpacing: -4,
         leading: AppBarButton(
           handler: () => Navigator.of(context).pop(),
           tooltip: "Go back",
           icon: PhosphorIcons.caretLeftLight,
           color: Colors.black,
         ),
-        backgroundColor: Themes.themeData.appBarTheme.backgroundColor,
-        foregroundColor: Themes.themeData.appBarTheme.foregroundColor,
         actions: [
           AppBarButton(
             handler: () {
@@ -64,71 +62,69 @@ class ConfigureTaskScreen extends StatelessWidget {
 }
 
 class _TaskScreenBody extends StatefulWidget {
-  Task task;
-  _TaskScreenBody(this.task);
+  final Task task;
+  const _TaskScreenBody(this.task);
   @override
-  State<StatefulWidget> createState() => _TaskScreenBodyState(task);
+  State<StatefulWidget> createState() => _TaskScreenBodyState();
 }
 
 class _TaskScreenBodyState extends State<_TaskScreenBody> {
-  _TaskScreenBodyState(this.task);
-  final Task task;
+  late Task task;
   final _formKey = GlobalKey<FormState>();
   bool isTagPickerShown = false;
   List<Tag> allTags = ExampleData.tags;
   List<User> selectedUsers = [];
 
   @override
+  void initState() {
+    task = widget.task;
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Form(
-      key: _formKey,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: <Widget>[
-          _createTaskNameSection(),
-          const SizedBox(
-            height: 20,
-          ),
-          _createTagsSection(),
-          const SizedBox(
-            height: 20,
-          ),
-          _createDeadlineSection(),
-          const SizedBox(
-            height: 20,
-          ),
-          _createAssignedSection(),
-          const SizedBox(
-            height: 20,
-          ),
-          _createDescriptionSection(),
-        ],
+    return Consumer(
+      builder: (context, ref, child) => Form(
+        key: _formKey,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: <Widget>[
+            _createTaskNameSection(ref),
+            const SizedBox(
+              height: 20,
+            ),
+            _createTagsSection(),
+            const SizedBox(
+              height: 20,
+            ),
+            _createDeadlineSection(ref),
+            const SizedBox(
+              height: 20,
+            ),
+            _createAssignedSection(ref),
+            const SizedBox(
+              height: 20,
+            ),
+            _createDescriptionSection(ref),
+          ],
+        ),
       ),
     );
   }
 
-  Widget _createTaskNameSection() {
+  Widget _createTaskNameSection(ref) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Text(
-          "task",
-          style: Theme.of(context).textTheme.displayMedium,
-        ),
-        const SizedBox(
-          height: 5,
-        ),
         TextFormField(
-          initialValue: task.title,
-          onFieldSubmitted: (String value) {
-            task.title = value;
-          },
-          style: const TextStyle(fontSize: 12),
-          decoration: const InputDecoration.collapsed(
-            hintText: 'concise description of the task at hand...',
-          ),
-        ),
+            initialValue: task.title,
+            onFieldSubmitted: (String value) {
+              task.title = value;
+            },
+            style: Theme.of(context).textTheme.bodySmall,
+            decoration: Themes.inputDecoration(
+                ref, "task", "concise description of the task at hand...")),
       ],
     );
   }
@@ -139,7 +135,7 @@ class _TaskScreenBodyState extends State<_TaskScreenBody> {
       children: <Widget>[
         Text(
           "tags",
-          style: Theme.of(context).textTheme.displayMedium,
+          style: Theme.of(context).textTheme.labelMedium,
         ),
         const SizedBox(
           height: 5,
@@ -276,19 +272,19 @@ class _TaskScreenBodyState extends State<_TaskScreenBody> {
     }
   }
 
-  Widget _createDeadlineSection() {
+  Widget _createDeadlineSection(WidgetRef ref) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Text(
           "deadline",
-          style: Theme.of(context).textTheme.displayMedium,
+          style: Theme.of(context).textTheme.labelMedium,
         ),
         const SizedBox(
           height: 5,
         ),
         TextButton(
-          style: Themes.datePickerButtonStyle,
+          style: Themes.datePickerButtonStyle(ref),
           child: Text(task.deadline != null
               ? Jiffy(DateTime.parse(task.deadline!)).format("dd/MM/yyyy")
               : "click to pick a date..."),
@@ -313,20 +309,20 @@ class _TaskScreenBodyState extends State<_TaskScreenBody> {
     });
   }
 
-  Widget _createAssignedSection() {
+  Widget _createAssignedSection(WidgetRef ref) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         Text(
           "assigned",
-          style: Theme.of(context).textTheme.displayMedium,
+          style: Theme.of(context).textTheme.labelMedium,
         ),
-        _createAssignedList(context),
+        _createAssignedList(context, ref),
       ],
     );
   }
 
-  Widget _createAssignedList(BuildContext context) {
+  Widget _createAssignedList(BuildContext context, WidgetRef ref) {
     return Column(
       children: [
         ...task.assigned
@@ -392,7 +388,8 @@ class _TaskScreenBodyState extends State<_TaskScreenBody> {
                 radius: 15,
                 backgroundColor: Themes.primaryColor.shade100,
                 backgroundImage: const AssetImage(
-                    "assets/images/empty_profile_pic_large.png"),
+                  "assets/images/empty_profile_pic_large.png",
+                ),
               ),
               const SizedBox(
                 width: 8,
@@ -402,7 +399,7 @@ class _TaskScreenBodyState extends State<_TaskScreenBody> {
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
-                  color: Themes.textColor,
+                  color: Themes.textColor(ref),
                 ),
               )
             ],
@@ -412,24 +409,16 @@ class _TaskScreenBodyState extends State<_TaskScreenBody> {
     );
   }
 
-  Widget _createDescriptionSection() {
+  Widget _createDescriptionSection(WidgetRef ref) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Text(
-          "description",
-          style: Theme.of(context).textTheme.displayMedium,
-        ),
-        const SizedBox(
-          height: 5,
-        ),
         TextFormField(
           initialValue: task.description,
           maxLines: 8,
-          style: const TextStyle(fontSize: 12),
-          decoration: const InputDecoration.collapsed(
-            hintText: 'detailed description of the task at hand...',
-          ),
+          style: Theme.of(context).textTheme.bodySmall,
+          decoration: Themes.inputDecoration(ref, "description",
+              "detailed description of the task at hand..."),
         ),
       ],
     );
