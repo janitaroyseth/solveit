@@ -66,22 +66,6 @@ class SignInScreen extends StatelessWidget {
       ],
     );
   }
-
-  Row _logo(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        Text("solve", style: Theme.of(context).textTheme.displayLarge),
-        Text(
-          "it",
-          style: Theme.of(context).textTheme.displayLarge!.copyWith(
-                color: Themes.primaryColor.shade50,
-                fontWeight: FontWeight.w500,
-              ),
-        ),
-      ],
-    );
-  }
 }
 
 /// Sign in and sign up form.
@@ -104,7 +88,7 @@ class __SignInFormState extends ConsumerState<_SignInForm> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
         Text(
-          signupForm ? "sign up" : "login",
+          signupMode ? "sign up" : "login",
           style: Theme.of(context).textTheme.displayMedium,
         ),
         const SizedBox(height: 16),
@@ -243,7 +227,7 @@ class __SignInFormState extends ConsumerState<_SignInForm> {
               children: <Widget>[
                 const Text("already have an account?"),
                 TextButton(
-                  style: Themes.textButtonStyle,
+                  style: Themes.textButtonStyle(ref),
                   child: const Text("sign in here >"),
                   onPressed: () => setState(() => signupMode = false),
                 ),
@@ -254,7 +238,7 @@ class __SignInFormState extends ConsumerState<_SignInForm> {
               children: <Widget>[
                 const Text("don't have an account?"),
                 TextButton(
-                  style: Themes.textButtonStyle,
+                  style: Themes.textButtonStyle(ref),
                   child: const Text("sign up here >"),
                   onPressed: () => setState(() => signupMode = true),
                 ),

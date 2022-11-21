@@ -109,15 +109,16 @@ class EditProfileScreen extends ConsumerWidget {
                     child: Column(
                       children: <Widget>[
                         TextField(
-                          decoration:
-                              Themes.textFieldStyle("username", user.username),
+                          decoration: Themes.inputDecoration(
+                              ref, "username", user.username),
                           readOnly: true,
                           onTap: () => updateUsername(user),
                         ),
                         const SizedBox(height: 8.0),
                         TextField(
                           readOnly: true,
-                          decoration: Themes.textFieldStyle("bio", user.bio),
+                          decoration:
+                              Themes.inputDecoration(ref, "bio", user.bio),
                           onTap: () => updateBio(user),
                         ),
                       ],
@@ -218,14 +219,16 @@ class _EditFieldSceenState extends State<_EditFieldSceen> {
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: TextField(
-          controller: _fieldController,
-          minLines: 1,
-          maxLines: 10,
-          style: Themes.textTheme.bodyMedium,
-          decoration: Themes.textFieldStyle(widget.label, widget.value),
+      body: Consumer(
+        builder: (context, ref, child) => Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: TextField(
+            controller: _fieldController,
+            minLines: 1,
+            maxLines: 10,
+            style: Themes.textTheme(ref).bodyMedium,
+            decoration: Themes.inputDecoration(ref, widget.label, widget.value),
+          ),
         ),
       ),
     );
