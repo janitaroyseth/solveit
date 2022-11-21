@@ -1,8 +1,10 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:project/styles/theme.dart';
 import 'package:project/widgets/modal_list_item.dart';
 
 /// Modal sheet displaying options for adding images.
@@ -54,47 +56,49 @@ class _ImagePickerModalState extends State<ImagePickerModal> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(20.0),
-          topRight: Radius.circular(20.0),
+    return Consumer(
+      builder: (context, ref, child) => Container(
+        decoration: const BoxDecoration(
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20.0),
+            topRight: Radius.circular(20.0),
+          ),
         ),
-      ),
-      height: 280,
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: <Widget>[
-            Container(
-              height: 3,
-              width: 100,
-              decoration: const BoxDecoration(
-                color: Colors.black,
-                borderRadius: BorderRadius.all(
-                  Radius.circular(50.0),
+        height: 280,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: <Widget>[
+              Container(
+                height: 3,
+                width: 100,
+                decoration: BoxDecoration(
+                  color: Themes.textColor(ref),
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(50.0),
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 4.0),
-            ModalListItem(
-              icon: PhosphorIcons.cameraLight,
-              label: "take picture",
-              handler: () {
-                getImageFromCamera();
-                Navigator.of(widget.buildContext).pop();
-              },
-            ),
-            ModalListItem(
-              icon: PhosphorIcons.imageLight,
-              label: "upload image",
-              handler: () {
-                getImageFromLocalStorage();
-                Navigator.of(widget.buildContext).pop();
-              },
-            ),
-            const SizedBox(height: 12.0),
-          ],
+              const SizedBox(height: 4.0),
+              ModalListItem(
+                icon: PhosphorIcons.cameraLight,
+                label: "take picture",
+                handler: () {
+                  getImageFromCamera();
+                  Navigator.of(widget.buildContext).pop();
+                },
+              ),
+              ModalListItem(
+                icon: PhosphorIcons.imageLight,
+                label: "upload image",
+                handler: () {
+                  getImageFromLocalStorage();
+                  Navigator.of(widget.buildContext).pop();
+                },
+              ),
+              const SizedBox(height: 12.0),
+            ],
+          ),
         ),
       ),
     );

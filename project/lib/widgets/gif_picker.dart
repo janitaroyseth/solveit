@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:project/styles/theme.dart';
 import 'package:project/widgets/message_input_field.dart';
@@ -126,96 +127,100 @@ class _GifPickerState extends State<GifPicker> {
 
   @override
   Widget build(BuildContext context) {
-    return DraggableScrollableSheet(
-      expand: false,
-      maxChildSize: 0.8,
-      minChildSize: 0.6,
-      initialChildSize: 0.6,
-      builder: (context, scrollController) => FutureBuilder(
-        future: currentGifSearch,
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            var result = snapshot.data;
-            var resultBody = (result as http.Response).body;
-            var trendingGifs = json.decode(resultBody)["results"];
-            return Padding(
-              padding: const EdgeInsets.only(top: 16.0),
-              child: Column(
-                children: [
-                  buildTopHorizontalLine(),
-                  buildButtonTabs(),
-                  SearchBar(
-                    placeholderText: "Search Tenor",
-                    searchFunction: (String query) {
-                      if (query.isEmpty) {
-                        setState(() {
-                          gifType == GifType.gif
-                              ? currentGifSearch = getTrendingGifs()
-                              : currentGifSearch = getTrendingStickers();
-                        });
-                      } else {
-                        setState(() {
-                          gifType == GifType.gif
-                              ? currentGifSearch = searchGifs(query)
-                              : currentGifSearch = searchStickers(query);
-                        });
-                      }
-                    },
-                    textEditingController: _searchController,
-                  ),
-                  buildGifGrid(scrollController, trendingGifs),
-                ],
-              ),
-            );
-          }
-          return buildLoadingView();
-        },
+    return Consumer(
+      builder: (context, ref, child) => DraggableScrollableSheet(
+        expand: false,
+        maxChildSize: 0.8,
+        minChildSize: 0.6,
+        initialChildSize: 0.6,
+        builder: (context, scrollController) => FutureBuilder(
+          future: currentGifSearch,
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              var result = snapshot.data;
+              var resultBody = (result as http.Response).body;
+              var trendingGifs = json.decode(resultBody)["results"];
+              return Padding(
+                padding: const EdgeInsets.only(top: 16.0),
+                child: Column(
+                  children: [
+                    buildTopHorizontalLine(ref),
+                    buildButtonTabs(),
+                    SearchBar(
+                      placeholderText: "Search Tenor",
+                      searchFunction: (String query) {
+                        if (query.isEmpty) {
+                          setState(() {
+                            gifType == GifType.gif
+                                ? currentGifSearch = getTrendingGifs()
+                                : currentGifSearch = getTrendingStickers();
+                          });
+                        } else {
+                          setState(() {
+                            gifType == GifType.gif
+                                ? currentGifSearch = searchGifs(query)
+                                : currentGifSearch = searchStickers(query);
+                          });
+                        }
+                      },
+                      textEditingController: _searchController,
+                    ),
+                    buildGifGrid(scrollController, trendingGifs),
+                  ],
+                ),
+              );
+            }
+            return buildLoadingView();
+          },
+        ),
       ),
     );
   }
 
-  Container buildTopHorizontalLine() {
+  Container buildTopHorizontalLine(WidgetRef ref) {
     return Container(
       height: 3,
       width: 100,
-      decoration: const BoxDecoration(
-        color: Colors.black,
-        borderRadius: BorderRadius.all(
+      decoration: BoxDecoration(
+        color: Themes.textColor(ref),
+        borderRadius: const BorderRadius.all(
           Radius.circular(50.0),
         ),
       ),
     );
   }
 
-  Row buildButtonTabs() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: [
-        if (gifType == GifType.gif)
-          ElevatedButton(
-            onPressed: () {},
-            style: Themes.softPrimaryElevatedButtonStyle,
-            child: const Text("GIF"),
-          )
-        else
-          TextButton(
-            onPressed: showGifs,
-            style: Themes.textButtonStyle,
-            child: const Text("GIF"),
-          ),
-        if (gifType == GifType.sticker)
-          ElevatedButton(
-            onPressed: () {},
-            style: Themes.softPrimaryElevatedButtonStyle,
-            child: const Text("Stickers"),
-          )
-        else
-          TextButton(
-            onPressed: showStickers,
-            style: Themes.textButtonStyle,
-            child: const Text("Stickers"),
-          ),
-      ],
+  Widget buildButtonTabs() {
+    return Consumer(
+      builder: (context, ref, child) => Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: [
+          if (gifType == GifType.gif)
+            ElevatedButton(
+              onPressed: () {},
+              style: Themes.softPrimaryElevatedButtonStyle,
+              child: const Text("GIF"),
+            )
+          else
+            TextButton(
+              onPressed: showGifs,
+              style: Themes.textButtonStyle(ref),
+              child: const Text("GIF"),
+            ),
+          if (gifType == GifType.sticker)
+            ElevatedButton(
+              onPressed: () {},
+              style: Themes.softPrimaryElevatedButtonStyle,
+              child: const Text("Stickers"),
+            )
+          else
+            TextButton(
+              onPressed: showStickers,
+              style: Themes.textButtonStyle(ref),
+              child: const Text("Stickers"),
+            ),
+        ],
+      ),
     );
   }
 

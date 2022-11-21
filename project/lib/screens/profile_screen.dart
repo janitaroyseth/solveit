@@ -31,20 +31,19 @@ class ProfileScreen extends ConsumerWidget {
         backgroundColor: Themes.primaryColor,
         title: Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: const <Widget>[
+          children: <Widget>[
             Text(
               "solve",
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w300,
-              ),
+              style: Theme.of(context).appBarTheme.titleTextStyle!.copyWith(
+                    color: Colors.white,
+                  ),
             ),
             Text(
               "it",
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-                fontSize: 18,
-              ),
+              style: Theme.of(context).appBarTheme.titleTextStyle!.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w600,
+                  ),
             )
           ],
         ),
@@ -73,9 +72,9 @@ class ProfileScreen extends ConsumerWidget {
                       Container(
                         height: 3,
                         width: 100,
-                        decoration: const BoxDecoration(
-                          color: Colors.black,
-                          borderRadius: BorderRadius.all(
+                        decoration: BoxDecoration(
+                          color: Themes.textColor(ref),
+                          borderRadius: const BorderRadius.all(
                             Radius.circular(50.0),
                           ),
                         ),
@@ -247,16 +246,17 @@ class ProfileScreen extends ConsumerWidget {
   }
 }
 
-class _ProfileProjectList extends StatefulWidget {
+class _ProfileProjectList extends ConsumerStatefulWidget {
   final List<Project> projects;
 
   const _ProfileProjectList({super.key, required this.projects});
 
   @override
-  State<_ProfileProjectList> createState() => _ProfileProjectListState();
+  ConsumerState<_ProfileProjectList> createState() =>
+      _ProfileProjectListState();
 }
 
-class _ProfileProjectListState extends State<_ProfileProjectList> {
+class _ProfileProjectListState extends ConsumerState<_ProfileProjectList> {
   String projects = "projects";
   String starred = "starred";
   late String isSelected;
@@ -286,7 +286,7 @@ class _ProfileProjectListState extends State<_ProfileProjectList> {
                         child: Text(projects),
                       )
                     : TextButton(
-                        style: Themes.textButtonStyle,
+                        style: Themes.textButtonStyle(ref),
                         onPressed: () {
                           setState(() {
                             isSelected = projects;
@@ -306,7 +306,7 @@ class _ProfileProjectListState extends State<_ProfileProjectList> {
                         child: Text(starred),
                       )
                     : TextButton(
-                        style: Themes.textButtonStyle,
+                        style: Themes.textButtonStyle(ref),
                         onPressed: () {
                           setState(() {
                             isSelected = starred;
