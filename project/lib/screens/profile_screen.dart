@@ -88,12 +88,18 @@ class ProfileScreen extends ConsumerWidget {
                       ModalListItem(
                         icon: PhosphorIcons.userCircleGearLight,
                         label: "edit profile",
-                        handler: () {},
+                        handler: () {
+                          Navigator.of(context).pop();
+                          Navigator.of(context).pushNamed(
+                            EditProfileScreen.routeName,
+                          );
+                        },
                       ),
                       ModalListItem(
                         icon: PhosphorIcons.gearSixLight,
                         label: "settings",
                         handler: () {
+                          Navigator.of(context).pop();
                           Navigator.of(context).pushNamed(
                             UserSettingsScreen.routeName,
                           );

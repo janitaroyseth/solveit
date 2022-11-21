@@ -87,12 +87,12 @@ class EditProfileScreen extends ConsumerWidget {
         ),
         foregroundColor: Colors.white,
         backgroundColor: Themes.primaryColor,
-        title: const Text(
+        title: Text(
           "edit profile",
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w300,
-          ),
+          style: Theme.of(context)
+              .appBarTheme
+              .titleTextStyle!
+              .copyWith(color: Colors.white),
         ),
       ),
       body: StreamBuilder(
