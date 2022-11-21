@@ -1,8 +1,13 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/data/example_data.dart';
+import 'package:project/models/user.dart';
+import 'package:project/providers/user_images_provider.dart';
+import 'package:project/providers/user_provider.dart';
 import 'package:project/styles/curve_clipper.dart';
 import 'package:project/styles/theme.dart';
 import 'package:project/widgets/appbar_button.dart';
@@ -10,14 +15,44 @@ import 'package:project/screens/home_screen.dart';
 import 'package:project/widgets/image_picker_modal.dart';
 
 /// Scaffold/Screen for creating profile after signing up.
-class CreateProfileScreen extends StatelessWidget {
+class CreateProfileScreen extends ConsumerWidget {
   static const routeName = "/create-profile";
 
   /// Creates an instance of create-profile-screen.
   const CreateProfileScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    TextEditingController bioController = TextEditingController();
+    String userId = ModalRoute.of(context)!.settings.arguments as String;
+    User? user;
+    // User? user = ref.watch(userProvider).getUser(userId);
+
+    File? image;
+
+    void imagePicker(File? pickedImage) {
+      image = pickedImage;
+    }
+
+    Future<void> updateNewUser(
+      WidgetRef ref,
+      String userId,
+    ) async {
+      User? user = await ref.watch(userProvider).getUser(userId);
+
+      if (user != null) {
+        user.bio = bioController.text;
+
+        if (image != null) {
+          user.imageUrl =
+              await ref.read(userImageProvider).updateUserImage(userId, image!);
+          //await ref.read(userProvider).addProfilePictre(userId, image!);
+        }
+
+        return ref.read(userProvider).updateUser(userId, user);
+      }
+    }
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Themes.primaryColor,
@@ -32,77 +67,69 @@ class CreateProfileScreen extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: <Widget>[
-            ClipPath(
-              clipper: CurveClipper(),
-              child: Container(
-                height: 400,
-                color: const Color.fromRGBO(92, 0, 241, 1),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: <Widget>[
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: <Widget>[
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: const <Widget>[
-                            Text(
-                              "solve",
-                              style: TextStyle(
-                                fontSize: 40,
-                                color: Colors.white,
-                                fontWeight: FontWeight.w300,
-                              ),
-                            ),
-                            Text(
-                              "it",
-                              style: TextStyle(
-                                fontSize: 40,
-                                color: Colors.white,
-                                fontWeight: FontWeight.w500,
-                              ),
+            FutureBuilder(
+                future: ref.watch(userProvider).getUser(userId),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    user = snapshot.data as User?;
+                    return ClipPath(
+                      clipper: CurveClipper(),
+                      child: Container(
+                        height: 400,
+                        color: const Color.fromRGBO(92, 0, 241, 1),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: <Widget>[
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: <Widget>[
+                                appTitle(),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: RichText(
+                                    textAlign: TextAlign.center,
+                                    softWrap: true,
+                                    text: TextSpan(
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        fontFamily: Themes.fontFamily,
+                                      ),
+                                      children: <InlineSpan>[
+                                        const TextSpan(text: "hi "),
+                                        TextSpan(
+                                          text: "${user!.username}, ",
+                                          style: const TextStyle(
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        const TextSpan(
+                                          text:
+                                              "here you can set up your profile",
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 16),
+                                _PickProfilePicture(imagePicker),
+                              ],
                             ),
                           ],
                         ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: RichText(
-                            textAlign: TextAlign.center,
-                            softWrap: true,
-                            text: const TextSpan(
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontFamily: Themes.fontFamily,
-                              ),
-                              children: <InlineSpan>[
-                                TextSpan(text: "hi "),
-                                TextSpan(
-                                  text: "Jane, ",
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                TextSpan(
-                                  text: "here you can set up your profile",
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        const _PickProfilePicture(),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const Padding(
-              padding: EdgeInsets.all(8.0),
+                      ),
+                    );
+                  }
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                }),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
               child: TextField(
                 minLines: 4,
                 maxLines: 10,
-                decoration: InputDecoration(
+                controller: bioController,
+                decoration: const InputDecoration(
                   label: Text("bio"),
                   focusedBorder: UnderlineInputBorder(
                     borderSide: BorderSide(
@@ -121,20 +148,41 @@ class CreateProfileScreen extends StatelessWidget {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.of(context).pop();
-          Navigator.of(context).popAndPushNamed(
-            HomeScreen.routeName,
-            arguments: {
-              "user": ExampleData.user1,
-              "projects": ExampleData.projects
-            },
-          );
+          SchedulerBinding.instance.addPostFrameCallback((_) {
+            updateNewUser(ref, userId).then((value) {
+              Navigator.of(context).pop();
+            });
+          });
         },
         child: const Icon(
           PhosphorIcons.arrowRight,
           color: Colors.white,
         ),
       ),
+    );
+  }
+
+  Row appTitle() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: const <Widget>[
+        Text(
+          "solve",
+          style: TextStyle(
+            fontSize: 40,
+            color: Colors.white,
+            fontWeight: FontWeight.w300,
+          ),
+        ),
+        Text(
+          "it",
+          style: TextStyle(
+            fontSize: 40,
+            color: Colors.white,
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ],
     );
   }
 }
@@ -144,7 +192,9 @@ class CreateProfileScreen extends StatelessWidget {
 class _PickProfilePicture extends StatefulWidget {
   /// Creates in instance of [_PickProfilePicture] that displays the
   /// profile picture chosen and a button for changing profile picture.
-  const _PickProfilePicture();
+  const _PickProfilePicture(this.imageHandler);
+
+  final void Function(File? image) imageHandler;
 
   @override
   State<_PickProfilePicture> createState() => _PickProfilePictureState();
@@ -156,9 +206,18 @@ class _PickProfilePictureState extends State<_PickProfilePicture> {
 
   /// Sets the picked image to the profile picture image.
   void imageHandler(File pickedImage) {
-    setState(() {
-      image = pickedImage;
-    });
+    if (mounted) {
+      setState(() {
+        image = pickedImage;
+        widget.imageHandler(image);
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
   }
 
   @override
@@ -167,7 +226,7 @@ class _PickProfilePictureState extends State<_PickProfilePicture> {
       children: <Widget>[
         image == null
             ? Image.asset(
-                "assets/images/empty_profile_pic_large.png",
+                "assets/images/profile_placeholder.png",
                 height: 200,
               )
             : CircleAvatar(
@@ -184,7 +243,7 @@ class _PickProfilePictureState extends State<_PickProfilePicture> {
               ),
             ),
             context: context,
-            builder: (context) => ImagePickerModal(
+            builder: (dialogContext) => ImagePickerModal(
               handler: imageHandler,
               buildContext: context,
             ),

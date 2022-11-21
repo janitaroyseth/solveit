@@ -14,7 +14,7 @@ abstract class AuthService {
   Future<User?> registerWithEmailAndPassword(String email, String password);
 
   /// Signing in with Google.
-  Future<User?> signInWithGoogle();
+  Future<UserCredential?> signInWithGoogle();
 
   /// Sign out.
   Future<void> signOut();
@@ -52,7 +52,7 @@ class Auth implements AuthService {
   }
 
   @override
-  Future<User?> signInWithGoogle() async {
+  Future<UserCredential?> signInWithGoogle() async {
     _googleSignIn = GoogleSignIn();
     final googleUser = await _googleSignIn?.signIn();
     if (googleUser != null) {
@@ -63,7 +63,7 @@ class Auth implements AuthService {
           idToken: googleAuth.idToken,
           accessToken: googleAuth.accessToken,
         ));
-        return userCredential.user;
+        return userCredential;
       } else {
         throw FirebaseAuthException(
           code: "ERROR_MISSING_GOOGLE_ID_TOKEN",
