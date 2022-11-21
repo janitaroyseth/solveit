@@ -1,4 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:project/styles/theme.dart';
 
 /// Used for a list item in a modal which display various options.
 class ModalListItem extends StatelessWidget {
@@ -23,23 +27,26 @@ class ModalListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        const SizedBox(height: 12.0),
-        InkWell(
-          onTap: handler,
-          child: Row(
-            children: <Widget>[
-              Icon(
-                icon,
-                size: 34,
-              ),
-              const SizedBox(width: 8),
-              Text(label)
-            ],
+    return Consumer(
+      builder: (context, ref, child) => Column(
+        children: <Widget>[
+          const SizedBox(height: 12.0),
+          InkWell(
+            onTap: handler,
+            child: Row(
+              children: <Widget>[
+                Icon(
+                  icon,
+                  size: Platform.isIOS ? 34 : 28,
+                  color: Themes.textColor(ref),
+                ),
+                const SizedBox(width: 8),
+                Text(label)
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

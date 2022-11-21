@@ -1,6 +1,7 @@
 import 'dart:collection';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:project/models/project.dart';
 import 'package:project/models/task.dart';
@@ -88,58 +89,54 @@ class _CalendarState extends State<Calendar> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        TableCalendar(
-          rowHeight: 45.0,
-          headerStyle: Themes.calendarHeaderTheme,
-          daysOfWeekStyle: const DaysOfWeekStyle(
-            weekdayStyle: TextStyle(
-              fontWeight: FontWeight.w700,
-            ),
-            weekendStyle: TextStyle(
-              fontWeight: FontWeight.w700,
-            ),
+    return Consumer(
+      builder: (context, ref, child) => Column(
+        children: <Widget>[
+          TableCalendar(
+            rowHeight: 45.0,
+            headerStyle: Themes.calendarHeaderTheme(ref),
+            daysOfWeekStyle: Themes.daysOfWeekStyle(),
+            firstDay: DateTime.utc(2021, 10, 16),
+            lastDay: DateTime.utc(DateTime.now().year + 2, 3, 14),
+            focusedDay: _focusedDay,
+            startingDayOfWeek: StartingDayOfWeek.monday,
+            selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
+            onDaySelected: _onDaySelected,
+            eventLoader: _getTasksForDay,
+            calendarStyle: Themes.calendarTheme(ref),
+            onPageChanged: (newFocusedDay) {
+              _focusedDay = newFocusedDay;
+            },
           ),
-          firstDay: DateTime.utc(2021, 10, 16),
-          lastDay: DateTime.utc(DateTime.now().year + 2, 3, 14),
-          focusedDay: _focusedDay,
-          startingDayOfWeek: StartingDayOfWeek.monday,
-          selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
-          onDaySelected: _onDaySelected,
-          eventLoader: _getTasksForDay,
-          calendarStyle: Themes.calendarTheme,
-          onPageChanged: (newFocusedDay) {
-            _focusedDay = newFocusedDay;
-          },
-        ),
-        Expanded(
-          child: ValueListenableBuilder(
-            valueListenable: _selectedTasks,
-            builder: (context, List<dynamic> value, child) => ListView.builder(
-              padding: EdgeInsets.zero,
-              scrollDirection: Axis.vertical,
-              itemCount: value.isEmpty ? 0 : value.length + 1,
-              itemBuilder: (context, index) {
-                if (index == 0) {
-                  return Container(
-                    padding: const EdgeInsets.only(top: 16.0),
-                    child: Text(
-                      Jiffy(_selectedDay).format("EEEE, do of MMMM yyyy"),
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w700,
+          Expanded(
+            child: ValueListenableBuilder(
+              valueListenable: _selectedTasks,
+              builder: (context, List<dynamic> value, child) =>
+                  ListView.builder(
+                padding: EdgeInsets.zero,
+                scrollDirection: Axis.vertical,
+                itemCount: value.isEmpty ? 0 : value.length + 1,
+                itemBuilder: (context, index) {
+                  if (index == 0) {
+                    return Container(
+                      padding: const EdgeInsets.only(top: 16.0),
+                      child: Text(
+                        Jiffy(_selectedDay).format("EEEE, do of MMMM yyyy"),
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                        ),
+                        textAlign: TextAlign.center,
                       ),
-                      textAlign: TextAlign.center,
-                    ),
-                  );
-                }
-                return TaskListItem(task: value[index - 1]);
-              },
+                    );
+                  }
+                  return TaskListItem(task: value[index - 1]);
+                },
+              ),
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

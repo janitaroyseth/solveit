@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/screens/profile_screen.dart';
 import 'package:project/screens/project_overview_screen.dart';
@@ -42,14 +43,18 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         toolbarHeight: 0,
         backgroundColor: Themes.primaryColor,
       ),
-      body: SafeArea(
-        child: TabBarView(
-          controller: tabBarController,
-          children: screens,
+      body: Container(
+        color: Colors.black,
+        child: SafeArea(
+          child: TabBarView(
+            controller: tabBarController,
+            children: screens,
+          ),
         ),
       ),
       bottomNavigationBar: BottomAppBar(
@@ -64,11 +69,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 0.0,
                 tabBarHeight,
               ),
-              borderSide:
-                  BorderSide(color: Theme.of(context).primaryColor, width: 3),
+              borderSide: BorderSide(
+                color: Themes.primaryColor.shade100,
+                width: 3,
+              ),
             ),
-            labelColor: Themes.primaryColor,
-            unselectedLabelColor: Themes.textColor,
             tabs: const <Widget>[
               _BottomTab(
                 icon: PhosphorIcons.diamondsFour,

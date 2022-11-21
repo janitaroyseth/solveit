@@ -54,7 +54,7 @@ class TaskDetailsScreen extends StatelessWidget {
             _TaskPopUpMenu(task: task),
           ],
           bottom: const TabBar(
-            labelColor: Colors.black,
+            //labelColor: Colors.black,
             indicatorColor: Themes.primaryColor,
             tabs: <Tab>[
               Tab(text: "overview"),
@@ -128,24 +128,39 @@ class _OverviewTabView extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Text("tags", style: Themes.textTheme.labelMedium),
+                  Text(
+                    "tags",
+                    style: Theme.of(context).textTheme.labelMedium,
+                  ),
                   const SizedBox(height: 8),
                   TagsList(
                     tags: task.tags,
                     size: TagSize.large,
                   ),
                   const SizedBox(height: 24),
-                  Text("deadline", style: Themes.textTheme.labelMedium),
+                  Text(
+                    "deadline",
+                    style: Theme.of(context).textTheme.labelMedium,
+                  ),
                   const SizedBox(height: 8),
                   Text(deadlineFormatted()),
                   const SizedBox(height: 24.0),
-                  Text("assigned", style: Themes.textTheme.labelMedium),
+                  Text(
+                    "assigned",
+                    style: Theme.of(context).textTheme.labelMedium,
+                  ),
                   const SizedBox(height: 8),
                   assignedList(context),
                   const SizedBox(height: 24),
-                  Text("description", style: Themes.textTheme.labelMedium),
+                  Text(
+                    "description",
+                    style: Theme.of(context).textTheme.labelMedium,
+                  ),
                   const SizedBox(height: 8),
-                  Text(task.description, style: Themes.textTheme.bodyMedium),
+                  Text(
+                    task.description,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
                 ],
               ),
             )
@@ -294,7 +309,10 @@ class _CommentTabViewState extends State<_CommentTabView> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Text("comments", style: Themes.textTheme.labelMedium),
+            Text(
+              "comments",
+              style: Theme.of(context).textTheme.labelMedium,
+            ),
             const SizedBox(height: 8),
             if (widget.task.comments.isEmpty) const Text("No comments..."),
             Expanded(
@@ -328,7 +346,7 @@ class _TaskPopUpMenu extends StatelessWidget {
       itemBuilder: (context) => [
         PopupMenuItem(
           value: 1,
-          height: 48,
+          height: 40,
           onTap: () {
             Future.delayed(
               const Duration(seconds: 0),
@@ -340,7 +358,7 @@ class _TaskPopUpMenu extends StatelessWidget {
         ),
         PopupMenuItem(
           value: 2,
-          height: 48,
+          height: 40,
           onTap: () {
             Future.delayed(
               const Duration(seconds: 0),
@@ -377,7 +395,7 @@ class _TaskPopUpMenu extends StatelessWidget {
           },
           child: Text(
             "delete task",
-            style: TextStyle(color: Colors.red.shade900),
+            style: TextStyle(color: Theme.of(context).errorColor),
           ),
         ),
       ],

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/models/filter.dart';
@@ -42,10 +44,10 @@ class TaskOverviewScreen extends StatelessWidget {
               child: Text(
                 project.title.toLowerCase(),
                 overflow: TextOverflow.fade,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.w300,
-                ),
+                style: Theme.of(context)
+                    .appBarTheme
+                    .titleTextStyle!
+                    .copyWith(color: Colors.white),
               ),
             ),
             const SizedBox(width: 8.0)
@@ -220,7 +222,7 @@ class _TaskOverviewBodyState extends State<_TaskOverviewBody> {
           clipper: CurveClipper(),
           child: Container(
             color: Themes.primaryColor,
-            height: 150,
+            height: Platform.isIOS ? 150 : 130,
           ),
         ),
         SearchBar(
@@ -373,7 +375,9 @@ class __ProjectPopUpMenuState extends State<_ProjectPopUpMenu> {
           },
           child: Text(
             "delete projext",
-            style: TextStyle(color: Colors.red.shade900),
+            style: TextStyle(
+              color: Theme.of(context).errorColor,
+            ),
           ),
         ),
       ],
