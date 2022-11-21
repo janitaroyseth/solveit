@@ -5,6 +5,8 @@ import 'package:project/models/user.dart';
 
 /// The data content of a project in the application.
 class Project {
+  // The id of the project.
+  String projectId;
   // The name of the project.
   String title;
 
@@ -37,6 +39,7 @@ class Project {
     if (null == data) {
       return null;
     }
+    final String id = data["projectId"];
     final String title = data['title'];
     final List<Task> tasks = [];
     for (Map<String, dynamic> map in data['tasks']) {
@@ -54,6 +57,7 @@ class Project {
     final bool isPublic = data['isPublic'];
     final String? lastUpdated = data['lastUpdated'];
     return Project(
+        projectId: id,
         title: title,
         tasks: tasks,
         tags: tags,
@@ -66,6 +70,7 @@ class Project {
 
   /// Creates an instance of [Project],
   Project({
+    this.projectId = "0",
     this.title = "project title",
     this.tasks = const [],
     this.tags = const [],
