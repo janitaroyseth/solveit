@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:project/styles/theme.dart';
 
 /// Represents a input field.
 class InputField extends StatelessWidget {
@@ -37,25 +39,37 @@ class InputField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TextFormField(
-      keyboardType: keyboardType,
-      textInputAction: keyboardAction,
-      controller: textEditingController,
-      validator: (value) {
-        if (value == null || value.isEmpty) {
-          return 'Please enter $label';
-        }
-        return null;
-      },
-      obscureText: isPassword,
-      decoration: InputDecoration(
-        labelStyle: Theme.of(context).textTheme.labelLarge,
-        label: Text(label, style: const TextStyle(color: Colors.black)),
-        hintText: placeholderText,
-        hintStyle: Theme.of(context).textTheme.labelSmall,
-        floatingLabelBehavior: FloatingLabelBehavior.always,
+    return Consumer(
+      builder: (context, ref, child) => TextFormField(
+        keyboardType: keyboardType,
+        textInputAction: keyboardAction,
+        controller: textEditingController,
+        validator: (value) {
+          if (value == null || value.isEmpty) {
+            return 'Please enter $label';
+          }
+          return null;
+        },
+        obscureText: isPassword,
+        decoration: InputDecoration(
+          labelStyle: Theme.of(context).textTheme.labelLarge,
+          label: Text(label, style: TextStyle(color: Themes.textColor(ref))),
+          hintText: placeholderText,
+          hintStyle: Theme.of(context).textTheme.labelSmall,
+          floatingLabelBehavior: FloatingLabelBehavior.always,
+          border: UnderlineInputBorder(
+            borderSide: BorderSide(
+              color: Themes.textColor(ref).withOpacity(0.4),
+            ),
+          ),
+          enabledBorder: UnderlineInputBorder(
+            borderSide: BorderSide(
+              color: Themes.textColor(ref).withOpacity(0.4),
+            ),
+          ),
+        ),
+        style: Theme.of(context).textTheme.bodySmall,
       ),
-      style: Theme.of(context).textTheme.bodySmall,
     );
   }
 }

@@ -22,14 +22,15 @@ class ProjectOverviewScreen extends StatelessWidget {
     //     ModalRoute.of(context)!.settings.arguments as List<Project>;
 
     return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         elevation: 0,
         centerTitle: true,
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.transparent,
         title: Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: const <Widget>[
-            Text(
+          children: <Widget>[
+            const Text(
               "solve",
               style: TextStyle(
                 fontSize: 18,
@@ -41,7 +42,7 @@ class ProjectOverviewScreen extends StatelessWidget {
               style: TextStyle(
                 fontWeight: FontWeight.w600,
                 fontSize: 18,
-                color: Themes.primaryColor,
+                color: Themes.primaryColor.shade50,
               ),
             )
           ],

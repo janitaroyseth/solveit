@@ -1,7 +1,7 @@
+import 'package:animated_toggle_switch/animated_toggle_switch.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
-import 'package:project/services/preferences_service.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:project/styles/theme.dart';
 import 'package:project/providers/settings_provider.dart';
@@ -31,11 +31,8 @@ class _UserSettingsScreenState extends ConsumerState<UserSettingsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        foregroundColor: Colors.black,
-        elevation: 0,
         title: const Text("settings"),
-        titleSpacing: -4,
-        backgroundColor: Themes.themeData.appBarTheme.backgroundColor,
+        backgroundColor: Colors.transparent,
         leading: AppBarButton(
           handler: () {
             Navigator.pop(context);
@@ -45,36 +42,72 @@ class _UserSettingsScreenState extends ConsumerState<UserSettingsScreen> {
           color: Colors.black,
         ),
       ),
-      body: _getSettingsList(),
+      body: _getSettingsList(ref),
     );
   }
 
-  Widget _getSettingsList() {
+  Widget _getSettingsList(WidgetRef ref) {
     return SettingsList(
       lightTheme: SettingsThemeData(
-        settingsListBackground: Themes.themeData.scaffoldBackgroundColor,
-        settingsSectionBackground: Themes.themeData.scaffoldBackgroundColor,
+        settingsListBackground: Theme.of(context).scaffoldBackgroundColor,
+        settingsSectionBackground: Theme.of(context).scaffoldBackgroundColor,
         dividerColor: Colors.black,
       ),
       sections: [
         SettingsSection(
-          title: const Text(
+          title: Text(
             'theme',
-            style: TextStyle(color: Themes.primaryColor),
+            style: TextStyle(
+              color: Themes.primaryColor.shade50,
+              fontFamily: Themes.fontFamily,
+            ),
           ),
           tiles: <SettingsTile>[
             SettingsTile.switchTile(
+              trailing: AnimatedToggleSwitch.rolling(
+                current: settings.darkThemeEnabled,
+                values: const [false, true],
+                onChanged: (bool value) {
+                  settings.darkThemeEnabled = value;
+                  ref.read(darkModeProvider.notifier).change(value);
+                  _saveSettings();
+                  setState(() {});
+                },
+                height: 32,
+                iconBuilder: (value, size, foreground) {
+                  if (value == true) {
+                    return Icon(
+                      PhosphorIcons.moonStarsBold,
+                      color: foreground == false ? Colors.black : Colors.white,
+                    );
+                  }
+                  return const Icon(
+                    PhosphorIcons.sunHorizonBold,
+                    color: Colors.white,
+                  );
+                },
+              ),
               onToggle: (value) {
                 settings.darkThemeEnabled = value;
+                ref.read(darkModeProvider.notifier).change(value);
                 _saveSettings();
+
                 setState(() {});
               },
               initialValue: settings.darkThemeEnabled,
               leading: Icon(
-                PhosphorIcons.paletteFill,
-                color: Themes.textColor.withOpacity(0.5),
+                PhosphorIcons.moonBold,
+                color: Themes.textColor(ref).withOpacity(0.7),
               ),
-              title: const Text('enable dark theme'),
+              activeSwitchColor: Themes.primaryColor.shade100,
+              title: Text(
+                'dark theme',
+                style: TextStyle(
+                  fontFamily: Themes.fontFamily,
+                  color: Themes.textColor(ref),
+                  fontSize: 14,
+                ),
+              ),
             ),
           ],
         ),

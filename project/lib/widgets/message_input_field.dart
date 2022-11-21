@@ -126,7 +126,7 @@ class _MessageInputFieldState extends State<MessageInputField> {
           controller: textEditingController,
           textInputAction: TextInputAction.newline,
           keyboardType: TextInputType.multiline,
-          style: Themes.textTheme.bodyMedium,
+          style: Theme.of(context).textTheme.bodyMedium,
           decoration: InputDecoration(
             contentPadding: const EdgeInsets.all(9.0),
             isDense: true,
@@ -143,7 +143,7 @@ class _MessageInputFieldState extends State<MessageInputField> {
             focusedBorder: OutlineInputBorder(
               borderSide: BorderSide(
                 width: 1.0,
-                color: Themes.primaryColor.withOpacity(0.8),
+                color: Themes.primaryColor.shade100,
                 style: BorderStyle.solid,
               ),
               borderRadius: BorderRadius.circular(20.0),
@@ -151,7 +151,7 @@ class _MessageInputFieldState extends State<MessageInputField> {
             enabledBorder: OutlineInputBorder(
               borderSide: BorderSide(
                 width: 1.0,
-                color: Themes.primaryColor.withOpacity(0.4),
+                color: Themes.primaryColor.shade100,
                 style: BorderStyle.solid,
               ),
               borderRadius: BorderRadius.circular(20.0),
@@ -197,8 +197,8 @@ class _SendButtonState extends State<_SendButton> {
       icon: Icon(
         PhosphorIcons.paperPlaneTiltFill,
         color: widget.textEditingController.text.isEmpty
-            ? Themes.primaryColor.withOpacity(0.4)
-            : Themes.primaryColor.withOpacity(0.8),
+            ? Themes.primaryColor.shade100.withOpacity(0.4)
+            : Themes.primaryColor.shade100,
         size: 32,
       ),
     );
@@ -224,7 +224,7 @@ class _GifButton extends StatelessWidget {
           builder: (context) => GifPicker(handler: widget.handler)),
       icon: Icon(
         PhosphorIcons.gifFill,
-        color: Themes.primaryColor.withOpacity(0.8),
+        color: Themes.primaryColor.shade100,
         size: 32,
       ),
     );
@@ -246,7 +246,7 @@ class _RecordButton extends StatelessWidget {
       },
       icon: Icon(
         PhosphorIcons.microphoneFill,
-        color: Themes.primaryColor.withOpacity(0.8),
+        color: Themes.primaryColor.shade100,
         size: 32,
       ),
     );
@@ -276,7 +276,7 @@ class _CameraButton extends StatelessWidget {
       },
       icon: Icon(
         PhosphorIcons.cameraFill,
-        color: Themes.primaryColor.withOpacity(0.8),
+        color: Themes.primaryColor.shade100,
         size: 32,
       ),
     );
@@ -309,7 +309,7 @@ class _GalleryButton extends StatelessWidget {
       },
       icon: Icon(
         PhosphorIcons.imageFill,
-        color: Themes.primaryColor.withOpacity(0.8),
+        color: Themes.primaryColor.shade100,
         size: 32,
       ),
     );

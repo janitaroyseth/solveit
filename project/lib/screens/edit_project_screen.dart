@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/data/example_data.dart';
 import 'package:project/data/project_avatar_options.dart';
@@ -16,14 +17,14 @@ enum _EditProjectMode {
 }
 
 /// Screen/Scaffold for creating a new project or editing an existing one.
-class EditProjectScreen extends StatelessWidget {
+class EditProjectScreen extends ConsumerWidget {
   static const routeName = "/edit-project";
   const EditProjectScreen({super.key});
 
   final Widget _verticalPadding = const SizedBox(height: 24);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final titleController = TextEditingController();
 
     final descriptionController = TextEditingController();
@@ -60,7 +61,6 @@ class EditProjectScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: appBarTitle(mode),
-        centerTitle: true,
         leading: backButton(context),
         backgroundColor: Themes.primaryColor,
         foregroundColor: Colors.white,
@@ -98,9 +98,12 @@ class EditProjectScreen extends StatelessWidget {
                 "collaborators",
                 style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
               ),
-              addCollaboratorButton(context),
+              addCollaboratorButton(context, ref),
               _verticalPadding,
-              const Text("choose a project avatar"),
+              Text(
+                "choose a project avatar",
+                style: Theme.of(context).textTheme.labelMedium,
+              ),
               _ProjectAvatarPicker(project),
               ElevatedButton(
                 onPressed: saveProject,
@@ -118,8 +121,7 @@ class EditProjectScreen extends StatelessWidget {
     return Text(
       mode == _EditProjectMode.create ? "create project" : "edit project",
       style: const TextStyle(
-        fontSize: 18,
-        fontWeight: FontWeight.w300,
+        color: Colors.white,
       ),
     );
   }
@@ -133,7 +135,7 @@ class EditProjectScreen extends StatelessWidget {
     );
   }
 
-  TextButton addCollaboratorButton(BuildContext context) {
+  TextButton addCollaboratorButton(BuildContext context, WidgetRef ref) {
     return TextButton(
       onPressed: () => showDialog(
         context: context,
@@ -155,7 +157,7 @@ class EditProjectScreen extends StatelessWidget {
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w400,
-              color: Themes.textColor,
+              color: Themes.textColor(ref),
             ),
           )
         ],

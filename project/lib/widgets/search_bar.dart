@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:project/styles/theme.dart';
 
 /// Represents a search bar used to filter through a list.
 class SearchBar extends StatefulWidget {
@@ -33,48 +35,59 @@ class SearchBar extends StatefulWidget {
 class _SearchBarState extends State<SearchBar> {
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: <Widget>[
-        Expanded(
-          child: Container(
-            height: 50,
-            padding: const EdgeInsets.symmetric(horizontal: 0.0, vertical: 4.0),
-            child: TextField(
-              controller: widget.textEditingController,
-              onChanged: (value) => widget.searchFunction(value),
-              style: const TextStyle(
-                fontSize: 12,
-              ),
-              decoration: InputDecoration(
-                prefixIcon: const Icon(PhosphorIcons.magnifyingGlass),
-                border: InputBorder.none,
-                hintText: widget.placeholderText.toLowerCase(),
+    return Consumer(
+      builder: (context, ref, child) => Row(
+        children: <Widget>[
+          Expanded(
+            child: Container(
+              height: 50,
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 0.0, vertical: 4.0),
+              child: TextField(
+                controller: widget.textEditingController,
+                onChanged: (value) => widget.searchFunction(value),
+                style: TextStyle(
+                  fontSize: 12,
+                  color: Themes.textColor(ref),
+                ),
+                decoration: InputDecoration(
+                  prefixIcon: Icon(
+                    PhosphorIcons.magnifyingGlass,
+                    color: Themes.textColor(ref),
+                  ),
+                  border: InputBorder.none,
+                  enabledBorder: InputBorder.none,
+                  hintStyle: TextStyle(
+                    color: Themes.textColor(ref),
+                  ),
+                  hintText: widget.placeholderText.toLowerCase(),
+                ),
               ),
             ),
           ),
-        ),
-        widget.filter
-            ? IconButton(
-                onPressed: () {
-                  showModalBottomSheet(
-                    shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(20.0),
-                        topRight: Radius.circular(20.0),
+          widget.filter
+              ? IconButton(
+                  onPressed: () {
+                    showModalBottomSheet(
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(20.0),
+                          topRight: Radius.circular(20.0),
+                        ),
                       ),
-                    ),
-                    context: context,
-                    builder: (context) {
-                      return widget.filterModal!;
-                    },
-                  );
-                },
-                icon: const Icon(
-                  PhosphorIcons.fadersHorizontal,
-                ),
-              )
-            : Container(),
-      ],
+                      context: context,
+                      builder: (context) {
+                        return widget.filterModal!;
+                      },
+                    );
+                  },
+                  icon: const Icon(
+                    PhosphorIcons.fadersHorizontal,
+                  ),
+                )
+              : Container(),
+        ],
+      ),
     );
   }
 }
