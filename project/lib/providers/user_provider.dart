@@ -10,5 +10,4 @@ final userAuthProvider = StreamProvider.autoDispose<User?>((ref) {
 final userProvider = Provider<UserService>((ref) {
   final UserService userService = FirebaseUserService();
   return userService;
-  ;
 });

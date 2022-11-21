@@ -42,7 +42,7 @@ class UserListItem extends StatelessWidget {
             ),
             const SizedBox(width: 8.0),
             Text(
-              "$user.username",
+              user.username,
               style: size == UserListItemSize.large
                   ? const TextStyle(fontSize: 13)
                   : const TextStyle(fontSize: 12),
