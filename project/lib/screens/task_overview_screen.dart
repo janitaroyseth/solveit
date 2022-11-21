@@ -149,11 +149,11 @@ class _TaskOverviewBodyState extends State<_TaskOverviewBody> {
   /// [bool] descending - Whether or not the list should be sorted descending.
   void sortByVariable(String attribute, bool descending) {
     if (descending) {
-      items.sort((b, a) => (a.asMap()[attribute] as String)
-          .compareTo(b.asMap()[attribute] as String));
+      items.sort((b, a) => (a.toMap()[attribute] as String)
+          .compareTo(b.toMap()[attribute] as String));
     } else {
-      items.sort((a, b) => (a.asMap()[attribute] as String)
-          .compareTo(b.asMap()[attribute] as String));
+      items.sort((a, b) => (a.toMap()[attribute] as String)
+          .compareTo(b.toMap()[attribute] as String));
     }
 
     setState(() {});

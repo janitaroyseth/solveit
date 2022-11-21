@@ -76,7 +76,7 @@ class Task {
   }
 
   /// Returns the data content of the task as a map.
-  Map asMap() {
+  Map toMap() {
     return {
       "title": title,
       "description": description,

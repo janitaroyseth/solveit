@@ -68,6 +68,28 @@ class Project {
         lastUpdated: lastUpdated);
   }
 
+  static Map<String, dynamic> toMap(Project project) {
+    var tasks = [];
+    for (Task task in project.tasks) {
+      tasks.add(task.toMap());
+    }
+    var tags = [];
+    for (Tag tag in project.tags) {
+      tags.add(tag.toMap());
+    }
+    return {
+      "projectId": project.projectId,
+      "title": project.title,
+      "tasks": tasks,
+      "tags": tags,
+      "owner": project.owner,
+      "imageUrl": project.imageUrl,
+      "description": project.description,
+      "isPublic": project.isPublic,
+      "lastUpdated": project.lastUpdated
+    };
+  }
+
   /// Creates an instance of [Project],
   Project({
     this.projectId = "0",

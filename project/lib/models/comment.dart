@@ -17,8 +17,34 @@ abstract class Comment {
 
     final User author = data['author'];
     final String date = data['date'];
-    // TODO: fix this
-    //return Comment(author: author, date: date);
+    final String? image = data['image'];
+    final String? text = data['text'];
+    final String? url = data['url'];
+
+    if (null != image) {
+      return ImageComment(author: author, date: date, image: File(image));
+    } else if (null != text) {
+      return TextComment(author: author, date: date, text: text);
+    } else if (null != url) {
+      return GifComment(author: author, date: date, url: url);
+    } else {
+      return null;
+    }
+  }
+
+  static Map<String, dynamic> toMap(Comment comment) {
+    Map<String, dynamic> map = {
+      "author": comment.author,
+      "date": comment.date,
+    };
+    if (comment is TextComment) {
+      map["text"] = comment.text;
+    } else if (comment is GifComment) {
+      map["url"] = comment.url;
+    } else if (comment is ImageComment) {
+      map["image"] = comment.image;
+    }
+    return map;
   }
 
   Comment({

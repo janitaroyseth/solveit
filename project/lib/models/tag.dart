@@ -25,4 +25,9 @@ class Tag {
     final String color = data['color'];
     return Tag(text: text, color: color);
   }
+
+  /// Converts a [Tag] object to a [Map] object.
+  Map toMap() {
+    return {"text": text, "color": color};
+  }
 }
