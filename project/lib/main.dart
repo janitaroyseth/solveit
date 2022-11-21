@@ -42,7 +42,7 @@ class MyApp extends StatelessWidget {
   /// Check if the user is logged in.
   /// They get send to the [HomeScreen] if logged in and [SignInScreen] if not.
   Widget initialScreenCheck(WidgetRef ref) {
-    final userAsyncData = ref.watch(userProvider);
+    final userAsyncData = ref.watch(userAuthProvider);
 
     return userAsyncData.when(
       data: (user) {
