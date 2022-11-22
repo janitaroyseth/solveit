@@ -93,7 +93,7 @@ class __SignInFormState extends ConsumerState<_SignInForm> {
     bool? isValid = formKey.currentState?.validate();
     FocusScope.of(context).unfocus();
 
-    if (isValid != null && isValid && signupForm) {
+    if (isValid != null && isValid && signupMode) {
       formKey.currentState?.save();
 
       /// Send registration request.
@@ -114,7 +114,7 @@ class __SignInFormState extends ConsumerState<_SignInForm> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
           Text(
-            signupForm ? "sign up" : "login",
+            signupMode ? "sign up" : "login",
             style: Theme.of(context).textTheme.displayMedium,
           ),
           const SizedBox(height: 16),
@@ -127,10 +127,10 @@ class __SignInFormState extends ConsumerState<_SignInForm> {
           ElevatedButton(
             onPressed: submitEmailRequest,
             style: Themes.primaryElevatedButtonStyle,
-            child: Text(signupForm ? "sign up" : "sign in"),
+            child: Text(signupMode ? "sign up" : "sign in"),
           ),
           const SizedBox(height: 48),
-          signupForm
+          signupMode
               ? const Text(
                   "or sign up with",
                   textAlign: TextAlign.center,
@@ -160,7 +160,7 @@ class __SignInFormState extends ConsumerState<_SignInForm> {
                 ),
               ),
               ElevatedButton(
-                onPressed: signupForm
+                onPressed: signupMode
                     ? () => Navigator.of(context)
                         .pushNamed(CreateProfileScreen.routeName)
                     : () => Navigator.of(context).popAndPushNamed(
@@ -181,7 +181,7 @@ class __SignInFormState extends ConsumerState<_SignInForm> {
           const SizedBox(height: 20),
           FittedBox(
             fit: BoxFit.scaleDown,
-            child: signupForm
+            child: signupMode
                 ? Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
@@ -196,7 +196,7 @@ class __SignInFormState extends ConsumerState<_SignInForm> {
                           ),
                         ),
                         child: const Text("sign in here >"),
-                        onPressed: () => setState(() => signupForm = false),
+                        onPressed: () => setState(() => signupMode = false),
                       ),
                     ],
                   )
@@ -214,7 +214,7 @@ class __SignInFormState extends ConsumerState<_SignInForm> {
                           ),
                         ),
                         child: const Text("sign up here >"),
-                        onPressed: () => setState(() => signupForm = true),
+                        onPressed: () => setState(() => signupMode = true),
                       ),
                     ],
                   ),
@@ -228,7 +228,7 @@ class __SignInFormState extends ConsumerState<_SignInForm> {
 
   Visibility confirmPasswordField() {
     return Visibility(
-      visible: signupForm,
+      visible: signupMode,
       child: Column(
         children: <Widget>[
           verticalPadding(),
@@ -279,14 +279,14 @@ class __SignInFormState extends ConsumerState<_SignInForm> {
       onSaved: (newValue) {
         name = newValue ?? "";
       },
-      textInputAction: signupForm ? TextInputAction.next : TextInputAction.done,
+      textInputAction: signupMode ? TextInputAction.next : TextInputAction.done,
       keyboardType: TextInputType.visiblePassword,
     );
   }
 
   Visibility nameField() {
     return Visibility(
-      visible: signupForm,
+      visible: signupMode,
       child: Column(
         children: <Widget>[
           verticalPadding(),
