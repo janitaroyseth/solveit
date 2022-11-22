@@ -69,7 +69,7 @@ class FirebaseProjectService implements ProjectService {
 
       // Fetch and add the collaborators
       for (String userId in map["collaborators"]) {
-        User? user = await userService.getUser(userId);
+        User? user = await userService.getUser(userId).first;
         if (null != user) {
           project.collaborators.add(user);
         }

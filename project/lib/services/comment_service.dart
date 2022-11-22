@@ -42,7 +42,7 @@ class FirebaseCommentService extends CommentService {
     if (null != commentMap) {
       comment = Comment.fromMap(commentMap);
       if (null != comment) {
-        comment.author = await userService.getUser(commentMap["author"]);
+        comment.author = await userService.getUser(commentMap["author"]).first;
       }
     }
     return comment;
@@ -55,7 +55,8 @@ class FirebaseCommentService extends CommentService {
       for (var element in value.docs) {
         Comment? comment = Comment.fromMap(element.data());
         if (comment != null) {
-          comment.author = await userService.getUser(element.data()["author"]);
+          comment.author =
+              await userService.getUser(element.data()["author"]).first;
           comments.add(comment);
         }
       }
