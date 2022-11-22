@@ -86,7 +86,7 @@ Our project assignment is to create a mobile application for a target group of o
 
 ## Roadmap
 
-- [ ] Create static version of the wireframe.
+- [x] Create static version of the wireframe.
 - [ ] Finish MVP (Minimal Viable Product)
 - [ ] Add dark theme
 - [ ] Implement shared projects
