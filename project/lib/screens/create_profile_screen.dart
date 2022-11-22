@@ -4,14 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
-import 'package:project/data/example_data.dart';
 import 'package:project/models/user.dart';
 import 'package:project/providers/user_images_provider.dart';
 import 'package:project/providers/user_provider.dart';
 import 'package:project/styles/curve_clipper.dart';
 import 'package:project/styles/theme.dart';
 import 'package:project/widgets/appbar_button.dart';
-import 'package:project/screens/home_screen.dart';
 import 'package:project/widgets/image_picker_modal.dart';
 
 /// Scaffold/Screen for creating profile after signing up.
@@ -38,14 +36,14 @@ class CreateProfileScreen extends ConsumerWidget {
       WidgetRef ref,
       String userId,
     ) async {
-      User? user = await ref.watch(userProvider).getUser(userId);
+      User? user = await ref.watch(userProvider).getUser(userId).first;
 
       if (user != null) {
         user.bio = bioController.text;
 
         if (image != null) {
           user.imageUrl =
-              await ref.read(userImageProvider).updateUserImage(userId, image!);
+              await ref.read(userImageProvider).addUserImage(userId, image!);
           //await ref.read(userProvider).addProfilePictre(userId, image!);
         }
 
@@ -67,8 +65,8 @@ class CreateProfileScreen extends ConsumerWidget {
       body: SingleChildScrollView(
         child: Column(
           children: <Widget>[
-            FutureBuilder(
-                future: ref.watch(userProvider).getUser(userId),
+            StreamBuilder(
+                stream: ref.watch(userProvider).getUser(userId),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     user = snapshot.data as User?;
@@ -111,7 +109,10 @@ class CreateProfileScreen extends ConsumerWidget {
                                   ),
                                 ),
                                 const SizedBox(height: 16),
-                                _PickProfilePicture(imagePicker),
+                                PickProfilePicture(
+                                  imagePicker,
+                                  label: "Add profile picture",
+                                ),
                               ],
                             ),
                           ],
@@ -189,18 +190,21 @@ class CreateProfileScreen extends ConsumerWidget {
 
 /// Displaying the profile picture chosen by the user and a button for
 /// changing profile picture.
-class _PickProfilePicture extends StatefulWidget {
-  /// Creates in instance of [_PickProfilePicture] that displays the
+class PickProfilePicture extends StatefulWidget {
+  /// Creates in instance of [PickProfilePicture] that displays the
   /// profile picture chosen and a button for changing profile picture.
-  const _PickProfilePicture(this.imageHandler);
+  const PickProfilePicture(this.imageHandler,
+      {super.key, required this.label, this.imageUrl});
 
   final void Function(File? image) imageHandler;
+  final String label;
+  final String? imageUrl;
 
   @override
-  State<_PickProfilePicture> createState() => _PickProfilePictureState();
+  State<PickProfilePicture> createState() => _PickProfilePictureState();
 }
 
-class _PickProfilePictureState extends State<_PickProfilePicture> {
+class _PickProfilePictureState extends State<PickProfilePicture> {
   /// Profile picture chosen, if none chosen is null.
   File? image;
 
@@ -224,15 +228,21 @@ class _PickProfilePictureState extends State<_PickProfilePicture> {
   Widget build(BuildContext context) {
     return Column(
       children: <Widget>[
-        image == null
-            ? Image.asset(
-                "assets/images/profile_placeholder.png",
-                height: 200,
-              )
-            : CircleAvatar(
-                radius: 100,
-                backgroundImage: FileImage(image!),
-              ),
+        if (widget.imageUrl != null)
+          CircleAvatar(
+            radius: 100,
+            backgroundImage: NetworkImage(widget.imageUrl!),
+          )
+        else if (image == null)
+          Image.asset(
+            "assets/images/profile_placeholder.png",
+            height: 200,
+          )
+        else
+          CircleAvatar(
+            radius: 100,
+            backgroundImage: FileImage(image!),
+          ),
         const SizedBox(height: 8),
         ElevatedButton(
           onPressed: () => showModalBottomSheet(
@@ -249,7 +259,7 @@ class _PickProfilePictureState extends State<_PickProfilePicture> {
             ),
           ),
           style: Themes.secondaryElevatedButtonStyle,
-          child: const Text("add profile picture"),
+          child: Text(widget.label.toLowerCase()),
         ),
       ],
     );

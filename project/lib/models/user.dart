@@ -22,7 +22,7 @@ class User {
     final String username = data["username"];
     final String email = data["email"];
     final String bio = data["bio"];
-    final String imageUrl = data["imageUrl"];
+    String imageUrl = data["imageUrl"];
 
     return User(
       userId: userId,
