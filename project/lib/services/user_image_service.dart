@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:path/path.dart';
@@ -26,31 +27,27 @@ class FirebaseUserImageService implements UserImageService {
     if (image != null) {
       String imageExtension = extension(image.path);
       return userImagesReference
+          .child(userId)
           .child("$userId$imageExtension")
           .putFile(image)
           .then((value) => value.ref.getDownloadURL());
     } else {
       return Future<String>.value(
-          "https://firebasestorage.googleapis.com/v0/b/solveit-1337.appspot.com/o/user_images%2Fprofile_placeholder.png?alt=media&token=892934b3-c3ad-48d5-a946-4c153aefbbbe");
+          "https://firebasestorage.googleapis.com/v0/b/solveit-1337.appspot.com/o/user_images%2Fprofile_placeholder.png?alt=media&token=d1167324-93a9-4515-8341-21d27abd3d24");
     }
   }
 
   @override
   Future<String> updateUserImage(String userId, File image) async {
-    return deleteUserImage(userId).then(
-      (value) => addUserImage(userId, image).then((value) => value),
-      onError: (error) => print(error),
-    );
+    await deleteUserImage(userId);
+    return await addUserImage(userId, image);
   }
 
   @override
   Future<void> deleteUserImage(String userId) {
-    return userImagesReference.listAll().then((userImages) {
-      for (Reference userImageReference in userImages.items) {
-        if (userImageReference.name.contains(userId)) {
-          userImageReference.delete();
-        }
-      }
-    }, onError: (error) => print(error));
+    return userImagesReference
+        .child(userId)
+        .listAll()
+        .then((value) => value.items.first.delete());
   }
 }

@@ -24,7 +24,7 @@ class ProjectCalendarScreen extends StatelessWidget {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        toolbarHeight: 90,
+        toolbarHeight: 95,
         title: Row(
           children: [
             Image.asset(

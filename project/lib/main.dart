@@ -7,6 +7,7 @@ import 'package:project/firebase_options.dart';
 import 'package:project/providers/settings_provider.dart';
 import 'package:project/providers/user_provider.dart';
 import 'package:project/screens/create_profile_screen.dart';
+import 'package:project/screens/edit_profile_screen.dart';
 import 'package:project/screens/edit_project_screen.dart';
 import 'package:project/screens/configure_task_screen.dart';
 import 'package:project/screens/profile_screen.dart';
@@ -68,21 +69,22 @@ class MyApp extends StatelessWidget {
         routes: {
           SignInScreen.routeName: (context) => SignInScreen(),
           HomeScreen.routeName: (context) => const HomeScreen(),
-          ProjectCalendarScreen.routeName: (context) =>
-              const ProjectCalendarScreen(),
-          TaskOverviewScreen.routeName: (context) => const TaskOverviewScreen(),
-          TaskDetailsScreen.routeName: (context) => const TaskDetailsScreen(),
-          ProfileScreen.routeName: (context) => const ProfileScreen(),
-          ProjectPreviewScreen.routeName: (context) =>
-              const ProjectPreviewScreen(),
           ProjectOverviewScreen.routeName: (context) =>
               const ProjectOverviewScreen(),
+          ProjectPreviewScreen.routeName: (context) =>
+              const ProjectPreviewScreen(),
+          ProjectCalendarScreen.routeName: (context) =>
+              const ProjectCalendarScreen(),
+          EditProjectScreen.routeName: (context) => const EditProjectScreen(),
+          TaskOverviewScreen.routeName: (context) => const TaskOverviewScreen(),
+          TaskDetailsScreen.routeName: (context) => const TaskDetailsScreen(),
+          ConfigureTaskScreen.routeName: (context) =>
+              const ConfigureTaskScreen(),
+          ProfileScreen.routeName: (context) => const ProfileScreen(),
+          EditProfileScreen.routeName: (context) => const EditProfileScreen(),
           CreateProfileScreen.routeName: (context) =>
               const CreateProfileScreen(),
           UserSettingsScreen.routeName: (context) => const UserSettingsScreen(),
-          EditProjectScreen.routeName: (context) => const EditProjectScreen(),
-          ConfigureTaskScreen.routeName: (context) =>
-              const ConfigureTaskScreen(),
         },
       ),
     );

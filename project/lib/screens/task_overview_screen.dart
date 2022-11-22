@@ -33,7 +33,7 @@ class TaskOverviewScreen extends StatelessWidget {
       appBar: AppBar(
         foregroundColor: Colors.white,
         elevation: 0,
-        toolbarHeight: 90,
+        toolbarHeight: 95,
         title: Row(
           children: [
             Image.asset(

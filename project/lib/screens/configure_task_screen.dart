@@ -388,7 +388,7 @@ class _TaskScreenBodyState extends State<_TaskScreenBody> {
                 radius: 15,
                 backgroundColor: Themes.primaryColor.shade100,
                 backgroundImage: const AssetImage(
-                  "assets/images/empty_profile_pic_large.png",
+                  "assets/images/profile_placeholder.png",
                 ),
               ),
               const SizedBox(

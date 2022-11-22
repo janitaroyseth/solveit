@@ -6,6 +6,7 @@ import 'package:project/models/project.dart';
 import 'package:project/providers/auth_provider.dart';
 import 'package:project/models/user.dart';
 import 'package:project/providers/user_provider.dart';
+import 'package:project/screens/edit_profile_screen.dart';
 import 'package:project/screens/project_preview_screen.dart';
 import 'package:project/styles/curve_clipper.dart';
 import 'package:project/styles/theme.dart';
@@ -23,7 +24,7 @@ class ProfileScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final List<Project> projects = ExampleData.projects;
-    final Future<User?> user = ref
+    final Stream<User?> user = ref
         .watch(userProvider)
         .getUser(ref.watch(authProvider).currentUser!.uid);
 
@@ -87,12 +88,18 @@ class ProfileScreen extends ConsumerWidget {
                       ModalListItem(
                         icon: PhosphorIcons.userCircleGearLight,
                         label: "edit profile",
-                        handler: () {},
+                        handler: () {
+                          Navigator.of(context).pop();
+                          Navigator.of(context).pushNamed(
+                            EditProfileScreen.routeName,
+                          );
+                        },
                       ),
                       ModalListItem(
                         icon: PhosphorIcons.gearSixLight,
                         label: "settings",
                         handler: () {
+                          Navigator.of(context).pop();
                           Navigator.of(context).pushNamed(
                             UserSettingsScreen.routeName,
                           );
@@ -145,8 +152,8 @@ class ProfileScreen extends ConsumerWidget {
                   right: 24.0,
                   bottom: 16.0,
                 ),
-                child: FutureBuilder<User?>(
-                  future: user,
+                child: StreamBuilder<User?>(
+                  stream: user,
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
                       return Row(
@@ -288,7 +295,11 @@ class ProfileScreen extends ConsumerWidget {
                 ModalListItem(
                   icon: PhosphorIcons.userCircleGearLight,
                   label: "edit profile",
-                  handler: () {},
+                  handler: () {
+                    Navigator.of(context).pop();
+                    Navigator.of(context)
+                        .pushNamed(EditProfileScreen.routeName);
+                  },
                 ),
                 ModalListItem(
                   icon: PhosphorIcons.gearSixLight,
