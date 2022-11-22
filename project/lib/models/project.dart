@@ -7,6 +7,7 @@ import 'package:project/models/user.dart';
 class Project {
   // The id of the project.
   String projectId;
+
   // The name of the project.
   String title;
 
@@ -17,7 +18,7 @@ class Project {
   List<Tag> tags;
 
   /// Owner of this project.
-  User owner;
+  User? owner;
 
   /// List of collaborators on this project.
   List<User> collaborators;
@@ -41,67 +42,59 @@ class Project {
     }
     final String id = data["projectId"];
     final String title = data['title'];
-    final List<Task> tasks = [];
-    for (Map<String, dynamic> map in data['tasks']) {
-      Task? task = Task.fromMap(map);
-      if (task != null) tasks.add(task);
-    }
-    final List<Tag> tags = [];
-    for (Map<String, dynamic> map in data['tags']) {
-      Tag? tag = Tag.fromMap(map);
-      if (tag != null) tags.add(tag);
-    }
-    final User owner = data["owner"];
-    final String imageUrl = data['imageUrl'];
     final String description = data['description'];
     final bool isPublic = data['isPublic'];
     final String? lastUpdated = data['lastUpdated'];
+    final String imageUrl = data['imageUrl'];
+
+    // final List<Task> tasks = [];
+    // final List<Tag> tags = [];
+    // final User owner = data["owner"];
+
+    // for (Map<String, dynamic> map in data['tasks']) {
+    //   Task? task = Task.fromMap(map);
+    //   if (task != null) tasks.add(task);
+    // }
+
+    // for (Map<String, dynamic> map in data['tags']) {
+    //   Tag? tag = Tag.fromMap(map);
+    //   if (tag != null) tags.add(tag);
+    // }
+
     return Project(
         projectId: id,
         title: title,
-        tasks: tasks,
-        tags: tags,
-        owner: owner,
         imageUrl: imageUrl,
         description: description,
         isPublic: isPublic,
         lastUpdated: lastUpdated);
   }
 
-  static Map<String, dynamic> toMap(Project project) {
-    var tasks = [];
-    for (Task task in project.tasks) {
-      tasks.add(task.toMap());
-    }
-    var tags = [];
-    for (Tag tag in project.tags) {
-      tags.add(tag.toMap());
-    }
+  Map<String, dynamic> toMap() {
     return {
-      "projectId": project.projectId,
-      "title": project.title,
-      "tasks": tasks,
-      "tags": tags,
-      "owner": project.owner,
-      "imageUrl": project.imageUrl,
-      "description": project.description,
-      "isPublic": project.isPublic,
-      "lastUpdated": project.lastUpdated
+      "projectId": projectId,
+      "title": title,
+      "tasks": tasks.map((e) => e.taskId).toList(),
+      "tags": tags.map((e) => e.tagId).toList(),
+      "owner": owner!.userId,
+      "imageUrl": imageUrl,
+      "description": description,
+      "isPublic": isPublic,
+      "lastUpdated": lastUpdated
     };
   }
 
   /// Creates an instance of [Project],
   Project({
-    this.projectId = "0",
+    this.projectId = "",
     this.title = "project title",
     this.tasks = const [],
     this.tags = const [],
-    required this.owner,
-    List<User>? collaborators,
+    this.owner,
+    this.collaborators = const [],
     String? imageUrl,
     this.description = "",
     this.lastUpdated,
     this.isPublic = false,
-  })  : imageUrl = imageUrl ?? projectAvatars[0],
-        collaborators = collaborators ?? [];
+  }) : imageUrl = imageUrl ?? projectAvatars[0];
 }

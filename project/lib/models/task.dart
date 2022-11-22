@@ -4,6 +4,8 @@ import 'package:project/models/user.dart';
 
 /// Represents a task in a project.
 class Task {
+  // The id of the task.
+  String taskId;
   // The name of the task.
   String title;
   // The description of the task.
@@ -20,6 +22,7 @@ class Task {
   List<User> assigned;
 
   Task({
+    this.taskId = "",
     this.title = "task title",
     this.description = "task description",
     this.tags = const [],
@@ -34,40 +37,41 @@ class Task {
     if (data == null) {
       return null;
     }
+    final String taskId = data["taskId"];
     final String title = data['title'];
     final String description = data['description'];
-    final List<Tag> tags = [];
-    if (null != data['tags']) {
-      for (Map<String, dynamic> map in data['tags']) {
-        Tag? tag = Tag.fromMap(map);
-        if (tag != null) tags.add(tag);
-      }
-    }
     final bool done = data['done'];
     final String? deadline = data['deadline'];
     final List<Comment> comments = [];
-    if (null != data['comments']) {
-      for (Map<String, dynamic> map in data['comments']) {
-        Comment? comment = Comment.fromMap(map);
-        if (comment != null) comments.add(comment);
-      }
-    }
     final List<User> assigned = [];
-    if (data["assigned"] != null) {
-      for (Map<String, dynamic> map in data["assigned"]) {
-        User? user = User.fromMap(map);
-        if (user != null) assigned.add(user);
-      }
-    }
+    final List<Tag> tags = [];
+    // TASKSERVICE HANDLES EXTRACTION AND INJECTION OF FOLLOWING FIELDS
+    // if (null != data['tags']) {
+    //   for (Map<String, dynamic> map in data['tags']) {
+    //     Tag? tag = Tag.fromMap(map);
+    //     if (tag != null) tags.add(tag);
+    //   }
+    // }
+
+    // if (null != data['comments']) {
+    //   for (Map<String, dynamic> map in data['comments']) {
+    //     Comment? comment = Comment.fromMap(map);
+    //     if (comment != null) comments.add(comment);
+    //   }
+    // }
+
+    // if (data["assigned"] != null) {
+    //   for (Map<String, dynamic> map in data["assigned"]) {
+    //     User? user = User.fromMap(map);
+    //     if (user != null) assigned.add(user);
+    //   }
+    // }
     return Task(
-      title: title,
-      description: description,
-      tags: tags,
-      done: done,
-      deadline: deadline,
-      comments: comments,
-      assigned: assigned,
-    );
+        taskId: taskId,
+        title: title,
+        description: description,
+        done: done,
+        deadline: deadline);
   }
 
   /// Returns the data content of the task as a dynamic list.
@@ -76,15 +80,16 @@ class Task {
   }
 
   /// Returns the data content of the task as a map.
-  Map toMap() {
+  Map<String, dynamic> toMap() {
     return {
+      "taskId": taskId,
       "title": title,
       "description": description,
-      "tags": tags,
       "done": done,
       "deadline": deadline,
-      "comments": comments,
-      "assigned": assigned,
+      "comments": comments.map((e) => e.commentId).toList(),
+      "assigned": assigned.map((e) => e.userId).toList(),
+      "tags": tags.map((e) => e.tagId)
     };
   }
 }
