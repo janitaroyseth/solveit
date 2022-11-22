@@ -7,6 +7,7 @@ import 'package:project/data/example_data.dart';
 import 'package:project/models/project.dart';
 import 'package:project/models/user.dart' as app;
 import 'package:project/providers/auth_provider.dart';
+import 'package:project/providers/user_provider.dart';
 import 'package:project/screens/create_profile_screen.dart';
 import 'package:project/screens/home_screen.dart';
 import 'package:project/styles/theme.dart';
@@ -81,7 +82,7 @@ class __SignInFormState extends ConsumerState<_SignInForm> {
   List<Project> projects = ExampleData.projects;
   app.User user = ExampleData.user2;
 
-  bool signupForm = false;
+  bool signupMode = false;
   final formKey = GlobalKey<FormState>();
 
   String email = "";
@@ -343,6 +344,21 @@ class __SignInFormState extends ConsumerState<_SignInForm> {
   /// Signing the user in with Google.
   Future<void> _signInWithGoogle() async {
     final auth = ref.read(authProvider);
-    auth.signInWithGoogle();
+    auth.signInWithGoogle().then((value) {
+      if (value != null &&
+          value.user != null &&
+          value.additionalUserInfo!.isNewUser) {
+        String userId = value.user!.uid;
+        ref.read(userProvider).addUser(
+              userId: userId,
+              username: value.user!.displayName!,
+              email: value.user!.email!,
+            );
+        Navigator.of(context).pushNamed(
+          CreateProfileScreen.routeName,
+          arguments: userId,
+        );
+      }
+    });
   }
 }
