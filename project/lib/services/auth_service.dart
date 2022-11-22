@@ -7,6 +7,12 @@ abstract class AuthService {
   /// Signing in anonymously.
   Future<User?> signInAnonymously();
 
+  /// Signing in with email and password.
+  Future<User?> signInWithEmailAndPassword(String email, String password);
+
+  /// Registering a new used with email and password.
+  Future<User?> registerWithEmailAndPassword(String email, String password);
+
   /// Signing in with Google.
   Future<UserCredential?> signInWithGoogle();
 
@@ -27,6 +33,22 @@ class Auth implements AuthService {
   Future<User?> signInAnonymously() async {
     final userCredentials = await _fireBaseAuth.signInAnonymously();
     return userCredentials.user;
+  }
+
+  @override
+  Future<User?> signInWithEmailAndPassword(
+      String email, String password) async {
+    final UserCredential userCredential = await _fireBaseAuth
+        .signInWithEmailAndPassword(email: email, password: password);
+    return userCredential.user;
+  }
+
+  @override
+  Future<User?> registerWithEmailAndPassword(
+      String email, String password) async {
+    final UserCredential userCredential = await _fireBaseAuth
+        .createUserWithEmailAndPassword(email: email, password: password);
+    return userCredential.user;
   }
 
   @override

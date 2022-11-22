@@ -95,10 +95,26 @@ class __SignInFormState extends ConsumerState<_SignInForm> {
 
     if (isValid != null && isValid && signupMode) {
       formKey.currentState?.save();
-
-      /// Send registration request.
+      ref
+          .read(authProvider)
+          .registerWithEmailAndPassword(email, password)
+          .then((user) {
+        if (user != null) {
+          String userId = user.uid;
+          ref.read(userProvider).addUser(
+                userId: userId,
+                username: name,
+                email: email,
+              );
+          Navigator.of(context).pushNamed(
+            CreateProfileScreen.routeName,
+            arguments: userId,
+          );
+        }
+      });
     } else if (isValid != null && isValid) {
       formKey.currentState?.save();
+      ref.read(authProvider).signInWithEmailAndPassword(email, password);
 
       /// Send login request.
     }
@@ -248,9 +264,7 @@ class __SignInFormState extends ConsumerState<_SignInForm> {
             onChanged: (value) {
               password = value;
             },
-            onSaved: (newValue) {
-              name = newValue ?? "";
-            },
+            onSaved: (newValue) {},
             obscureText: true,
             keyboardType: TextInputType.visiblePassword,
             textInputAction: TextInputAction.done,
@@ -277,7 +291,7 @@ class __SignInFormState extends ConsumerState<_SignInForm> {
         password = value;
       },
       onSaved: (newValue) {
-        name = newValue ?? "";
+        password = newValue ?? "";
       },
       textInputAction: signupMode ? TextInputAction.next : TextInputAction.done,
       keyboardType: TextInputType.visiblePassword,
