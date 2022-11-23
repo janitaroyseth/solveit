@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="app_name">solveit</string>
+  <string name="facebook_app_id">947127636170604</string>
+  <string name="fb_login_protocol_scheme">fb947127636170604</string>
+  <string name="facebook_client_token">8df10995e372094ea72a7aa5519bf41c</string>
+</resources>
