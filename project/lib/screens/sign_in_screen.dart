@@ -122,6 +122,54 @@ class __SignInFormState extends ConsumerState<_SignInForm> {
     setState(() {});
   }
 
+  /// Signing the user in anonymously.
+  Future<void> _signInAnonymously() async {
+    final auth = ref.read(authProvider);
+    auth.signInAnonymously();
+  }
+
+  /// Signing the user in with Facebook.
+  Future<void> _signInWithGoogle() async {
+    final auth = ref.read(authProvider);
+    auth.signInWithGoogle().then((value) {
+      if (value != null &&
+          value.user != null &&
+          value.additionalUserInfo!.isNewUser) {
+        String userId = value.user!.uid;
+        ref.read(userProvider).addUser(
+              userId: userId,
+              username: value.user!.displayName!,
+              email: value.user!.email!,
+            );
+        Navigator.of(context).pushNamed(
+          CreateProfileScreen.routeName,
+          arguments: userId,
+        );
+      }
+    });
+  }
+
+  /// Signing the user in with Google.
+  Future<void> _signInWithFacebook() async {
+    final auth = ref.read(authProvider);
+    auth.signInWithFacebook().then((value) {
+      if (value != null &&
+          value.user != null &&
+          value.additionalUserInfo!.isNewUser) {
+        String userId = value.user!.uid;
+        ref.read(userProvider).addUser(
+              userId: userId,
+              username: value.user!.displayName!,
+              email: value.user!.email!,
+            );
+        Navigator.of(context).pushNamed(
+          CreateProfileScreen.routeName,
+          arguments: userId,
+        );
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -159,39 +207,9 @@ class __SignInFormState extends ConsumerState<_SignInForm> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
-              ElevatedButton(
-                onPressed: _signInAnonymously,
-                style: Themes.circularButtonStyle,
-                child: const Icon(
-                  PhosphorIcons.facebookLogo,
-                  size: 36,
-                ),
-              ),
-              ElevatedButton(
-                onPressed: _signInWithGoogle,
-                style: Themes.circularButtonStyle,
-                child: const Icon(
-                  PhosphorIcons.googleLogo,
-                  size: 36,
-                ),
-              ),
-              ElevatedButton(
-                onPressed: signupMode
-                    ? () => Navigator.of(context)
-                        .pushNamed(CreateProfileScreen.routeName)
-                    : () => Navigator.of(context).popAndPushNamed(
-                          HomeScreen.routeName,
-                          arguments: {
-                            "user": user,
-                            "projects": projects,
-                          },
-                        ),
-                style: Themes.circularButtonStyle,
-                child: const Icon(
-                  PhosphorIcons.appleLogo,
-                  size: 36,
-                ),
-              ),
+              facebookButton(),
+              googleButton(),
+              appleButton(context),
             ],
           ),
           const SizedBox(height: 20),
@@ -236,6 +254,47 @@ class __SignInFormState extends ConsumerState<_SignInForm> {
                   ),
           ),
         ],
+      ),
+    );
+  }
+
+  ElevatedButton appleButton(BuildContext context) {
+    return ElevatedButton(
+      onPressed: signupMode
+          ? () => Navigator.of(context).pushNamed(CreateProfileScreen.routeName)
+          : () => Navigator.of(context).popAndPushNamed(
+                HomeScreen.routeName,
+                arguments: {
+                  "user": user,
+                  "projects": projects,
+                },
+              ),
+      style: Themes.circularButtonStyle,
+      child: const Icon(
+        PhosphorIcons.appleLogo,
+        size: 36,
+      ),
+    );
+  }
+
+  ElevatedButton googleButton() {
+    return ElevatedButton(
+      onPressed: _signInWithGoogle,
+      style: Themes.circularButtonStyle,
+      child: const Icon(
+        PhosphorIcons.googleLogo,
+        size: 36,
+      ),
+    );
+  }
+
+  ElevatedButton facebookButton() {
+    return ElevatedButton(
+      onPressed: _signInWithFacebook,
+      style: Themes.circularButtonStyle,
+      child: const Icon(
+        PhosphorIcons.facebookLogo,
+        size: 36,
       ),
     );
   }
@@ -347,32 +406,5 @@ class __SignInFormState extends ConsumerState<_SignInForm> {
       keyboardType: TextInputType.emailAddress,
       textInputAction: TextInputAction.next,
     );
-  }
-
-  /// Signing the user in anonymously.
-  Future<void> _signInAnonymously() async {
-    final auth = ref.read(authProvider);
-    auth.signInAnonymously();
-  }
-
-  /// Signing the user in with Google.
-  Future<void> _signInWithGoogle() async {
-    final auth = ref.read(authProvider);
-    auth.signInWithGoogle().then((value) {
-      if (value != null &&
-          value.user != null &&
-          value.additionalUserInfo!.isNewUser) {
-        String userId = value.user!.uid;
-        ref.read(userProvider).addUser(
-              userId: userId,
-              username: value.user!.displayName!,
-              email: value.user!.email!,
-            );
-        Navigator.of(context).pushNamed(
-          CreateProfileScreen.routeName,
-          arguments: userId,
-        );
-      }
-    });
   }
 }

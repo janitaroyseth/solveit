@@ -30,6 +30,7 @@ dependencies:
   firebase_storage: ^11.0.6
   path: ^1.8.2
   http: ^0.13.5
+  flutter_facebook_auth: ^5.0.6
 
 dev_dependencies:
   flutter_test:
