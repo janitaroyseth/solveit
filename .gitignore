@@ -1,3 +1,5 @@
 
 .DS_Store
 *.env
+project/android/app/src/main/res/values/strings.xml
+project/ios/Runner/Info.plist
