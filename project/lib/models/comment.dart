@@ -1,13 +1,16 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:project/models/user.dart';
 
 /// The data content of a comment in a task.
 abstract class Comment {
+  // The id of the comment.
+  String commentId;
   // The author of the comment.
-  User author;
+  User? author;
   // The date on which the comment was made.
-  String date;
+  DateTime date;
 
   /// Converts a [Map] object to a [Comment] object.
   static Comment? fromMap(Map<String, dynamic>? data) {
@@ -15,16 +18,44 @@ abstract class Comment {
       return null;
     }
 
-    final User author = data['author'];
-    final String date = data['date'];
-    // TODO: fix this
-    //return Comment(author: author, date: date);
+    final String commentId = data["commentId"];
+    final DateTime date = (data['date'] as Timestamp).toDate();
+    final String? image = data['image'];
+    final String? text = data['text'];
+    final String? url = data['url'];
+
+    if (null != image) {
+      return ImageComment(commentId: commentId, date: date, image: File(image));
+    } else if (null != text) {
+      return TextComment(commentId: commentId, date: date, text: text);
+    } else if (null != url) {
+      return GifComment(commentId: commentId, date: date, url: url);
+    } else {
+      return null;
+    }
+  }
+
+  static Map<String, dynamic> toMap(Comment comment) {
+    Map<String, dynamic> map = {
+      "commentId": comment.commentId,
+      "author": comment.author!.userId,
+      "date": comment.date,
+    };
+    if (comment is TextComment) {
+      map["text"] = comment.text;
+    } else if (comment is GifComment) {
+      map["url"] = comment.url;
+    } else if (comment is ImageComment) {
+      map["image"] = comment.image;
+    }
+    return map;
   }
 
   Comment({
-    required this.author,
-    String? date,
-  }) : date = date ?? DateTime.now().toIso8601String();
+    this.commentId = "",
+    this.author,
+    DateTime? date,
+  }) : date = date ?? DateTime.now();
 }
 
 /// Comment where the content is a [Image].
@@ -35,7 +66,8 @@ class ImageComment extends Comment {
   /// Creates an instance of [ImageComment], a comment where the content
   /// is a [Image].
   ImageComment({
-    required super.author,
+    super.commentId = "",
+    super.author,
     super.date,
     required this.image,
   });
@@ -45,13 +77,12 @@ class ImageComment extends Comment {
     if (data == null) {
       return null;
     }
-
-    final User author = data["author"];
-    final String date = data["date"];
+    final String commentId = data["commentId"];
+    final DateTime date = (data["date"] as Timestamp).toDate();
     final File image = data["image"];
 
     return ImageComment(
-      author: author,
+      commentId: commentId,
       date: date,
       image: image,
     );
@@ -66,7 +97,8 @@ class TextComment extends Comment {
   /// Creates an instant of [TextComment], a comment where the content
   /// is a [String].
   TextComment({
-    required super.author,
+    super.commentId = "",
+    super.author,
     super.date,
     required this.text,
   });
@@ -77,12 +109,12 @@ class TextComment extends Comment {
       return null;
     }
 
-    final User author = data["author"];
-    final String date = data["date"];
+    final String commentId = data["commentId"];
+    final DateTime date = (data["date"] as Timestamp).toDate();
     final String text = data["text"];
 
     return TextComment(
-      author: author,
+      commentId: commentId,
       date: date,
       text: text,
     );
@@ -96,7 +128,8 @@ class GifComment extends Comment {
 
   /// Creates an instance of [GifComment].
   GifComment({
-    required super.author,
+    super.commentId,
+    super.author,
     super.date,
     required this.url,
   });
@@ -107,12 +140,12 @@ class GifComment extends Comment {
       return null;
     }
 
-    final User author = data["author"];
-    final String date = data["date"];
+    final String commentId = data["commentId"];
+    final DateTime date = (data["date"] as Timestamp).toDate();
     final String url = data["url"];
 
     return GifComment(
-      author: author,
+      commentId: commentId,
       date: date,
       url: url,
     );

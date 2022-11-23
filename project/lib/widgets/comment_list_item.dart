@@ -15,20 +15,20 @@ class CommentListItem extends StatelessWidget {
 
   /// Returns a [String] of the authors first name and last name.
   String _authorName() {
-    return comment.author.username;
+    return comment.author!.username;
   }
 
   /// Returns a [Widget] of the authors profile picture.
   Widget _authorImage() {
     return CircleAvatar(
-      backgroundImage: AssetImage(comment.author.imageUrl!),
+      backgroundImage: AssetImage(comment.author!.imageUrl!),
       radius: 20,
     );
   }
 
   /// Returns a formatted [String] of a [date], displaying how
   /// long ago the comment was posted.
-  String _formatTimeSincePosted(String date) {
+  String _formatTimeSincePosted(DateTime date) {
     return Jiffy(date).fromNow();
   }
 

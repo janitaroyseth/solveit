@@ -286,7 +286,7 @@ class _TaskScreenBodyState extends State<_TaskScreenBody> {
         TextButton(
           style: Themes.datePickerButtonStyle(ref),
           child: Text(task.deadline != null
-              ? Jiffy(DateTime.parse(task.deadline!)).format("dd/MM/yyyy")
+              ? Jiffy(task.deadline!).format("dd/MM/yyyy")
               : "click to pick a date..."),
           onPressed: () => _getDate(),
         ),
@@ -295,17 +295,15 @@ class _TaskScreenBodyState extends State<_TaskScreenBody> {
   }
 
   void _getDate() async {
-    String deadline = task.deadline ?? "";
     DateTime? pickedDate = await showDatePicker(
         context: context,
-        initialDate:
-            task.deadline != null ? DateTime.parse(deadline) : DateTime.now(),
+        initialDate: task.deadline != null ? task.deadline! : DateTime.now(),
         firstDate: DateTime.now(),
         lastDate: DateTime.now().add(const Duration(days: 730)));
     if (null == pickedDate) return;
 
     setState(() {
-      task.deadline = pickedDate.toIso8601String();
+      task.deadline = pickedDate;
     });
   }
 

@@ -107,7 +107,7 @@ class _OverviewTabView extends StatelessWidget {
   }
 
   String deadlineFormatted() {
-    return Jiffy(DateTime.parse(task.deadline!)).format("dd/MM/yyyy");
+    return Jiffy(task.deadline!).format("dd/MM/yyyy");
   }
 
   @override

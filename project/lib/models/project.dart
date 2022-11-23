@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:project/data/project_avatar_options.dart';
 import 'package:project/models/tag.dart';
 import 'package:project/models/task.dart';
@@ -5,6 +6,9 @@ import 'package:project/models/user.dart';
 
 /// The data content of a project in the application.
 class Project {
+  // The id of the project.
+  String projectId;
+
   // The name of the project.
   String title;
 
@@ -15,7 +19,7 @@ class Project {
   List<Tag> tags;
 
   /// Owner of this project.
-  User owner;
+  User? owner;
 
   /// List of collaborators on this project.
   List<User> collaborators;
@@ -37,44 +41,58 @@ class Project {
     if (null == data) {
       return null;
     }
+    final String id = data["projectId"];
     final String title = data['title'];
-    final List<Task> tasks = [];
-    for (Map<String, dynamic> map in data['tasks']) {
-      Task? task = Task.fromMap(map);
-      if (task != null) tasks.add(task);
-    }
-    final List<Tag> tags = [];
-    for (Map<String, dynamic> map in data['tags']) {
-      Tag? tag = Tag.fromMap(map);
-      if (tag != null) tags.add(tag);
-    }
-    final User owner = data["owner"];
-    final String imageUrl = data['imageUrl'];
     final String description = data['description'];
     final bool isPublic = data['isPublic'];
     final String? lastUpdated = data['lastUpdated'];
+    final String imageUrl = data['imageUrl'];
+
     return Project(
+        projectId: id,
         title: title,
-        tasks: tasks,
-        tags: tags,
-        owner: owner,
         imageUrl: imageUrl,
         description: description,
         isPublic: isPublic,
         lastUpdated: lastUpdated);
   }
 
+  static List<Project> fromMaps(var data) {
+    List<Project> projects = [];
+    for (var value in data) {
+      Project? project = fromMap(value.data());
+      if (null != project) {
+        projects.add(project);
+      }
+    }
+    return projects;
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      "projectId": projectId,
+      "title": title,
+      "tasks": tasks.map((e) => e.taskId).toList(),
+      "tags": tags.map((e) => e.tagId).toList(),
+      "owner": owner!.userId,
+      "imageUrl": imageUrl,
+      "description": description,
+      "isPublic": isPublic,
+      "lastUpdated": lastUpdated
+    };
+  }
+
   /// Creates an instance of [Project],
   Project({
+    this.projectId = "",
     this.title = "project title",
     this.tasks = const [],
     this.tags = const [],
-    required this.owner,
-    List<User>? collaborators,
+    this.owner,
+    this.collaborators = const [],
     String? imageUrl,
     this.description = "",
     this.lastUpdated,
     this.isPublic = false,
-  })  : imageUrl = imageUrl ?? projectAvatars[0],
-        collaborators = collaborators ?? [];
+  }) : imageUrl = imageUrl ?? projectAvatars[0];
 }
