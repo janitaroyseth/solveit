@@ -41,23 +41,18 @@ class ExampleData {
         Task(
             title: "Vacuum the house",
             description: "Vacuum the living room, hallway and kitchen.",
-            deadline:
-                DateFormat("dd.MM.yyyy").parse("23.11.2022").toIso8601String(),
+            deadline: DateFormat("dd.MM.yyyy").parse("23.11.2022"),
             assigned: [
               user1
             ],
             comments: [
               TextComment(
                   author: user1,
-                  date: DateFormat("dd.MM.yyyy")
-                      .parse("18.10.2022")
-                      .toIso8601String(),
+                  date: DateFormat("dd.MM.yyyy").parse("18.10.2022"),
                   text: "Only had time to vacuum the living room and hallway."),
               TextComment(
                   author: user2,
-                  date: DateFormat("dd.MM.yyyy")
-                      .parse("19.10.2022")
-                      .toIso8601String(),
+                  date: DateFormat("dd.MM.yyyy").parse("19.10.2022"),
                   text:
                       "That's okay, your mother and I still love you. You can do the rest tomorrow."),
             ],
@@ -109,8 +104,7 @@ class ExampleData {
             ]),
         Task(
           title: "Water flowers",
-          deadline:
-              DateFormat("dd.MM.yyyy").parse("15.11.2022").toIso8601String(),
+          deadline: DateFormat("dd.MM.yyyy").parse("15.11.2022"),
           description:
               "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.",
           assigned: [user2],
@@ -144,23 +138,18 @@ class ExampleData {
         Task(
             title: "Vacuum the house",
             description: "Vacuum the living room, hallway and kitchen.",
-            deadline:
-                DateFormat("dd.MM.yyyy").parse("23.11.2022").toIso8601String(),
+            deadline: DateFormat("dd.MM.yyyy").parse("23.11.2022"),
             assigned: [
               user1
             ],
             comments: [
               TextComment(
                   author: user1,
-                  date: DateFormat("dd.MM.yyyy")
-                      .parse("18.11.2022")
-                      .toIso8601String(),
+                  date: DateFormat("dd.MM.yyyy").parse("18.11.2022"),
                   text: "Only had time to vacuum the living room and hallway."),
               TextComment(
                   author: user2,
-                  date: DateFormat("dd.MM.yyyy")
-                      .parse("19.11.2022")
-                      .toIso8601String(),
+                  date: DateFormat("dd.MM.yyyy").parse("19.11.2022"),
                   text:
                       "That's okay, your mother and I still love you. \nYou can do the rest tomorrow."),
             ],
@@ -172,8 +161,7 @@ class ExampleData {
             ]),
         Task(
           title: "Water flowers",
-          deadline:
-              DateFormat("dd.MM.yyyy").parse("15.11.2022").toIso8601String(),
+          deadline: DateFormat("dd.MM.yyyy").parse("15.11.2022"),
           description:
               "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.",
           assigned: [user2],
@@ -207,23 +195,18 @@ class ExampleData {
         Task(
             title: "Vacuum the house",
             description: "Vacuum the living room, hallway and kitchen.",
-            deadline:
-                DateFormat("dd.MM.yyyy").parse("23.11.2022").toIso8601String(),
+            deadline: DateFormat("dd.MM.yyyy").parse("23.11.2022"),
             assigned: [
               user1
             ],
             comments: [
               TextComment(
                   author: user1,
-                  date: DateFormat("dd.MM.yyyy")
-                      .parse("18.11.2022")
-                      .toIso8601String(),
+                  date: DateFormat("dd.MM.yyyy").parse("18.11.2022"),
                   text: "Only had time to vacuum the living room and hallway."),
               TextComment(
                   author: user2,
-                  date: DateFormat("dd.MM.yyyy")
-                      .parse("19.11.2022")
-                      .toIso8601String(),
+                  date: DateFormat("dd.MM.yyyy").parse("19.11.2022"),
                   text:
                       "That's okay, your mother and I still love you. \nYou can do the rest tomorrow."),
             ],
@@ -235,8 +218,7 @@ class ExampleData {
             ]),
         Task(
           title: "Water flowers",
-          deadline:
-              DateFormat("dd.MM.yyyy").parse("15.11.2022").toIso8601String(),
+          deadline: DateFormat("dd.MM.yyyy").parse("15.11.2022"),
           description:
               "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.",
           assigned: [user2],
@@ -270,21 +252,18 @@ class ExampleData {
         Task(
             title: "Vacuum the house",
             description: "Vacuum the living room, hallway and kitchen.",
-            deadline:
-                DateFormat("dd.MM.yyyy").parse("23.11.2022").toIso8601String(),
+            deadline: DateFormat("dd.MM.yyyy").parse("23.11.2022"),
             assigned: [
               user1
             ],
             comments: [
               TextComment(
                   author: user1,
-                  date: "18.10.2022",
+                  date: DateFormat("dd.MM.yyyy").parse("18.10.2022"),
                   text: "Only had time to vacuum the living room and hallway."),
               TextComment(
                   author: user2,
-                  date: DateFormat("dd.MM.yyyy")
-                      .parse("19.11.2022")
-                      .toIso8601String(),
+                  date: DateFormat("dd.MM.yyyy").parse("19.11.2022"),
                   text:
                       "That's okay, your mother and I still love you. \nYou can do the rest tomorrow."),
             ],
@@ -296,8 +275,7 @@ class ExampleData {
             ]),
         Task(
           title: "Water flowers",
-          deadline:
-              DateFormat("dd.MM.yyyy").parse("15.11.2022").toIso8601String(),
+          deadline: DateFormat("dd.MM.yyyy").parse("15.11.2022"),
           description:
               "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.",
           assigned: [user2],

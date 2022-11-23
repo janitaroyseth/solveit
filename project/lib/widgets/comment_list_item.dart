@@ -28,7 +28,7 @@ class CommentListItem extends StatelessWidget {
 
   /// Returns a formatted [String] of a [date], displaying how
   /// long ago the comment was posted.
-  String _formatTimeSincePosted(String date) {
+  String _formatTimeSincePosted(DateTime date) {
     return Jiffy(date).fromNow();
   }
 

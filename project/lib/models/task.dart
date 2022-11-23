@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:project/models/comment.dart';
 import 'package:project/models/tag.dart';
 import 'package:project/models/user.dart';
@@ -15,7 +16,7 @@ class Task {
   // Whether or not the task has been completed.
   bool done;
   // The (optional) deadline of the task.
-  String? deadline;
+  DateTime? deadline;
   // List of comments of this task.
   List<Comment> comments;
 
@@ -41,31 +42,13 @@ class Task {
     final String title = data['title'];
     final String description = data['description'];
     final bool done = data['done'];
-    final String? deadline = data['deadline'];
+    final DateTime? deadline = data['deadline'] != null
+        ? (data['deadline'] as Timestamp).toDate()
+        : null;
     final List<Comment> comments = [];
     final List<User> assigned = [];
     final List<Tag> tags = [];
-    // TASKSERVICE HANDLES EXTRACTION AND INJECTION OF FOLLOWING FIELDS
-    // if (null != data['tags']) {
-    //   for (Map<String, dynamic> map in data['tags']) {
-    //     Tag? tag = Tag.fromMap(map);
-    //     if (tag != null) tags.add(tag);
-    //   }
-    // }
 
-    // if (null != data['comments']) {
-    //   for (Map<String, dynamic> map in data['comments']) {
-    //     Comment? comment = Comment.fromMap(map);
-    //     if (comment != null) comments.add(comment);
-    //   }
-    // }
-
-    // if (data["assigned"] != null) {
-    //   for (Map<String, dynamic> map in data["assigned"]) {
-    //     User? user = User.fromMap(map);
-    //     if (user != null) assigned.add(user);
-    //   }
-    // }
     return Task(
         taskId: taskId,
         title: title,

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:project/models/user.dart';
 
 /// The data content of a comment in a task.
@@ -9,7 +10,7 @@ abstract class Comment {
   // The author of the comment.
   User? author;
   // The date on which the comment was made.
-  String date;
+  DateTime date;
 
   /// Converts a [Map] object to a [Comment] object.
   static Comment? fromMap(Map<String, dynamic>? data) {
@@ -18,7 +19,7 @@ abstract class Comment {
     }
 
     final String commentId = data["commentId"];
-    final String date = data['date'];
+    final DateTime date = (data['date'] as Timestamp).toDate();
     final String? image = data['image'];
     final String? text = data['text'];
     final String? url = data['url'];
@@ -53,8 +54,8 @@ abstract class Comment {
   Comment({
     this.commentId = "",
     this.author,
-    String? date,
-  }) : date = date ?? DateTime.now().toIso8601String();
+    DateTime? date,
+  }) : date = date ?? DateTime.now();
 }
 
 /// Comment where the content is a [Image].
@@ -77,7 +78,7 @@ class ImageComment extends Comment {
       return null;
     }
     final String commentId = data["commentId"];
-    final String date = data["date"];
+    final DateTime date = (data["date"] as Timestamp).toDate();
     final File image = data["image"];
 
     return ImageComment(
@@ -109,7 +110,7 @@ class TextComment extends Comment {
     }
 
     final String commentId = data["commentId"];
-    final String date = data["date"];
+    final DateTime date = (data["date"] as Timestamp).toDate();
     final String text = data["text"];
 
     return TextComment(
@@ -140,7 +141,7 @@ class GifComment extends Comment {
     }
 
     final String commentId = data["commentId"];
-    final String date = data["date"];
+    final DateTime date = (data["date"] as Timestamp).toDate();
     final String url = data["url"];
 
     return GifComment(

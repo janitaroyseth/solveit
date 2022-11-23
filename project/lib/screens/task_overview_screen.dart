@@ -1,9 +1,11 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/models/filter.dart';
 import 'package:project/models/filter_option.dart';
+import 'package:project/providers/project_provider.dart';
 import 'package:project/screens/configure_task_screen.dart';
 import 'package:project/screens/project_calendar_screen.dart';
 import 'package:project/styles/curve_clipper.dart';
@@ -20,14 +22,20 @@ import '../data/sorting_methods.dart';
 import '../models/tag.dart';
 
 /// Screen/Scaffold for the overview of tasks in a project
-class TaskOverviewScreen extends StatelessWidget {
+class TaskOverviewScreen extends ConsumerStatefulWidget {
   static const routeName = "/tasks";
 
   const TaskOverviewScreen({super.key});
+
+  @override
+  ConsumerState<ConsumerStatefulWidget> createState() =>
+      TaskOverviewScreenState();
+}
+
+class TaskOverviewScreenState extends ConsumerState {
   @override
   Widget build(BuildContext context) {
-    final Project project =
-        ModalRoute.of(context)!.settings.arguments as Project;
+    Project project = ref.read(currentProjectProvider);
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -74,17 +82,11 @@ class TaskOverviewScreen extends StatelessWidget {
           ),
           ProjectPopUpMenu(
             project: project,
-            currentRouteName: routeName,
+            currentRouteName: TaskOverviewScreen.routeName,
           ),
         ],
       ),
-      body: RefreshIndicator(
-        // color: Colors.black,
-        onRefresh: () => Future.delayed(
-          const Duration(seconds: 2),
-        ),
-        child: _TaskOverviewBody(project: project),
-      ),
+      body: const _TaskOverviewBody(),
       floatingActionButton: FloatingActionButton(
         onPressed: () => Navigator.pushNamed(
             context, ConfigureTaskScreen.routeName,
@@ -99,23 +101,23 @@ class TaskOverviewScreen extends StatelessWidget {
 }
 
 /// Body for the overview of tasks in the task-overview screen.
-class _TaskOverviewBody extends StatefulWidget {
-  final Project project;
-  const _TaskOverviewBody({required this.project});
+class _TaskOverviewBody extends ConsumerStatefulWidget {
+  const _TaskOverviewBody();
 
   @override
-  State<_TaskOverviewBody> createState() => _TaskOverviewBodyState();
+  ConsumerState<_TaskOverviewBody> createState() => _TaskOverviewBodyState();
 }
 
-class _TaskOverviewBodyState extends State<_TaskOverviewBody> {
+class _TaskOverviewBodyState extends ConsumerState<_TaskOverviewBody> {
   final TextEditingController _searchController = TextEditingController();
-
+  late Project project;
   List<Task> items = [];
   String sortType = SortingMethods.dateDesc;
 
   @override
   void initState() {
-    items.addAll(widget.project.tasks);
+    project = ref.read(currentProjectProvider);
+    items.addAll(project.tasks);
     sort();
     super.initState();
   }
@@ -148,12 +150,22 @@ class _TaskOverviewBodyState extends State<_TaskOverviewBody> {
   /// [String] attribute - Name of the attribute by which to sort.
   /// [bool] descending - Whether or not the list should be sorted descending.
   void sortByVariable(String attribute, bool descending) {
-    if (descending) {
-      items.sort((b, a) => (a.toMap()[attribute] as String)
-          .compareTo(b.toMap()[attribute] as String));
+    if (attribute == "deadline") {
+      if (descending) {
+        items.sort((b, a) => (a.toMap()[attribute] as DateTime)
+            .compareTo(b.toMap()[attribute] as DateTime));
+      } else {
+        items.sort((a, b) => (a.toMap()[attribute] as DateTime)
+            .compareTo(b.toMap()[attribute] as DateTime));
+      }
     } else {
-      items.sort((a, b) => (a.toMap()[attribute] as String)
-          .compareTo(b.toMap()[attribute] as String));
+      if (descending) {
+        items.sort((b, a) => (a.toMap()[attribute] as String)
+            .compareTo(b.toMap()[attribute] as String));
+      } else {
+        items.sort((a, b) => (a.toMap()[attribute] as String)
+            .compareTo(b.toMap()[attribute] as String));
+      }
     }
 
     setState(() {});
@@ -166,7 +178,7 @@ class _TaskOverviewBodyState extends State<_TaskOverviewBody> {
         filter.filterOptions.where((element) => element.filterBy).toList();
 
     List<Task> filterResults = [];
-    for (Task task in widget.project.tasks) {
+    for (Task task in project.tasks) {
       for (FilterOption option in filterOptions) {
         for (Tag tag in task.tags) {
           if (tag.text == option.description && !filterResults.contains(task)) {
@@ -181,7 +193,7 @@ class _TaskOverviewBodyState extends State<_TaskOverviewBody> {
       });
     } else {
       setState(() {
-        items = widget.project.tasks;
+        items = project.tasks;
       });
     }
   }
@@ -191,7 +203,7 @@ class _TaskOverviewBodyState extends State<_TaskOverviewBody> {
   void filterSearchResults(String query) {
     if (query.isNotEmpty) {
       List<Task> searchResult = [];
-      for (var item in widget.project.tasks) {
+      for (var item in project.tasks) {
         if (item
             .values()
             .toString()
@@ -208,14 +220,14 @@ class _TaskOverviewBodyState extends State<_TaskOverviewBody> {
     } else {
       setState(() {
         items.clear();
-        items.addAll(widget.project.tasks);
+        items.addAll(project.tasks);
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    Project project = ModalRoute.of(context)!.settings.arguments as Project;
+    Project project = ref.read(currentProjectProvider);
     return Column(
       children: <Widget>[
         ClipPath(

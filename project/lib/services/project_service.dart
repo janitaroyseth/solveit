@@ -16,8 +16,8 @@ abstract class ProjectService {
   /// Returns a future with the project with the given project id.
   Future<Project?> getProject(String projectId);
 
-  // Returns a future with the list of projects belonging to the given user.
-  Future<List<Project>> getProjectsByUserId(String userId);
+  // Returns a list of projects belonging to the given user as a stream.
+  Stream<List<Project>> getProjectsByUserId(String userId);
 
   /// Deletes the project with the given project id.
   void deleteProject(String projectId);
@@ -54,50 +54,54 @@ class FirebaseProjectService implements ProjectService {
 
   @override
   Future<Project?> getProject(String projectId) async {
-    // Fetch and convert the project info
-    Map<String, dynamic>? map =
-        (await projectCollection.doc(projectId).get()).data();
-    Project? project = Project.fromMap(map);
-    if (null != map && null != project) {
-      // Fetch and add the tasks
-      for (String taskId in map["tasks"]) {
-        Task? task = await taskService.getTask(taskId);
-        if (null != task) {
-          project.tasks.add(task);
-        }
-      }
-
-      // Fetch and add the collaborators
-      for (String userId in map["collaborators"]) {
-        User? user = await userService.getUser(userId).first;
-        if (null != user) {
-          project.collaborators.add(user);
-        }
-      }
-
-      // Fetch and add the tags
-      for (String tagId in map["tags"]) {
-        Tag? tag = await tagService.getTag(tagId);
-        if (null != tag) {
-          project.tags.add(tag);
-        }
-      }
-    }
+    QuerySnapshot<Map<String, dynamic>> pmap = await projectCollection.get();
+    Project? project = await mapAndAddChildren(pmap.docs.first.data());
     return project;
   }
 
   @override
-  Future<List<Project>> getProjectsByUserId(String userId) async {
-    List<Project> projects = [];
-    for (var doc in (await projectCollection.get()).docs) {
-      List<String> collaborators = doc.data()["collaborators"];
-      if (collaborators.contains(userId)) {
-        Project? project = await getProject(doc.id);
-        if (null != project) {
-          projects.add(project);
+  Stream<List<Project>> getProjectsByUserId(String userId) {
+    return FirebaseFirestore.instance
+        .collection("projects")
+        .where('collaborators', arrayContains: userId)
+        .snapshots()
+        .map((event) => event.docs)
+        .map((event) => Project.fromMaps(event));
+  }
+
+  Future<Project?> mapAndAddChildren(Map<String, dynamic>? data) async {
+    Project? project = Project.fromMap(data);
+    if (null != project && null != data) {
+      List<Task> tasks = [];
+      // Fetch and add the tasks
+      for (String taskId in data["tasks"]) {
+        Task? task = await taskService.getTask(taskId);
+        if (null != task) {
+          tasks.add(task);
         }
       }
+      project.tasks = tasks;
+
+      // Fetch and add the collaborators
+      List<User> collaborators = [];
+      for (String userId in data["collaborators"]) {
+        User? user = await userService.getUser(userId).first;
+        if (null != user) {
+          collaborators.add(user);
+        }
+      }
+      project.collaborators = collaborators;
+
+      // Fetch and add the tags
+      List<Tag> tags = [];
+      for (String tagId in data["tags"]) {
+        Tag? tag = await tagService.getTag(tagId);
+        if (null != tag) {
+          tags.add(tag);
+        }
+      }
+      project.tags = tags;
     }
-    return projects;
+    return project;
   }
 }

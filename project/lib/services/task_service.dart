@@ -42,21 +42,25 @@ class FirebaseTaskService extends TaskService {
     if (null != taskMap) {
       task = Task.fromMap(taskMap);
       if (null != task) {
+        List<Comment> comments = [];
         // Fetch and add task comments
         for (String commentId in taskMap["comments"]) {
           Comment? comment = await commentService.getComment(commentId);
           if (null != comment) {
-            task.comments.add(comment);
+            comments.add(comment);
           }
         }
+        task.comments = comments;
 
         // Fetch and add task tags
+        List<Tag> tags = [];
         for (String tagId in taskMap["tags"]) {
           Tag? tag = await tagService.getTag(tagId);
           if (null != tag) {
-            task.tags.add(tag);
+            tags.add(tag);
           }
         }
+        task.tags = tags;
       }
     }
     return task;

@@ -18,7 +18,7 @@ class User {
     if (data == null) {
       return null;
     }
-    final String userId = data["userId"];
+    final String userId = data["userId"] ?? "";
     final String username = data["username"];
     final String email = data["email"];
     final String bio = data["bio"];

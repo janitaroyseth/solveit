@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:project/data/project_avatar_options.dart';
 import 'package:project/models/tag.dart';
 import 'package:project/models/task.dart';
@@ -47,20 +48,6 @@ class Project {
     final String? lastUpdated = data['lastUpdated'];
     final String imageUrl = data['imageUrl'];
 
-    // final List<Task> tasks = [];
-    // final List<Tag> tags = [];
-    // final User owner = data["owner"];
-
-    // for (Map<String, dynamic> map in data['tasks']) {
-    //   Task? task = Task.fromMap(map);
-    //   if (task != null) tasks.add(task);
-    // }
-
-    // for (Map<String, dynamic> map in data['tags']) {
-    //   Tag? tag = Tag.fromMap(map);
-    //   if (tag != null) tags.add(tag);
-    // }
-
     return Project(
         projectId: id,
         title: title,
@@ -68,6 +55,17 @@ class Project {
         description: description,
         isPublic: isPublic,
         lastUpdated: lastUpdated);
+  }
+
+  static List<Project> fromMaps(var data) {
+    List<Project> projects = [];
+    for (var value in data) {
+      Project? project = fromMap(value.data());
+      if (null != project) {
+        projects.add(project);
+      }
+    }
+    return projects;
   }
 
   Map<String, dynamic> toMap() {
