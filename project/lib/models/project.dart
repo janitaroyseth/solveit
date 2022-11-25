@@ -18,13 +18,13 @@ class Project {
   // The list of tags in the project.
   List<Tag> tags;
 
-  /// Owner of this project.
-  User? owner;
+  /// User id of the owner of this project.
+  String? owner;
 
-  /// List of collaborators on this project.
-  List<User> collaborators;
+  /// List of user ids for collaborators on this project.
+  List<String> collaborators;
 
-  /// Path to project avatar.
+  /// Path to project avatar.s
   String imageUrl;
 
   /// Description of the project.
@@ -74,7 +74,8 @@ class Project {
       "title": title,
       "tasks": tasks.map((e) => e.taskId).toList(),
       "tags": tags.map((e) => e.tagId).toList(),
-      "owner": owner!.userId,
+      "collaborators": collaborators,
+      "owner": owner,
       "imageUrl": imageUrl,
       "description": description,
       "isPublic": isPublic,
@@ -89,10 +90,11 @@ class Project {
     this.tasks = const [],
     this.tags = const [],
     this.owner,
-    this.collaborators = const [],
+    List<String>? collaborators,
     String? imageUrl,
     this.description = "",
     this.lastUpdated,
     this.isPublic = false,
-  }) : imageUrl = imageUrl ?? projectAvatars[0];
+  })  : imageUrl = imageUrl ?? projectAvatars[0],
+        collaborators = collaborators ?? [];
 }

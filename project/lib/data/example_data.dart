@@ -26,10 +26,10 @@ class ExampleData {
     Project(
       title: "Household",
       tags: tags,
-      owner: user1,
+      owner: user1.userId,
       collaborators: [
-        user1,
-        user2,
+        user1.userId,
+        user2.userId,
       ],
       isPublic: true,
       imageUrl: "assets/images/project_1.png",
@@ -124,10 +124,10 @@ class ExampleData {
     Project(
       title: "Gardening",
       tags: tags,
-      owner: user2,
+      owner: user2.userId,
       collaborators: [
-        user1,
-        user2,
+        user1.userId,
+        user2.userId,
       ],
       imageUrl: "assets/images/project_3.png",
       description:
@@ -181,10 +181,10 @@ class ExampleData {
     Project(
       title: "school",
       tags: tags,
-      owner: user1,
+      owner: user1.userId,
       collaborators: [
-        user1,
-        user2,
+        user1.userId,
+        user2.userId,
       ],
       imageUrl: "assets/images/project_2.png",
       description:
@@ -238,10 +238,10 @@ class ExampleData {
     Project(
       title: "christmas",
       tags: tags,
-      owner: user2,
+      owner: user2.userId,
       collaborators: [
-        user1,
-        user2,
+        user1.userId,
+        user2.userId,
       ],
       imageUrl: "assets/images/project_5.png",
       description:

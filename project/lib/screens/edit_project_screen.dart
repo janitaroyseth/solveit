@@ -4,6 +4,8 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/data/example_data.dart';
 import 'package:project/data/project_avatar_options.dart';
 import 'package:project/models/project.dart';
+import 'package:project/providers/auth_provider.dart';
+import 'package:project/providers/project_provider.dart';
 import 'package:project/screens/profile_screen.dart';
 import 'package:project/styles/theme.dart';
 import 'package:project/widgets/appbar_button.dart';
@@ -37,7 +39,7 @@ class EditProjectScreen extends ConsumerWidget {
         : _EditProjectMode.edit;
 
     final Project project =
-        existingProject ?? Project(owner: ExampleData.user1);
+        existingProject ?? Project(owner: ExampleData.user1.userId);
 
     titleController.text = _EditProjectMode.edit == mode ? project.title : "";
 
@@ -48,13 +50,11 @@ class EditProjectScreen extends ConsumerWidget {
     void saveProject() {
       project.title = titleController.text;
       project.description = descriptionController.text;
+      project.owner = ref.watch(authProvider).currentUser!.uid;
+      project.collaborators.add(ref.watch(authProvider).currentUser!.uid);
 
-      if (mode == _EditProjectMode.edit && existingProject != null) {
-        ExampleData.projects[ExampleData.projects.indexOf(existingProject)] =
-            project;
-      } else {
-        ExampleData.projects.add(project);
-      }
+      ref.read(projectProvider).saveProject(project);
+
       Navigator.of(context).pop();
     }
 
@@ -198,12 +198,12 @@ class _CollaboratorsDialog extends StatelessWidget {
                     UserListItem(
                       handler: () => Navigator.of(context)
                           .pushNamed(ProfileScreen.routeName),
-                      user: ExampleData.user1,
+                      userId: ExampleData.user1.userId,
                     ),
                     UserListItem(
                       handler: () => Navigator.of(context)
                           .pushNamed(ProfileScreen.routeName),
-                      user: ExampleData.user2,
+                      userId: ExampleData.user2.userId,
                     ),
                   ],
                 ),

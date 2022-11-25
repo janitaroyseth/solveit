@@ -141,6 +141,7 @@ class Themes {
       inputDecorationTheme: InputDecorationTheme(
         labelStyle: textTheme(ref).labelLarge,
         hintStyle: textTheme(ref).labelSmall,
+        helperStyle: textTheme(ref).labelSmall,
         floatingLabelBehavior: FloatingLabelBehavior.always,
         border: UnderlineInputBorder(
           borderSide: BorderSide(

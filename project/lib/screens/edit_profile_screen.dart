@@ -117,6 +117,8 @@ class EditProfileScreen extends ConsumerWidget {
                         const SizedBox(height: 8.0),
                         TextField(
                           readOnly: true,
+                          minLines: 1,
+                          maxLines: 4,
                           decoration:
                               Themes.inputDecoration(ref, "bio", user.bio),
                           onTap: () => updateBio(user),
@@ -193,6 +195,7 @@ class _EditFieldSceenState extends State<_EditFieldSceen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
         centerTitle: true,
         title: Text(
           widget.label,
@@ -225,7 +228,8 @@ class _EditFieldSceenState extends State<_EditFieldSceen> {
           child: TextField(
             controller: _fieldController,
             minLines: 1,
-            maxLines: 10,
+            maxLines: 4,
+            maxLength: 200,
             style: Themes.textTheme(ref).bodyMedium,
             decoration: Themes.inputDecoration(ref, widget.label, widget.value),
           ),

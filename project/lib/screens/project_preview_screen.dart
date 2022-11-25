@@ -95,7 +95,7 @@ class ProjectPreviewScreen extends StatelessWidget {
                     height: 12.0,
                   ),
                   ...project.collaborators.map((user) => UserListItem(
-                        user: user,
+                        userId: user,
                         isOwner: project.owner == user,
                         handler: () => Navigator.of(context).pushNamed(
                           ProfileScreen.routeName,

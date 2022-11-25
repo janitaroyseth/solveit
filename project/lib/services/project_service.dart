@@ -34,6 +34,7 @@ class FirebaseProjectService implements ProjectService {
   Future<Project> saveProject(Project project) async {
     if (project.projectId == "") {
       project.projectId = (await projectCollection.add(project.toMap())).id;
+      await projectCollection.doc(project.projectId).set(project.toMap());
     } else {
       await projectCollection.doc(project.projectId).set(project.toMap());
     }
@@ -54,16 +55,17 @@ class FirebaseProjectService implements ProjectService {
 
   @override
   Future<Project?> getProject(String projectId) async {
-    QuerySnapshot<Map<String, dynamic>> pmap = await projectCollection.get();
-    Project? project = await mapAndAddChildren(pmap.docs.first.data());
-    return project;
+    final project = await projectCollection.doc(projectId).get();
+    return await mapAndAddChildren(project.data());
+    // QuerySnapshot<Map<String, dynamic>> pmap = await projectCollection.get();
+    // Project? project = await mapAndAddChildren(pmap.docs.first.data());
+    // return project;
   }
 
   @override
   Stream<List<Project>> getProjectsByUserId(String userId) {
-    return FirebaseFirestore.instance
-        .collection("projects")
-        .where('collaborators', arrayContains: userId)
+    return projectCollection
+        .where("collaborators", arrayContains: userId)
         .snapshots()
         .map((event) => event.docs)
         .map((event) => Project.fromMaps(event));
@@ -83,12 +85,12 @@ class FirebaseProjectService implements ProjectService {
       project.tasks = tasks;
 
       // Fetch and add the collaborators
-      List<User> collaborators = [];
+      List<String> collaborators = [];
       for (String userId in data["collaborators"]) {
         User? user = await userService.getUser(userId).first;
-        if (null != user) {
-          collaborators.add(user);
-        }
+        // if (null != user) {
+        collaborators.add(userId);
+        // }
       }
       project.collaborators = collaborators;
 

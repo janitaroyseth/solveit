@@ -55,9 +55,9 @@ class ProjectOverviewScreenState extends ConsumerState<ProjectOverviewScreen> {
         actions: const [CreateProjectButton()],
       ),
       body: StreamBuilder(
-          stream: ref
-              .watch(projectProvider)
-              .getProjectsByUserId(ref.watch(authProvider).currentUser!.uid),
+          stream: ref.watch(projectProvider).getProjectsByUserId(
+                ref.watch(authProvider).currentUser!.uid,
+              ),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               var data = snapshot.data;

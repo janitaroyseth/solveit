@@ -327,7 +327,7 @@ class _TaskScreenBodyState extends State<_TaskScreenBody> {
             .map(
               (e) => UserListItem(
                 handler: () => {setState(() => task.assigned.remove(e))},
-                user: e,
+                userId: e.userId,
                 size: UserListItemSize.small,
               ),
             )
@@ -361,13 +361,13 @@ class _TaskScreenBodyState extends State<_TaskScreenBody> {
                               handler: () =>
                                   Navigator.of(context, rootNavigator: true)
                                       .pop(ExampleData.user1),
-                              user: ExampleData.user1,
+                              userId: ExampleData.user1.userId,
                             ),
                             UserListItem(
                               handler: () =>
                                   Navigator.of(context, rootNavigator: true)
                                       .pop(ExampleData.user2),
-                              user: ExampleData.user2,
+                              userId: ExampleData.user2.userId,
                             ),
                           ],
                         ),
