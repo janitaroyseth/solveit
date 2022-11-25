@@ -52,6 +52,7 @@ class EditProjectScreen extends ConsumerWidget {
       project.description = descriptionController.text;
       project.owner = ref.watch(authProvider).currentUser!.uid;
       project.collaborators.add(ref.watch(authProvider).currentUser!.uid);
+      project.lastUpdated = DateTime.now().toIso8601String();
 
       ref.read(projectProvider).saveProject(project);
 

@@ -85,18 +85,18 @@ class ProjectOverviewScreenState extends ConsumerState<ProjectOverviewScreen> {
                           ),
                           itemCount: projects.length,
                           itemBuilder: (context, index) => ProjectCard(
-                              project: projects[index],
-                              handler: () async => {
-                                    ref
-                                        .read(currentProjectProvider.notifier)
-                                        .setProject(ref
-                                            .read(projectProvider)
-                                            .getProject(
-                                                projects[index].projectId)),
-                                    Navigator.of(context).pushNamed(
-                                        TaskOverviewScreen.routeName,
-                                        arguments: projects[index].projectId),
-                                  }),
+                            project: projects[index],
+                            handler: () async => {
+                              ref
+                                  .read(currentProjectProvider.notifier)
+                                  .setProject(ref
+                                      .read(projectProvider)
+                                      .getProject(projects[index].projectId)),
+                              Navigator.of(context).pushNamed(
+                                  TaskOverviewScreen.routeName,
+                                  arguments: projects[index].projectId),
+                            },
+                          ),
                         ),
                       ),
                     ),

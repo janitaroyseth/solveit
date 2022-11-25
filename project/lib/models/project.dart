@@ -22,7 +22,7 @@ class Project {
   String? owner;
 
   /// List of user ids for collaborators on this project.
-  List<String> collaborators;
+  List<dynamic> collaborators;
 
   /// Path to project avatar.s
   String imageUrl;
@@ -41,9 +41,11 @@ class Project {
     if (null == data) {
       return null;
     }
+    print(data["collaborators"]);
     final String id = data["projectId"];
     final String title = data['title'];
     final String description = data['description'];
+    final collaborators = data["collaborators"];
     final bool isPublic = data['isPublic'];
     final String? lastUpdated = data['lastUpdated'];
     final String imageUrl = data['imageUrl'];
@@ -53,6 +55,7 @@ class Project {
         title: title,
         imageUrl: imageUrl,
         description: description,
+        collaborators: collaborators,
         isPublic: isPublic,
         lastUpdated: lastUpdated);
   }
@@ -90,7 +93,7 @@ class Project {
     this.tasks = const [],
     this.tags = const [],
     this.owner,
-    List<String>? collaborators,
+    List<dynamic>? collaborators,
     String? imageUrl,
     this.description = "",
     this.lastUpdated,

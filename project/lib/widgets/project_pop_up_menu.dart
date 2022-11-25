@@ -39,19 +39,24 @@ class __ProjectPopUpMenuState extends State<ProjectPopUpMenu> {
     );
   }
 
-  void togglePreviewOverview() {
+  void togglePreviewOverview(WidgetRef ref) {
     Future.delayed(
       const Duration(seconds: 0),
       widget.currentRouteName != ProjectPreviewScreen.routeName
-          ? () => Navigator.of(context).pushNamed(
-                ProjectPreviewScreen.routeName,
-                arguments: widget.project,
-              )
+          ? () {
+              ref.read(currentProjectProvider.notifier).setProject(ref
+                  .read(projectProvider)
+                  .getProject(widget.project.projectId));
+              print(widget.project.collaborators);
+              Navigator.of(context).pushNamed(ProjectPreviewScreen.routeName);
+            }
           : () {
+              ref.read(currentProjectProvider.notifier).setProject(ref
+                  .read(projectProvider)
+                  .getProject(widget.project.projectId));
               Navigator.of(context).pushNamedAndRemoveUntil(
                 TaskOverviewScreen.routeName,
                 ModalRoute.withName(HomeScreen.routeName),
-                arguments: widget.project,
               );
             },
     );
@@ -118,7 +123,7 @@ class __ProjectPopUpMenuState extends State<ProjectPopUpMenu> {
               editProject();
               break;
             case 1:
-              togglePreviewOverview();
+              togglePreviewOverview(ref);
               break;
             case 2:
               deleteProject(ref);
