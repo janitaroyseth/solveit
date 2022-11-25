@@ -73,7 +73,7 @@ class TaskOverviewScreenState extends ConsumerState {
             backgroundColor: Colors.transparent,
             leading: AppBarButton(
               handler: () {
-                Navigator.pop(context);
+                Navigator.of(context).pop();
               },
               tooltip: "Go back",
               icon: PhosphorIcons.caretLeftLight,

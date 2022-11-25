@@ -4,7 +4,6 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/models/project.dart';
 import 'package:project/providers/project_provider.dart';
 import 'package:project/screens/edit_project_screen.dart';
-import 'package:project/screens/home_screen.dart';
 import 'package:project/screens/project_preview_screen.dart';
 import 'package:project/screens/task_overview_screen.dart';
 import 'package:project/styles/theme.dart';
@@ -47,17 +46,15 @@ class __ProjectPopUpMenuState extends State<ProjectPopUpMenu> {
               ref.read(currentProjectProvider.notifier).setProject(ref
                   .read(projectProvider)
                   .getProject(widget.project.projectId));
-              print(widget.project.collaborators);
               Navigator.of(context).pushNamed(ProjectPreviewScreen.routeName);
             }
           : () {
               ref.read(currentProjectProvider.notifier).setProject(ref
                   .read(projectProvider)
                   .getProject(widget.project.projectId));
-              Navigator.of(context).pushNamedAndRemoveUntil(
-                TaskOverviewScreen.routeName,
-                ModalRoute.withName(HomeScreen.routeName),
-              );
+              Navigator.of(context).pop();
+              Navigator.of(context)
+                  .popAndPushNamed(TaskOverviewScreen.routeName);
             },
     );
   }
