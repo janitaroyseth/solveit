@@ -89,10 +89,10 @@ class ProjectOverviewScreenState extends ConsumerState<ProjectOverviewScreen> {
                               handler: () async => {
                                     ref
                                         .read(currentProjectProvider.notifier)
-                                        .setProject((await ref
+                                        .setProject(ref
                                             .read(projectProvider)
                                             .getProject(
-                                                projects[index].projectId))!),
+                                                projects[index].projectId)),
                                     Navigator.of(context).pushNamed(
                                         TaskOverviewScreen.routeName,
                                         arguments: projects[index].projectId),

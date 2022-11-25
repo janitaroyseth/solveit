@@ -14,13 +14,13 @@ abstract class ProjectService {
   Future<Project> saveProject(Project project);
 
   /// Returns a future with the project with the given project id.
-  Future<Project?> getProject(String projectId);
+  Stream<Project?> getProject(String projectId);
 
   // Returns a list of projects belonging to the given user as a stream.
   Stream<List<Project>> getProjectsByUserId(String userId);
 
   /// Deletes the project with the given project id.
-  void deleteProject(String projectId);
+  Future<void> deleteProject(String projectId);
 }
 
 /// Firebase implementation of [ProjectService].
@@ -42,7 +42,7 @@ class FirebaseProjectService implements ProjectService {
   }
 
   @override
-  void deleteProject(String projectId) async {
+  Future<void> deleteProject(String projectId) async {
     Map<String, dynamic>? map =
         (await projectCollection.doc(projectId).get()).data();
     if (null != map) {
@@ -50,16 +50,16 @@ class FirebaseProjectService implements ProjectService {
         taskService.deleteTask(taskId);
       }
     }
-    projectCollection.doc(projectId).delete();
+    return projectCollection.doc(projectId).delete();
   }
 
   @override
-  Future<Project?> getProject(String projectId) async {
-    final project = await projectCollection.doc(projectId).get();
-    return await mapAndAddChildren(project.data());
-    // QuerySnapshot<Map<String, dynamic>> pmap = await projectCollection.get();
-    // Project? project = await mapAndAddChildren(pmap.docs.first.data());
-    // return project;
+  Stream<Project?> getProject(String projectId) {
+    return projectCollection
+        .doc(projectId)
+        .snapshots()
+        .map((event) => Project.fromMap(event.data()));
+    //mapAndAddChildren(project.data());
   }
 
   @override
@@ -71,39 +71,39 @@ class FirebaseProjectService implements ProjectService {
         .map((event) => Project.fromMaps(event));
   }
 
-  Future<Project?> mapAndAddChildren(Map<String, dynamic>? data) async {
-    Project? project = Project.fromMap(data);
-    if (null != project && null != data) {
-      List<Task> tasks = [];
-      // Fetch and add the tasks
-      for (String taskId in data["tasks"]) {
-        Task? task = await taskService.getTask(taskId);
-        if (null != task) {
-          tasks.add(task);
-        }
-      }
-      project.tasks = tasks;
+  // Future<Project?> mapAndAddChildren(Map<String, dynamic>? data) async {
+  //   Project? project = Project.fromMap(data);
+  //   if (null != project && null != data) {
+  //     List<Task> tasks = [];
+  //     // Fetch and add the tasks
+  //     for (String taskId in data["tasks"]) {
+  //       Task? task = await taskService.getTask(taskId);
+  //       if (null != task) {
+  //         tasks.add(task);
+  //       }
+  //     }
+  //     project.tasks = tasks;
 
-      // Fetch and add the collaborators
-      List<String> collaborators = [];
-      for (String userId in data["collaborators"]) {
-        User? user = await userService.getUser(userId).first;
-        // if (null != user) {
-        collaborators.add(userId);
-        // }
-      }
-      project.collaborators = collaborators;
+  //     // Fetch and add the collaborators
+  //     List<String> collaborators = [];
+  //     for (String userId in data["collaborators"]) {
+  //       User? user = await userService.getUser(userId).first;
+  //       // if (null != user) {
+  //       collaborators.add(userId);
+  //       // }
+  //     }
+  //     project.collaborators = collaborators;
 
-      // Fetch and add the tags
-      List<Tag> tags = [];
-      for (String tagId in data["tags"]) {
-        Tag? tag = await tagService.getTag(tagId);
-        if (null != tag) {
-          tags.add(tag);
-        }
-      }
-      project.tags = tags;
-    }
-    return project;
-  }
+  //     // Fetch and add the tags
+  //     List<Tag> tags = [];
+  //     for (String tagId in data["tags"]) {
+  //       Tag? tag = await tagService.getTag(tagId);
+  //       if (null != tag) {
+  //         tags.add(tag);
+  //       }
+  //     }
+  //     project.tags = tags;
+  //   }
+  //   return project;
+  // }
 }
