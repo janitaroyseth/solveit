@@ -97,7 +97,7 @@ class _OverviewTabView extends StatelessWidget {
                     "projects": <Project>[],
                   },
                 ),
-                user: e,
+                userId: e.userId,
                 size: UserListItemSize.small,
               ),
             )

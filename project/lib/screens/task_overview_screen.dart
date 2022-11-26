@@ -35,74 +35,85 @@ class TaskOverviewScreen extends ConsumerStatefulWidget {
 class TaskOverviewScreenState extends ConsumerState {
   @override
   Widget build(BuildContext context) {
-    Project project = ref.read(currentProjectProvider);
-    return Scaffold(
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        foregroundColor: Colors.white,
-        elevation: 0,
-        toolbarHeight: 95,
-        title: Row(
-          children: [
-            Image.asset(
-              project.imageUrl,
-              height: 90,
+    Project project;
+    return StreamBuilder<Project?>(
+      stream: ref.watch(currentProjectProvider),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          project = snapshot.data!;
+        } else {
+          project = Project();
+        }
+        return Scaffold(
+          extendBodyBehindAppBar: true,
+          appBar: AppBar(
+            foregroundColor: Colors.white,
+            elevation: 0,
+            toolbarHeight: 95,
+            title: Row(
+              children: [
+                Image.asset(
+                  project.imageUrl,
+                  height: 90,
+                ),
+                Expanded(
+                  child: Text(
+                    project.title.toLowerCase(),
+                    overflow: TextOverflow.fade,
+                    style: Theme.of(context)
+                        .appBarTheme
+                        .titleTextStyle!
+                        .copyWith(color: Colors.white),
+                  ),
+                ),
+                const SizedBox(width: 8.0)
+              ],
             ),
-            Expanded(
-              child: Text(
-                project.title.toLowerCase(),
-                overflow: TextOverflow.fade,
-                style: Theme.of(context)
-                    .appBarTheme
-                    .titleTextStyle!
-                    .copyWith(color: Colors.white),
+            titleSpacing: -4,
+            backgroundColor: Colors.transparent,
+            leading: AppBarButton(
+              handler: () {
+                Navigator.of(context).pop();
+              },
+              tooltip: "Go back",
+              icon: PhosphorIcons.caretLeftLight,
+              color: Colors.white,
+            ),
+            actions: <Widget>[
+              AppBarButton(
+                handler: () => Navigator.of(context).popAndPushNamed(
+                    ProjectCalendarScreen.routeName,
+                    arguments: project),
+                tooltip: "Open calendar for this project",
+                icon: PhosphorIcons.calendarCheckLight,
+                color: Colors.white,
               ),
-            ),
-            const SizedBox(width: 8.0)
-          ],
-        ),
-        titleSpacing: -4,
-        backgroundColor: Colors.transparent,
-        leading: AppBarButton(
-          handler: () {
-            Navigator.pop(context);
-          },
-          tooltip: "Go back",
-          icon: PhosphorIcons.caretLeftLight,
-          color: Colors.white,
-        ),
-        actions: <Widget>[
-          AppBarButton(
-            handler: () => Navigator.of(context).popAndPushNamed(
-                ProjectCalendarScreen.routeName,
+              ProjectPopUpMenu(
+                project: project,
+                currentRouteName: TaskOverviewScreen.routeName,
+              ),
+            ],
+          ),
+          body: _TaskOverviewBody(project),
+          floatingActionButton: FloatingActionButton(
+            onPressed: () => Navigator.pushNamed(
+                context, ConfigureTaskScreen.routeName,
                 arguments: project),
-            tooltip: "Open calendar for this project",
-            icon: PhosphorIcons.calendarCheckLight,
-            color: Colors.white,
+            child: const Icon(
+              PhosphorIcons.plus,
+              color: Colors.white,
+            ),
           ),
-          ProjectPopUpMenu(
-            project: project,
-            currentRouteName: TaskOverviewScreen.routeName,
-          ),
-        ],
-      ),
-      body: const _TaskOverviewBody(),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => Navigator.pushNamed(
-            context, ConfigureTaskScreen.routeName,
-            arguments: project),
-        child: const Icon(
-          PhosphorIcons.plus,
-          color: Colors.white,
-        ),
-      ),
+        );
+      },
     );
   }
 }
 
 /// Body for the overview of tasks in the task-overview screen.
 class _TaskOverviewBody extends ConsumerStatefulWidget {
-  const _TaskOverviewBody();
+  final Project project;
+  const _TaskOverviewBody(this.project);
 
   @override
   ConsumerState<_TaskOverviewBody> createState() => _TaskOverviewBodyState();
@@ -116,7 +127,7 @@ class _TaskOverviewBodyState extends ConsumerState<_TaskOverviewBody> {
 
   @override
   void initState() {
-    project = ref.read(currentProjectProvider);
+    project = widget.project;
     items.addAll(project.tasks);
     sort();
     super.initState();
@@ -227,52 +238,65 @@ class _TaskOverviewBodyState extends ConsumerState<_TaskOverviewBody> {
 
   @override
   Widget build(BuildContext context) {
-    Project project = ref.read(currentProjectProvider);
-    return Column(
-      children: <Widget>[
-        ClipPath(
-          clipper: CurveClipper(),
-          child: Container(
-            color: Themes.primaryColor,
-            height: Platform.isIOS ? 150 : 130,
-          ),
-        ),
-        SearchBar(
-          textEditingController: _searchController,
-          searchFunction: filterSearchResults,
-          placeholderText: "Search for tasks",
-          filter: true,
-          filterModal: FilterModal(
-            modalTitle: "Sort and filter tasks",
-            filters: [
-              Filter(
-                title: "sort by",
-                filterOptions: [
-                  FilterOption(
-                      description: SortingMethods.dateDesc, filterBy: false),
-                  FilterOption(
-                      description: SortingMethods.dateAsc, filterBy: false),
-                  FilterOption(
-                      description: SortingMethods.titleAsc, filterBy: false),
-                  FilterOption(
-                      description: SortingMethods.titleDesc, filterBy: false),
-                ],
-                filterHandler: onSortChange,
-                filterType: FilterType.sort,
+    Project project;
+    return StreamBuilder<Project?>(
+        stream: ref.watch(currentProjectProvider),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            project = snapshot.data!;
+          } else {
+            project = Project();
+          }
+          return Column(
+            children: <Widget>[
+              ClipPath(
+                clipper: CurveClipper(),
+                child: Container(
+                  color: Themes.primaryColor,
+                  height: Platform.isIOS ? 150 : 130,
+                ),
               ),
-              Filter(
-                  title: "tags",
-                  filterOptions: _buildTagFilterOptions(project),
-                  filterHandler: filterByTags,
-                  filterType: FilterType.tag),
+              SearchBar(
+                textEditingController: _searchController,
+                searchFunction: filterSearchResults,
+                placeholderText: "Search for tasks",
+                filter: true,
+                filterModal: FilterModal(
+                  modalTitle: "Sort and filter tasks",
+                  filters: [
+                    Filter(
+                      title: "sort by",
+                      filterOptions: [
+                        FilterOption(
+                            description: SortingMethods.dateDesc,
+                            filterBy: false),
+                        FilterOption(
+                            description: SortingMethods.dateAsc,
+                            filterBy: false),
+                        FilterOption(
+                            description: SortingMethods.titleAsc,
+                            filterBy: false),
+                        FilterOption(
+                            description: SortingMethods.titleDesc,
+                            filterBy: false),
+                      ],
+                      filterHandler: onSortChange,
+                      filterType: FilterType.sort,
+                    ),
+                    Filter(
+                        title: "tags",
+                        filterOptions: _buildTagFilterOptions(project),
+                        filterHandler: filterByTags,
+                        filterType: FilterType.tag),
+                  ],
+                ),
+              ),
+              TaskList(
+                tasks: items,
+              ),
             ],
-          ),
-        ),
-        TaskList(
-          tasks: items,
-        ),
-      ],
-    );
+          );
+        });
   }
 
   /// Builds the list of tag filter options.

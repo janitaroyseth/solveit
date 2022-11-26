@@ -55,9 +55,9 @@ class ProjectOverviewScreenState extends ConsumerState<ProjectOverviewScreen> {
         actions: const [CreateProjectButton()],
       ),
       body: StreamBuilder(
-          stream: ref
-              .watch(projectProvider)
-              .getProjectsByUserId(ref.watch(authProvider).currentUser!.uid),
+          stream: ref.watch(projectProvider).getProjectsByUserIdAsCollaborator(
+                ref.watch(authProvider).currentUser!.uid,
+              ),
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               var data = snapshot.data;
@@ -85,18 +85,18 @@ class ProjectOverviewScreenState extends ConsumerState<ProjectOverviewScreen> {
                           ),
                           itemCount: projects.length,
                           itemBuilder: (context, index) => ProjectCard(
-                              project: projects[index],
-                              handler: () async => {
-                                    ref
-                                        .read(currentProjectProvider.notifier)
-                                        .setProject((await ref
-                                            .read(projectProvider)
-                                            .getProject(
-                                                projects[index].projectId))!),
-                                    Navigator.of(context).pushNamed(
-                                        TaskOverviewScreen.routeName,
-                                        arguments: projects[index].projectId),
-                                  }),
+                            project: projects[index],
+                            handler: () async => {
+                              ref
+                                  .read(currentProjectProvider.notifier)
+                                  .setProject(ref
+                                      .read(projectProvider)
+                                      .getProject(projects[index].projectId)),
+                              Navigator.of(context).pushNamed(
+                                  TaskOverviewScreen.routeName,
+                                  arguments: projects[index].projectId),
+                            },
+                          ),
                         ),
                       ),
                     ),

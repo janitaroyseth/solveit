@@ -8,14 +8,14 @@ final projectProvider = Provider<ProjectService>((ref) {
 });
 
 final currentProjectProvider =
-    StateNotifierProvider<CurrentProjectNotifier, Project>((ref) {
+    StateNotifierProvider<CurrentProjectNotifier, Stream<Project?>>((ref) {
   return CurrentProjectNotifier();
 });
 
-class CurrentProjectNotifier extends StateNotifier<Project> {
-  CurrentProjectNotifier() : super(Project());
+class CurrentProjectNotifier extends StateNotifier<Stream<Project?>> {
+  CurrentProjectNotifier() : super(Stream<Project?>.value(Project()));
 
-  void setProject(Project project) {
+  void setProject(Stream<Project?> project) {
     state = project;
   }
 }
