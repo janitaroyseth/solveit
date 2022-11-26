@@ -1,8 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:project/models/project.dart';
-import 'package:project/models/tag.dart';
-import 'package:project/models/task.dart';
-import 'package:project/models/user.dart';
 import 'package:project/services/tag_service.dart';
 import 'package:project/services/task_service.dart';
 import 'package:project/services/user_service.dart';
@@ -13,11 +10,16 @@ abstract class ProjectService {
   /// Returns a future with the added or updated project.
   Future<Project> saveProject(Project project);
 
-  /// Returns a future with the project with the given project id.
+  /// Returns a stream with the project with the given project id.
   Stream<Project?> getProject(String projectId);
 
-  // Returns a list of projects belonging to the given user as a stream.
-  Stream<List<Project>> getProjectsByUserId(String userId);
+  /// Returns a list of projects the user with the given user id is a collaborator
+  /// on as a stream.
+  Stream<List<Project>> getProjectsByUserIdAsCollaborator(String userId);
+
+  /// Returns a list of projects the user with the given user id is a owner of
+  /// as a stream.
+  Stream<List<Project>> getProjectsByUserIdAsOwner(String userId);
 
   /// Deletes the project with the given project id.
   Future<void> deleteProject(String projectId);
@@ -55,17 +57,26 @@ class FirebaseProjectService implements ProjectService {
 
   @override
   Stream<Project?> getProject(String projectId) {
-    return projectCollection
-        .doc(projectId)
-        .snapshots()
-        .map((event) => Project.fromMap(event.data()));
-    //mapAndAddChildren(project.data());
+    return projectCollection.doc(projectId).snapshots().map(
+          (event) => Project.fromMap(
+            event.data(),
+          ),
+        );
   }
 
   @override
-  Stream<List<Project>> getProjectsByUserId(String userId) {
+  Stream<List<Project>> getProjectsByUserIdAsCollaborator(String userId) {
     return projectCollection
         .where("collaborators", arrayContains: userId)
+        .snapshots()
+        .map((event) => event.docs)
+        .map((event) => Project.fromMaps(event));
+  }
+
+  @override
+  Stream<List<Project>> getProjectsByUserIdAsOwner(String userId) {
+    return projectCollection
+        .where("owner", isEqualTo: userId)
         .snapshots()
         .map((event) => event.docs)
         .map((event) => Project.fromMaps(event));

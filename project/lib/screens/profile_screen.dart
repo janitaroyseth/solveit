@@ -5,6 +5,7 @@ import 'package:project/data/example_data.dart';
 import 'package:project/models/project.dart';
 import 'package:project/providers/auth_provider.dart';
 import 'package:project/models/user.dart';
+import 'package:project/providers/project_provider.dart';
 import 'package:project/providers/user_provider.dart';
 import 'package:project/screens/edit_profile_screen.dart';
 import 'package:project/screens/project_preview_screen.dart';
@@ -362,20 +363,27 @@ class _ProfileProjectListState extends ConsumerState<_ProfileProjectList> {
           Expanded(
             child: Padding(
               padding: const EdgeInsets.all(8.0),
-              child: GridView.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  mainAxisExtent: 120,
-                  crossAxisSpacing: 16,
-                  mainAxisSpacing: 16,
-                ),
-                itemCount: widget.projects.length,
-                itemBuilder: (context, index) => ProjectCard(
-                    project: widget.projects[index],
-                    handler: () => Navigator.of(context).pushNamed(
-                        ProjectPreviewScreen.routeName,
-                        arguments: widget.projects[index])),
-              ),
+              child: StreamBuilder<List<Project>?>(
+                  stream: ref.watch(projectProvider).getProjectsByUserIdAsOwner(
+                        ref.watch(authProvider).currentUser!.uid,
+                      ),
+                  builder: (context, snapshot) {
+                    return GridView.builder(
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        mainAxisExtent: 120,
+                        crossAxisSpacing: 16,
+                        mainAxisSpacing: 16,
+                      ),
+                      itemCount: widget.projects.length,
+                      itemBuilder: (context, index) => ProjectCard(
+                          project: widget.projects[index],
+                          handler: () => Navigator.of(context).pushNamed(
+                              ProjectPreviewScreen.routeName,
+                              arguments: widget.projects[index])),
+                    );
+                  }),
             ),
           ),
         ],
