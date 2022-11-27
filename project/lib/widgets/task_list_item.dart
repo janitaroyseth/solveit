@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jiffy/jiffy.dart';
+import 'package:project/providers/task_provider.dart';
 import 'package:project/screens/task_details_screen.dart';
 import '../models/task.dart';
 
 import 'tags_list.dart';
 
 /// Converts a Task object to a list item used in a task list.
-class TaskListItem extends StatelessWidget {
+class TaskListItem extends ConsumerWidget {
   /// The [task] to be converted.
   final Task task;
 
@@ -14,17 +16,16 @@ class TaskListItem extends StatelessWidget {
   const TaskListItem({super.key, required this.task});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Column(
       children: <Widget>[
         const Divider(),
         InkWell(
           onTap: () {
-            Navigator.pushNamed(
-              context,
-              TaskDetailsScreen.routeName,
-              arguments: task,
-            );
+            ref
+                .read(currentTaskProvider.notifier)
+                .setTask(ref.watch(taskProvider).getTask(task.taskId));
+            Navigator.of(context).pushNamed(TaskDetailsScreen.routeName);
           },
           child: Padding(
             padding: const EdgeInsets.all(8.0),
@@ -44,7 +45,9 @@ class TaskListItem extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        Jiffy(task.deadline!).format("dd/MM/yyyy"),
+                        task.deadline != null
+                            ? Jiffy(task.deadline).format("dd/MM/yyyy")
+                            : "-",
                         style: Theme.of(context).textTheme.labelSmall,
                       )
                     ],

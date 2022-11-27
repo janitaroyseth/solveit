@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:project/providers/auth_provider.dart';
+import 'package:project/providers/project_provider.dart';
+import 'package:project/providers/task_provider.dart';
 import 'package:project/widgets/tag_widget.dart';
 
 import '../data/example_data.dart';
@@ -14,49 +17,69 @@ import '../widgets/appbar_button.dart';
 import '../widgets/search_bar.dart';
 import '../widgets/user_list_item.dart';
 
-class ConfigureTaskScreen extends StatelessWidget {
+enum _EditTaskMode {
+  create,
+  edit,
+}
+
+class ConfigureTaskScreen extends ConsumerWidget {
   static const routeName = "/configure-task";
   const ConfigureTaskScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    var args = ModalRoute.of(context)?.settings.arguments;
-    Project? project;
-    Task task = Task();
-    if (args != null) {
-      if (args is Project) {
-        project = args;
-      } else if (args is Task) {
-        task = args;
-      }
+  Widget build(BuildContext context, WidgetRef ref) {
+    final Task? existingTask =
+        (ModalRoute.of(context)?.settings.arguments as Task?);
+
+    final _EditTaskMode mode =
+        existingTask == null ? _EditTaskMode.create : _EditTaskMode.edit;
+
+    Task task = existingTask ?? Task();
+
+    void saveTask() {
+      //task.tags = [];
+      ref.read(taskProvider).saveTask(task);
+
+      Navigator.of(context).pop();
     }
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(project != null ? "create task" : "edit task"),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: AppBarButton(
-          handler: () => Navigator.of(context).pop(),
-          tooltip: "Go back",
-          icon: PhosphorIcons.caretLeftLight,
-          color: Colors.black,
-        ),
-        actions: [
-          AppBarButton(
-            handler: () {
-              project != null ? project.tasks.add(task) : {};
-              Navigator.of(context).pop();
-            },
-            tooltip: "Save task",
-            icon: PhosphorIcons.floppyDiskLight,
-            color: Colors.black,
-          ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-            padding: const EdgeInsets.all(20), child: _TaskScreenBody(task)),
-      ),
+
+    return StreamBuilder<Project?>(
+      stream: ref.watch(currentProjectProvider),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          Project project = snapshot.data!;
+          task.projectId = project.projectId;
+          return Scaffold(
+            appBar: AppBar(
+              title: Text(
+                mode == _EditTaskMode.create ? "create task" : "edit task",
+              ),
+              backgroundColor: Colors.transparent,
+              elevation: 0,
+              leading: AppBarButton(
+                handler: () => Navigator.of(context).pop(),
+                tooltip: "Go back",
+                icon: PhosphorIcons.caretLeftLight,
+                color: Colors.black,
+              ),
+              actions: [
+                AppBarButton(
+                  handler: saveTask,
+                  tooltip: "Save task",
+                  icon: PhosphorIcons.floppyDiskLight,
+                  color: Colors.black,
+                ),
+              ],
+            ),
+            body: SingleChildScrollView(
+              child: Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: _TaskScreenBody(task)),
+            ),
+          );
+        }
+        return const Center(child: CircularProgressIndicator());
+      },
     );
   }
 }
@@ -75,9 +98,14 @@ class _TaskScreenBodyState extends State<_TaskScreenBody> {
   List<Tag> allTags = ExampleData.tags;
   List<User> selectedUsers = [];
 
+  final titleController = TextEditingController();
+  final descriptionController = TextEditingController();
+
   @override
   void initState() {
     task = widget.task;
+    titleController.text = task.title;
+    descriptionController.text = task.description;
     super.initState();
   }
 
@@ -90,22 +118,14 @@ class _TaskScreenBodyState extends State<_TaskScreenBody> {
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            _createTaskNameSection(ref),
-            const SizedBox(
-              height: 20,
-            ),
+            _createTaskTitleSection(ref),
+            _verticalPadding(),
             _createTagsSection(),
-            const SizedBox(
-              height: 20,
-            ),
+            _verticalPadding(),
             _createDeadlineSection(ref),
-            const SizedBox(
-              height: 20,
-            ),
+            _verticalPadding(),
             _createAssignedSection(ref),
-            const SizedBox(
-              height: 20,
-            ),
+            _verticalPadding(),
             _createDescriptionSection(ref),
           ],
         ),
@@ -113,13 +133,15 @@ class _TaskScreenBodyState extends State<_TaskScreenBody> {
     );
   }
 
-  Widget _createTaskNameSection(ref) {
+  Widget _verticalPadding() => const SizedBox(height: 20);
+
+  Widget _createTaskTitleSection(ref) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         TextFormField(
-            initialValue: task.title,
-            onFieldSubmitted: (String value) {
+            controller: titleController,
+            onChanged: (String value) {
               task.title = value;
             },
             style: Theme.of(context).textTheme.bodySmall,
@@ -327,7 +349,7 @@ class _TaskScreenBodyState extends State<_TaskScreenBody> {
             .map(
               (e) => UserListItem(
                 handler: () => {setState(() => task.assigned.remove(e))},
-                userId: e.userId,
+                userId: e,
                 size: UserListItemSize.small,
               ),
             )
@@ -357,18 +379,18 @@ class _TaskScreenBodyState extends State<_TaskScreenBody> {
                         ),
                         child: ListView(
                           children: [
-                            UserListItem(
-                              handler: () =>
-                                  Navigator.of(context, rootNavigator: true)
-                                      .pop(ExampleData.user1),
-                              userId: ExampleData.user1.userId,
-                            ),
-                            UserListItem(
-                              handler: () =>
-                                  Navigator.of(context, rootNavigator: true)
-                                      .pop(ExampleData.user2),
-                              userId: ExampleData.user2.userId,
-                            ),
+                            // UserListItem(
+                            //   handler: () =>
+                            //       Navigator.of(context, rootNavigator: true)
+                            //           .pop(ExampleData.user1),
+                            //   userId: ExampleData.user1.userId,
+                            // ),
+                            // UserListItem(
+                            //   handler: () =>
+                            //       Navigator.of(context, rootNavigator: true)
+                            //           .pop(ExampleData.user2),
+                            //   userId: ExampleData.user2.userId,
+                            // ),
                           ],
                         ),
                       ),
@@ -412,7 +434,10 @@ class _TaskScreenBodyState extends State<_TaskScreenBody> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
         TextFormField(
-          initialValue: task.description,
+          controller: descriptionController,
+          onChanged: (value) {
+            task.description = value;
+          },
           maxLines: 8,
           style: Theme.of(context).textTheme.bodySmall,
           decoration: Themes.inputDecoration(ref, "description",

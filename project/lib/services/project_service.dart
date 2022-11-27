@@ -35,6 +35,7 @@ class FirebaseProjectService implements ProjectService {
   @override
   Future<Project> saveProject(Project project) async {
     if (project.projectId == "") {
+      project.tags = await tagService.getTags();
       project.projectId = (await projectCollection.add(project.toMap())).id;
       await projectCollection.doc(project.projectId).set(project.toMap());
     } else {

@@ -38,7 +38,6 @@ Future<void> main() async {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-  static List<Project> projects = ExampleData.projects;
 
   /// Check if the user is logged in.
   /// They get send to the [HomeScreen] if logged in and [SignInScreen] if not.
@@ -67,7 +66,7 @@ class MyApp extends StatelessWidget {
             ref.watch(darkModeProvider) ? ThemeMode.dark : ThemeMode.light,
         home: initialScreenCheck(ref),
         routes: {
-          SignInScreen.routeName: (context) => SignInScreen(),
+          SignInScreen.routeName: (context) => const SignInScreen(),
           HomeScreen.routeName: (context) => const HomeScreen(),
           ProjectOverviewScreen.routeName: (context) =>
               const ProjectOverviewScreen(),
