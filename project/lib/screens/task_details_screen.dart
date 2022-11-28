@@ -2,14 +2,15 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
-import 'package:project/data/example_data.dart';
 import 'package:project/models/comment.dart';
 import 'package:project/models/project.dart';
 import 'package:project/models/task.dart';
+import 'package:project/providers/auth_provider.dart';
+import 'package:project/providers/comment_image_provider.dart';
+import 'package:project/providers/comment_provider.dart';
 import 'package:project/providers/project_provider.dart';
 import 'package:project/providers/task_provider.dart';
 import 'package:project/screens/profile_screen.dart';
@@ -93,34 +94,6 @@ class _OverviewTabView extends StatelessWidget {
   /// Creates an instance [OverviewTabView].
   const _OverviewTabView({required this.task});
 
-  Widget assignedList(BuildContext context) {
-    return Column(
-      children: [
-        ...task.assigned
-            .map(
-              (e) => UserListItem(
-                handler: () => Navigator.of(context).pushNamed(
-                  ProfileScreen.routeName,
-                  arguments: {
-                    "user": e,
-                    "projects": <Project>[],
-                  },
-                ),
-                userId: e,
-                size: UserListItemSize.small,
-              ),
-            )
-            .toList(),
-      ],
-    );
-  }
-
-  String deadlineFormatted() {
-    return task.deadline != null
-        ? Jiffy(task.deadline!).format("dd/MM/yyyy")
-        : "-";
-  }
-
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -129,49 +102,20 @@ class _OverviewTabView extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Text(
-              task.title.toLowerCase(),
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-            ),
+            _taskTitle(),
             const SizedBox(height: 16.0),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Text(
-                    "tags",
-                    style: Theme.of(context).textTheme.labelMedium,
-                  ),
-                  const SizedBox(height: 8),
-                  TagsList(
-                    tags: task.tags,
-                    size: TagSize.large,
-                  ),
-                  const SizedBox(height: 24),
-                  Text(
-                    "deadline",
-                    style: Theme.of(context).textTheme.labelMedium,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(deadlineFormatted()),
-                  const SizedBox(height: 24.0),
-                  Text(
-                    "assigned",
-                    style: Theme.of(context).textTheme.labelMedium,
-                  ),
-                  const SizedBox(height: 8),
-                  assignedList(context),
-                  const SizedBox(height: 24),
-                  Text(
-                    "description",
-                    style: Theme.of(context).textTheme.labelMedium,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    task.description,
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
+                  _tags(context),
+                  _vericalPaddingLarge(),
+                  _deadline(context),
+                  _vericalPaddingLarge(),
+                  _assigned(context),
+                  _vericalPaddingLarge(),
+                  _description(context),
                 ],
               ),
             )
@@ -180,10 +124,105 @@ class _OverviewTabView extends StatelessWidget {
       ),
     );
   }
+
+  /// Returns the task title in a Text widget.
+  Text _taskTitle() {
+    return Text(
+      task.title.toLowerCase(),
+      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+    );
+  }
+
+  SizedBox _verticalPaddingSmall() => const SizedBox(height: 8);
+
+  SizedBox _vericalPaddingLarge() => const SizedBox(height: 24.0);
+
+  /// Returns the task tags section.
+  Column _tags(BuildContext context) {
+    return Column(
+      children: [
+        Text(
+          "tags",
+          style: Theme.of(context).textTheme.labelMedium,
+        ),
+        _verticalPaddingSmall(),
+        TagsList(
+          tags: task.tags,
+          size: TagSize.large,
+        ),
+      ],
+    );
+  }
+
+  /// Returns the section for task deadline.
+  Column _deadline(BuildContext context) {
+    return Column(
+      children: [
+        Text(
+          "deadline",
+          style: Theme.of(context).textTheme.labelMedium,
+        ),
+        _verticalPaddingSmall(),
+        Text(task.deadline != null
+            ? Jiffy(task.deadline!).format("dd/MM/yyyy")
+            : "-"),
+      ],
+    );
+  }
+
+  /// Returns the section for displaying assignees,
+  Widget _assigned(BuildContext context) {
+    return Column(
+      children: [
+        Text(
+          "assigned",
+          style: Theme.of(context).textTheme.labelMedium,
+        ),
+        _verticalPaddingSmall(),
+        Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ...task.assigned
+                .map(
+                  (e) => UserListItem(
+                    handler: () => Navigator.of(context).pushNamed(
+                      ProfileScreen.routeName,
+                      arguments: {
+                        "user": e,
+                        "projects": <Project>[],
+                      },
+                    ),
+                    userId: e,
+                    size: UserListItemSize.small,
+                  ),
+                )
+                .toList(),
+          ],
+        ),
+      ],
+    );
+  }
+
+  ///Returns the section for task description.
+  Column _description(BuildContext context) {
+    return Column(
+      children: [
+        Text(
+          "description",
+          style: Theme.of(context).textTheme.labelMedium,
+        ),
+        _verticalPaddingSmall(),
+        Text(
+          task.description,
+          style: Theme.of(context).textTheme.bodyMedium,
+        ),
+      ],
+    );
+  }
 }
 
 /// Body content for the comment tab.
-class _CommentTabView extends StatefulWidget {
+class _CommentTabView extends ConsumerStatefulWidget {
   /// The task to display it's comments for.
   final Task task;
 
@@ -197,32 +236,12 @@ class _CommentTabView extends StatefulWidget {
   });
 
   @override
-  State<_CommentTabView> createState() => _CommentTabViewState();
+  ConsumerState<_CommentTabView> createState() => _CommentTabViewState();
 }
 
-class _CommentTabViewState extends State<_CommentTabView> {
+class _CommentTabViewState extends ConsumerState<_CommentTabView> {
   /// [ScrollController] for the [CommentList].
   final ScrollController controller = ScrollController();
-
-  @override
-  void initState() {
-    super.initState();
-    if (widget.task.comments.isNotEmpty) {
-      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-        controller.jumpTo(controller.position.maxScrollExtent);
-      });
-    }
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    if (widget.task.comments.isNotEmpty) {
-      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-        controller.jumpTo(controller.position.maxScrollExtent);
-      });
-    }
-  }
 
   @override
   void dispose() {
@@ -235,7 +254,7 @@ class _CommentTabViewState extends State<_CommentTabView> {
   void scrollToBottom(wait) {
     Timer(Duration(milliseconds: wait), () {
       controller.animateTo(
-        controller.position.maxScrollExtent,
+        controller.position.minScrollExtent,
         duration: const Duration(milliseconds: 200),
         curve: Curves.easeInOut,
       );
@@ -251,57 +270,91 @@ class _CommentTabViewState extends State<_CommentTabView> {
         8.0,
         Platform.isIOS ? 30.0 : 20.0,
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: <Widget>[
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                taskTitle(),
-                const SizedBox(height: 16.0),
-                commentListView(),
-              ],
-            ),
-          ),
-          MessageInputField(
-            handler: (content, MessageType type) async {
-              // switch (type) {
-              //   case MessageType.text:
-              //     widget.task.comments.add(TextComment(
-              //       author: ExampleData.user1,
-              //       text: content,
-              //     ));
-              //     break;
-              //   case MessageType.image:
-              //     widget.task.comments.add(ImageComment(
-              //       author: ExampleData.user2,
-              //       image: content,
-              //     ));
-              //     break;
-              //   case MessageType.gif:
-              //     widget.task.comments.add(GifComment(
-              //       author: ExampleData.user2,
-              //       url: content,
-              //     ));
-              //     break;
-              //   default:
-              // }
+      child: Consumer(
+        builder: (context, ref, child) => StreamBuilder<List<Comment>>(
+            stream: ref.watch(commentProvider).getComments(widget.task.taskId),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                List<Comment> comments = snapshot.data!;
 
-              // setState(() {});
-              // scrollToBottom(300);
-            },
-            focusNode: widget.focusNode,
-            camera: true,
-            gallery: true,
-            gif: true,
-          ),
-        ],
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          taskTitle(),
+                          const SizedBox(height: 16.0),
+                          commentListView(comments),
+                        ],
+                      ),
+                    ),
+                    _commentInputField(ref),
+                  ],
+                );
+              }
+              return const Center(child: CircularProgressIndicator());
+            }),
       ),
     );
   }
 
+  /// Returns the message input field customized for comments.
+  MessageInputField _commentInputField(WidgetRef ref) {
+    return MessageInputField(
+      handler: (content, MessageType type) async {
+        String currentUserId = ref.watch(authProvider).currentUser!.uid;
+        switch (type) {
+          case MessageType.text:
+            ref
+                .read(commentProvider)
+                .saveComment(
+                  TextComment(
+                    taskId: widget.task.taskId,
+                    author: currentUserId,
+                    text: content,
+                  ),
+                )
+                .then((value) => scrollToBottom(300));
+            break;
+          case MessageType.image:
+            ref
+                .read(commentImageProvider)
+                .addCommentImage(widget.task.taskId, content)
+                .then((value) => ref.read(commentProvider).saveComment(
+                      ImageComment(
+                        taskId: widget.task.taskId,
+                        author: currentUserId,
+                        imageUrl: value!,
+                      ),
+                    ))
+                .then((value) => scrollToBottom(600));
+            break;
+          case MessageType.gif:
+            ref
+                .read(commentProvider)
+                .saveComment(
+                  ImageComment(
+                    taskId: widget.task.taskId,
+                    author: currentUserId,
+                    imageUrl: content,
+                  ),
+                )
+                .then((value) => scrollToBottom(600));
+            break;
+          default:
+        }
+      },
+      focusNode: widget.focusNode,
+      camera: true,
+      gallery: true,
+      gif: true,
+    );
+  }
+
+  /// Returns the task title in a text widget.
   Text taskTitle() {
     return Text(
       widget.task.title.toLowerCase(),
@@ -309,7 +362,8 @@ class _CommentTabViewState extends State<_CommentTabView> {
     );
   }
 
-  Expanded commentListView() {
+  /// Returns the list of comments.
+  Expanded commentListView(List<Comment> comments) {
     return Expanded(
       child: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -321,10 +375,10 @@ class _CommentTabViewState extends State<_CommentTabView> {
               style: Theme.of(context).textTheme.labelMedium,
             ),
             const SizedBox(height: 8),
-            if (widget.task.comments.isEmpty) const Text("No comments..."),
+            if (comments.isEmpty) const Text("No comments..."),
             Expanded(
               child: CommentList(
-                comments: widget.task.comments,
+                comments: comments,
                 controller: controller,
               ),
             )
@@ -343,6 +397,7 @@ class _TaskPopUpMenu extends ConsumerWidget {
   /// The task to show the pop up menu for.
   final Task task;
 
+  /// Navigates to screen for editing tasks.
   void editTask(WidgetRef ref, BuildContext context) {
     ref.read(currentProjectProvider.notifier).setProject(
           ref.watch(projectProvider).getProject(
@@ -355,6 +410,7 @@ class _TaskPopUpMenu extends ConsumerWidget {
     );
   }
 
+  /// Displays a dialog asking if the user wishes to delete the task.
   void deleteTask(WidgetRef ref, BuildContext context) {
     Future.delayed(
       const Duration(seconds: 0),

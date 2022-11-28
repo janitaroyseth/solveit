@@ -21,6 +21,7 @@ class CommentList extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListView.builder(
       controller: controller,
+      reverse: true,
       itemCount: comments.length,
       itemBuilder: (context, index) => CommentListItem(
         comment: comments[index],
