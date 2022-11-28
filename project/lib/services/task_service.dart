@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:project/models/tag.dart';
 import 'package:project/models/task.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -14,7 +12,11 @@ abstract class TaskService {
   Stream<Task?> getTask(String taskId);
 
   /// Returns all tasks.
-  Stream<List<Task?>> getTasks(String projectId);
+  Stream<List<Task?>> getTasks(
+    String projectId, {
+    String field = "deadline",
+    bool descending = true,
+  });
 
   /// Filters the task for a project with the given [projectId] from the given [query].
   Stream<List<Task?>> searchTask(String projectId, String query);
@@ -48,42 +50,27 @@ class FirebaseTaskService extends TaskService {
         .snapshots()
         .map((event) => event.data())
         .map((event) => Task.fromMap(event));
-    // Map<String, dynamic>? taskMap =
-    //     (await taskCollection.doc(taskId).get()).data();
-    // if (null != taskMap) {
-    //   task = Task.fromMap(taskMap);
-    //   if (null != task) {
-    //     List<Comment> comments = [];
-    //     // Fetch and add task comments
-    //     for (String commentId in taskMap["comments"]) {
-    //       Comment? comment = await commentService.getComment(commentId);
-    //       if (null != comment) {
-    //         comments.add(comment);
-    //       }
-    //     }
-    //     task.comments = comments;
-
-    //     // Fetch and add task tags
-    //     List<Tag> tags = [];
-    //     for (String tagId in taskMap["tags"]) {
-    //       Tag? tag = await tagService.getTag(tagId);
-    //       if (null != tag) {
-    //         tags.add(tag);
-    //       }
-    //     }
-    //     task.tags = tags;
-    //   }
-    // }
-    // return task;
   }
 
   @override
-  Stream<List<Task?>> getTasks(String projectId) {
+  Stream<List<Task?>> getTasks(
+    String projectId, {
+    String field = "deadline",
+    bool descending = false,
+  }) {
     return taskCollection
         .where("projectId", isEqualTo: projectId)
         .snapshots()
         .map((event) => event.docs)
-        .map((event) => Task.fromMaps(event));
+        .map((event) {
+      List<Task?> tasks = Task.fromMaps(event);
+      if (descending) {
+        tasks.sort((b, a) => (a!.toMap()[field]).compareTo(b!.toMap()[field]));
+      } else {
+        tasks.sort((a, b) => (a!.toMap()[field]).compareTo(b!.toMap()[field]));
+      }
+      return tasks;
+    });
   }
 
   @override

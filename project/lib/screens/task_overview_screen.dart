@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -81,45 +80,46 @@ class TaskOverviewScreenState extends ConsumerState {
                 color: Colors.white,
               ),
               actions: <Widget>[
-                AppBarButton(
-                  handler: () => Navigator.of(context).popAndPushNamed(
-                      ProjectCalendarScreen.routeName,
-                      arguments: project),
-                  tooltip: "Open calendar for this project",
-                  icon: PhosphorIcons.calendarCheckLight,
-                  color: Colors.white,
-                ),
+                _calendarButton(context, project),
                 ProjectPopUpMenu(
                   project: project,
                   currentRouteName: TaskOverviewScreen.routeName,
                 ),
               ],
             ),
-            // body: StreamBuilder<List<Task?>>(
-            //     stream: ref.watch(taskProvider).getTasks(project.projectId),
-            //     builder: (context, snapshot) {
-            //       if (snapshot.hasData) {
-            body: _TaskOverviewBody(project, []),
-            //   }
-            //   return const Center(child: CircularProgressIndicator());
-            // }),
-            floatingActionButton: FloatingActionButton(
-              onPressed: () async {
-                ref.read(currentProjectProvider.notifier).setProject(
-                    ref.watch(projectProvider).getProject(project.projectId));
-                Navigator.of(context)
-                    .pushNamed(ConfigureTaskScreen.routeName)
-                    .whenComplete(() => setState(() {}));
-              },
-              child: const Icon(
-                PhosphorIcons.plus,
-                color: Colors.white,
-              ),
-            ),
+            body: _TaskOverviewBody(project),
+            floatingActionButton: _addNewTaskButton(project, context),
           );
         }
         return const Center(child: CircularProgressIndicator());
       },
+    );
+  }
+
+  AppBarButton _calendarButton(BuildContext context, Project project) {
+    return AppBarButton(
+      handler: () => Navigator.of(context)
+          .popAndPushNamed(ProjectCalendarScreen.routeName, arguments: project),
+      tooltip: "Open calendar for this project",
+      icon: PhosphorIcons.calendarCheckLight,
+      color: Colors.white,
+    );
+  }
+
+  FloatingActionButton _addNewTaskButton(
+      Project project, BuildContext context) {
+    return FloatingActionButton(
+      onPressed: () async {
+        ref.read(currentProjectProvider.notifier).setProject(
+            ref.watch(projectProvider).getProject(project.projectId));
+        Navigator.of(context)
+            .pushNamed(ConfigureTaskScreen.routeName)
+            .whenComplete(() => setState(() {}));
+      },
+      child: const Icon(
+        PhosphorIcons.plus,
+        color: Colors.white,
+      ),
     );
   }
 }
@@ -127,8 +127,7 @@ class TaskOverviewScreenState extends ConsumerState {
 /// Body for the overview of tasks in the task-overview screen.
 class _TaskOverviewBody extends ConsumerStatefulWidget {
   final Project project;
-  final List<Task?>? tasks;
-  const _TaskOverviewBody(this.project, this.tasks);
+  const _TaskOverviewBody(this.project);
 
   @override
   ConsumerState<_TaskOverviewBody> createState() => _TaskOverviewBodyState();
@@ -137,7 +136,6 @@ class _TaskOverviewBody extends ConsumerStatefulWidget {
 class _TaskOverviewBodyState extends ConsumerState<_TaskOverviewBody> {
   final TextEditingController _searchController = TextEditingController();
   late Project project;
-  List<Task?> items = [];
   String sortType = SortingMethods.dateDesc;
 
   late Stream<List<Task?>> currentStream;
@@ -145,70 +143,56 @@ class _TaskOverviewBodyState extends ConsumerState<_TaskOverviewBody> {
   @override
   void initState() {
     project = widget.project;
-    items.addAll(widget.tasks!);
-
-    sort();
     super.initState();
   }
 
   @override
   void didChangeDependencies() {
     currentStream = ref.watch(taskProvider).getTasks(project.projectId);
+    _sort();
     super.didChangeDependencies();
   }
 
   /// When sorting method is changed by user, sort the list by new method.
   /// [FilterOption] filterOption - The sorting method to use when sorting the task list.
-  void onSortChange(FilterOption filterOption) {
+  void _onSortChange(FilterOption filterOption) {
     sortType = filterOption.description;
-    sort();
+    _sort();
   }
 
   /// Sorts the task list by the chosen method.
-  void sort() {
+  void _sort() {
     switch (sortType) {
       case SortingMethods.titleAsc:
-        sortByVariable("title", false);
+        _sortByVariable("title", false);
         break;
       case SortingMethods.titleDesc:
-        sortByVariable("title", true);
+        _sortByVariable("title", true);
         break;
       case SortingMethods.dateAsc:
-        sortByVariable("deadline", false);
+        _sortByVariable("deadline", false);
         break;
       case SortingMethods.dateDesc:
-        sortByVariable("deadline", true);
+        _sortByVariable("deadline", true);
     }
   }
 
   /// Sorts the task list by attribute name.
   /// [String] attribute - Name of the attribute by which to sort.
   /// [bool] descending - Whether or not the list should be sorted descending.
-  void sortByVariable(String attribute, bool descending) {
-    if (attribute == "deadline") {
-      if (descending) {
-        items.sort((b, a) => (a!.toMap()[attribute] as DateTime)
-            .compareTo(b!.toMap()[attribute] as DateTime));
-      } else {
-        items.sort((a, b) => (a!.toMap()[attribute] as DateTime)
-            .compareTo(b!.toMap()[attribute] as DateTime));
-      }
-    } else {
-      if (descending) {
-        items.sort((b, a) => (a!.toMap()[attribute] as String)
-            .compareTo(b!.toMap()[attribute] as String));
-      } else {
-        items.sort((a, b) => (a!.toMap()[attribute] as String)
-            .compareTo(b!.toMap()[attribute] as String));
-      }
-    }
+  void _sortByVariable(String attribute, bool descending) {
+    currentStream = ref.watch(taskProvider).getTasks(
+          project.projectId,
+          field: attribute,
+          descending: descending,
+        );
 
     setState(() {});
   }
 
   /// Filters the task list by the selected tags.
   /// [Filter] filter - the filter containing the tags from which to filter.
-  void filterByTags(Filter filter) {
+  void _filterByTags(Filter filter) {
     List<FilterOption> filterOptions =
         filter.filterOptions.where((element) => element.filterBy).toList();
 
@@ -220,6 +204,18 @@ class _TaskOverviewBodyState extends ConsumerState<_TaskOverviewBody> {
       currentStream = ref.watch(taskProvider).getTasks(project.projectId);
       setState(() {});
     }
+  }
+
+  /// Builds the list of tag filter options.
+  /// [Project] the project to retrieve the tags of.
+  List<FilterOption> _buildTagFilterOptions(Project project) {
+    List<FilterOption> options = [];
+
+    for (Tag tag in project.tags) {
+      options
+          .add(FilterOption(tag: tag, description: tag.text, filterBy: false));
+    }
+    return options;
   }
 
   @override
@@ -235,7 +231,7 @@ class _TaskOverviewBodyState extends ConsumerState<_TaskOverviewBody> {
         ),
         SearchBar(
           textEditingController: _searchController,
-          searchFunction: /*filterSearchResults*/ (String query) {
+          searchFunction: (String query) {
             if (_searchController.text.isEmpty) {
               currentStream = ref.watch(taskProvider).getTasks(
                     project.projectId,
@@ -273,13 +269,13 @@ class _TaskOverviewBodyState extends ConsumerState<_TaskOverviewBody> {
                     filterBy: false,
                   ),
                 ],
-                filterHandler: onSortChange,
+                filterHandler: _onSortChange,
                 filterType: FilterType.sort,
               ),
               Filter(
                 title: "tags",
                 filterOptions: _buildTagFilterOptions(project),
-                filterHandler: filterByTags,
+                filterHandler: _filterByTags,
                 filterType: FilterType.tag,
               ),
             ],
@@ -296,18 +292,6 @@ class _TaskOverviewBodyState extends ConsumerState<_TaskOverviewBody> {
         ),
       ],
     );
-  }
-
-  /// Builds the list of tag filter options.
-  /// [Project] the project to retrieve the tags of.
-  List<FilterOption> _buildTagFilterOptions(Project project) {
-    List<FilterOption> options = [];
-
-    for (Tag tag in project.tags) {
-      options
-          .add(FilterOption(tag: tag, description: tag.text, filterBy: false));
-    }
-    return options;
   }
 }
 
