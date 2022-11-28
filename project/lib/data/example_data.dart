@@ -3,11 +3,11 @@
 
 // import '../models/comment.dart';
 // import '../models/project.dart';
-import '../models/tag.dart';
+// import '../models/tag.dart';
 // import '../models/task.dart';
 
 // /// Temp list for testing.
-class ExampleData {
+// class ExampleData {
 //   static User user1 = User(
 //     username: "Espen Otlo",
 //     email: "eo@example.com",
@@ -293,18 +293,18 @@ class ExampleData {
 //       ],
 //     ),
 //   ];
-  static List<Tag> tags = [
-    Tag(
-      text: "urgent",
-      color: "#FF0000",
-    ),
-    Tag(
-      text: "green",
-      color: "#8BC34A",
-    ),
-    Tag(
-      text: "fun",
-      color: "#0400FF",
-    ),
-  ];
-}
+//   static List<Tag> tags = [
+//     Tag(
+//       text: "urgent",
+//       color: "#FF0000",
+//     ),
+//     Tag(
+//       text: "green",
+//       color: "#8BC34A",
+//     ),
+//     Tag(
+//       text: "fun",
+//       color: "#0400FF",
+//     ),
+//   ];
+// }

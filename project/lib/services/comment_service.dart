@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:project/models/comment.dart';
 import 'package:project/services/user_service.dart';
 
+/// Business logic for comments.
 abstract class CommentService {
   /// Saves a new- or updates an existing comment.
   Future<Comment> saveComment(Comment comment);
@@ -10,12 +11,13 @@ abstract class CommentService {
   Future<Comment?> getComment(String commentId);
 
   /// Returns a future list with all comments.
-  Future<List<Comment>> getComments();
+  Stream<List<Comment>> getComments(String taskId);
 
   /// Deletes a comment by comment id.
-  void deleteComment(String commentId);
+  Future<void> deleteComment(String commentId);
 }
 
+/// Firebase implementation of commentservice.
 class FirebaseCommentService extends CommentService {
   final commentCollection = FirebaseFirestore.instance.collection("comments");
   final userService = FirebaseUserService();
@@ -25,6 +27,9 @@ class FirebaseCommentService extends CommentService {
     if (comment.commentId == "") {
       comment.commentId =
           (await commentCollection.add(Comment.toMap(comment))).id;
+      await commentCollection
+          .doc(comment.commentId)
+          .set(Comment.toMap(comment));
     } else {
       await commentCollection
           .doc(comment.commentId)
@@ -40,31 +45,29 @@ class FirebaseCommentService extends CommentService {
         (await commentCollection.doc(commentId).get()).data();
     if (null != commentMap) {
       comment = Comment.fromMap(commentMap);
-      if (null != comment) {
-        comment.author = await userService.getUser(commentMap["author"]).first;
-      }
     }
     return comment;
   }
 
   @override
-  Future<List<Comment>> getComments() async {
-    List<Comment> comments = [];
-    await commentCollection.get().then((value) async {
-      for (var element in value.docs) {
-        Comment? comment = Comment.fromMap(element.data());
-        if (comment != null) {
-          comment.author =
-              await userService.getUser(element.data()["author"]).first;
-          comments.add(comment);
-        }
-      }
+  Stream<List<Comment>> getComments(String taskId) {
+    return commentCollection
+        .where("taskId", isEqualTo: taskId)
+        .snapshots()
+        .map((event) => event.docs)
+        .map((event) {
+      List<Comment> comments = Comment.fromMaps(event);
+
+      comments.sort((b, a) => (Comment.toMap(a)["date"]).compareTo(
+            Comment.toMap(b)["date"],
+          ));
+
+      return comments;
     });
-    return comments;
   }
 
   @override
-  void deleteComment(String commentId) {
+  Future<void> deleteComment(String commentId) async {
     commentCollection.doc(commentId).delete();
   }
 }
