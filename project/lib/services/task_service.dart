@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:project/models/tag.dart';
 import 'package:project/models/task.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:project/services/comment_service.dart';
@@ -14,6 +15,11 @@ abstract class TaskService {
 
   /// Returns all tasks.
   Stream<List<Task?>> getTasks(String projectId);
+
+  /// Filters the task for a project with the given [projectId] from the given [query].
+  Stream<List<Task?>> searchTask(String projectId, String query);
+
+  Stream<List<Task>> filterTasksByTag(String projectId, List<Tag> tags);
 
   /// Deletes a task by task id.
   void deleteTask(String taskId);
@@ -78,6 +84,46 @@ class FirebaseTaskService extends TaskService {
         .snapshots()
         .map((event) => event.docs)
         .map((event) => Task.fromMaps(event));
+  }
+
+  @override
+  Stream<List<Task?>> searchTask(String projectId, String query) {
+    return taskCollection
+        .where("projectId", isEqualTo: projectId)
+        .snapshots()
+        .map((event) => event.docs)
+        .map((event) {
+      if (query.isEmpty) {
+        return Task.fromMaps(event);
+      }
+      return Task.fromMaps(event)
+          .where((element) => element
+              .values()
+              .toString()
+              .toLowerCase()
+              .contains(query.toLowerCase()))
+          .toList();
+    });
+  }
+
+  @override
+  Stream<List<Task>> filterTasksByTag(String projectId, List<Tag> tags) {
+    return taskCollection
+        .where("projectId", isEqualTo: projectId)
+        .snapshots()
+        .map((event) => event.docs)
+        .map((event) {
+      return Task.fromMaps(event).where((element) {
+        bool isTagInTask = false;
+
+        for (Tag tag in tags) {
+          isTagInTask = element.tags.contains(tag);
+          if (isTagInTask) break;
+        }
+
+        return isTagInTask;
+      }).toList();
+    });
   }
 
   @override

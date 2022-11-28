@@ -53,15 +53,18 @@ class TaskListItem extends ConsumerWidget {
                     ],
                   ),
                 ),
-                Container(
-                  padding: const EdgeInsets.only(top: 4.0),
-                  alignment: Alignment.topLeft,
-                  child: Text(
-                    task.description,
-                    textAlign: TextAlign.start,
-                    maxLines: 3,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.bodySmall,
+                Visibility(
+                  visible: task.description.isNotEmpty,
+                  child: Container(
+                    padding: const EdgeInsets.only(top: 4.0),
+                    alignment: Alignment.topLeft,
+                    child: Text(
+                      task.description,
+                      textAlign: TextAlign.start,
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.bodySmall,
+                    ),
                   ),
                 ),
                 const SizedBox(

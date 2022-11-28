@@ -43,4 +43,15 @@ class Tag {
   Map<String, dynamic> toMap() {
     return {"tagId": tagId, "text": text, "color": color};
   }
+
+  @override
+  int get hashCode => text.hashCode + color.hashCode;
+
+  @override
+  bool operator ==(Object other) {
+    if (text == (other as Tag).text && color == (other).color) {
+      return true;
+    }
+    return false;
+  }
 }

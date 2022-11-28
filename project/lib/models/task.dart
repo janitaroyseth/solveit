@@ -28,8 +28,8 @@ class Task {
   Task({
     this.taskId = "",
     this.projectId = "",
-    this.title = "no title",
-    this.description = "...",
+    this.title = "",
+    this.description = "",
     List<Tag>? tags,
     this.done = false,
     this.deadline,

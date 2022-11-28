@@ -86,10 +86,10 @@ class __ProjectPopUpMenuState extends State<ProjectPopUpMenu> {
             TextButton(
               onPressed: () {
                 String projectId = widget.project.projectId;
+                print(projectId);
 
                 Navigator.of(context).pop();
                 Navigator.of(context).pop();
-
                 ref.read(projectProvider).deleteProject(projectId);
               },
               child: Text(

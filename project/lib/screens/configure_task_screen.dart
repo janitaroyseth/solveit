@@ -74,7 +74,7 @@ class ConfigureTaskScreen extends ConsumerWidget {
             body: SingleChildScrollView(
               child: Padding(
                   padding: const EdgeInsets.all(20),
-                  child: _TaskScreenBody(task)),
+                  child: _TaskScreenBody(task, project)),
             ),
           );
         }
@@ -86,7 +86,8 @@ class ConfigureTaskScreen extends ConsumerWidget {
 
 class _TaskScreenBody extends StatefulWidget {
   final Task task;
-  const _TaskScreenBody(this.task);
+  final Project project;
+  const _TaskScreenBody(this.task, this.project);
   @override
   State<StatefulWidget> createState() => _TaskScreenBodyState();
 }
@@ -95,7 +96,7 @@ class _TaskScreenBodyState extends State<_TaskScreenBody> {
   late Task task;
   final _formKey = GlobalKey<FormState>();
   bool isTagPickerShown = false;
-  List<Tag> allTags = ExampleData.tags;
+  late List<Tag> allTags;
   List<User> selectedUsers = [];
 
   final titleController = TextEditingController();
@@ -103,6 +104,7 @@ class _TaskScreenBodyState extends State<_TaskScreenBody> {
 
   @override
   void initState() {
+    allTags = widget.project.tags;
     task = widget.task;
     titleController.text = task.title;
     descriptionController.text = task.description;
