@@ -34,7 +34,6 @@ class TaskOverviewScreen extends ConsumerStatefulWidget {
 }
 
 class TaskOverviewScreenState extends ConsumerState {
-  String? projectId;
   @override
   Widget build(BuildContext context) {
     Project project;
@@ -43,7 +42,6 @@ class TaskOverviewScreenState extends ConsumerState {
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           project = snapshot.data!;
-          projectId = project.projectId;
           return Scaffold(
             extendBodyBehindAppBar: true,
             appBar: AppBar(
@@ -218,6 +216,21 @@ class _TaskOverviewBodyState extends ConsumerState<_TaskOverviewBody> {
     return options;
   }
 
+  /// Searches through the list of tasks with the given query.
+  _searchFunction(String query) {
+    if (_searchController.text.isEmpty) {
+      currentStream = ref.watch(taskProvider).getTasks(
+            project.projectId,
+          );
+    } else {
+      currentStream = ref.watch(taskProvider).searchTask(
+            project.projectId,
+            _searchController.text,
+          );
+    }
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -231,19 +244,7 @@ class _TaskOverviewBodyState extends ConsumerState<_TaskOverviewBody> {
         ),
         SearchBar(
           textEditingController: _searchController,
-          searchFunction: (String query) {
-            if (_searchController.text.isEmpty) {
-              currentStream = ref.watch(taskProvider).getTasks(
-                    project.projectId,
-                  );
-            } else {
-              currentStream = ref.watch(taskProvider).searchTask(
-                    project.projectId,
-                    _searchController.text,
-                  );
-            }
-            setState(() {});
-          },
+          searchFunction: _searchFunction,
           placeholderText: "Search for tasks",
           filter: true,
           filterModal: FilterModal(
