@@ -90,7 +90,7 @@ class ProjectOverviewScreenState extends ConsumerState<ProjectOverviewScreen> {
                               ref
                                   .read(currentProjectProvider.notifier)
                                   .setProject(ref
-                                      .read(projectProvider)
+                                      .watch(projectProvider)
                                       .getProject(projects[index].projectId)),
                               Navigator.of(context).pushNamed(
                                   TaskOverviewScreen.routeName,

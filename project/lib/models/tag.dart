@@ -28,8 +28,30 @@ class Tag {
     return Tag(tagId: tagId, text: text, color: color);
   }
 
+  static List<Tag> fromMaps(var data) {
+    List<Tag> tags = [];
+    for (var value in data) {
+      Tag? tag = fromMap(value);
+      if (null != tag) {
+        tags.add(tag);
+      }
+    }
+    return tags;
+  }
+
   /// Converts a [Tag] object to a [Map] object.
   Map<String, dynamic> toMap() {
     return {"tagId": tagId, "text": text, "color": color};
+  }
+
+  @override
+  int get hashCode => text.hashCode + color.hashCode;
+
+  @override
+  bool operator ==(Object other) {
+    if (text == (other as Tag).text && color == (other).color) {
+      return true;
+    }
+    return false;
   }
 }

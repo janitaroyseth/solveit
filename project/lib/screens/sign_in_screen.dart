@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
-import 'package:project/data/example_data.dart';
 import 'package:project/models/project.dart';
 import 'package:project/models/user.dart' as app;
 import 'package:project/providers/auth_provider.dart';
@@ -15,12 +14,10 @@ import 'package:project/styles/theme.dart';
 /// Screen/Scaffold for signing in and signing up .
 class SignInScreen extends StatelessWidget {
   /// Creates an instance of [SignInScreen].
-  SignInScreen({super.key});
+  const SignInScreen({super.key});
 
   /// Named route for this screen.
   static const routeName = "/signin";
-
-  final List<Project> projects = ExampleData.projects;
 
   @override
   Widget build(BuildContext context) {
@@ -79,9 +76,6 @@ class _SignInForm extends ConsumerStatefulWidget {
 }
 
 class __SignInFormState extends ConsumerState<_SignInForm> {
-  List<Project> projects = ExampleData.projects;
-  app.User user = ExampleData.user2;
-
   bool signupMode = false;
   final formKey = GlobalKey<FormState>();
 
@@ -260,15 +254,9 @@ class __SignInFormState extends ConsumerState<_SignInForm> {
 
   ElevatedButton appleButton(BuildContext context) {
     return ElevatedButton(
-      onPressed: signupMode
-          ? () => Navigator.of(context).pushNamed(CreateProfileScreen.routeName)
-          : () => Navigator.of(context).popAndPushNamed(
-                HomeScreen.routeName,
-                arguments: {
-                  "user": user,
-                  "projects": projects,
-                },
-              ),
+      onPressed: () {
+        //TODO: Set up apple login
+      },
       style: Themes.circularButtonStyle,
       child: const Icon(
         PhosphorIcons.appleLogo,

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:project/models/project.dart';
+import 'package:project/models/task.dart';
 import 'package:project/services/tag_service.dart';
 import 'package:project/services/task_service.dart';
 import 'package:project/services/user_service.dart';
@@ -35,24 +36,13 @@ class FirebaseProjectService implements ProjectService {
   @override
   Future<Project> saveProject(Project project) async {
     if (project.projectId == "") {
+      project.tags = await tagService.getTags();
       project.projectId = (await projectCollection.add(project.toMap())).id;
       await projectCollection.doc(project.projectId).set(project.toMap());
     } else {
       await projectCollection.doc(project.projectId).set(project.toMap());
     }
     return project;
-  }
-
-  @override
-  Future<void> deleteProject(String projectId) async {
-    Map<String, dynamic>? map =
-        (await projectCollection.doc(projectId).get()).data();
-    if (null != map) {
-      for (String taskId in map["tasks"]) {
-        taskService.deleteTask(taskId);
-      }
-    }
-    return projectCollection.doc(projectId).delete();
   }
 
   @override
@@ -82,39 +72,14 @@ class FirebaseProjectService implements ProjectService {
         .map((event) => Project.fromMaps(event));
   }
 
-  // Future<Project?> mapAndAddChildren(Map<String, dynamic>? data) async {
-  //   Project? project = Project.fromMap(data);
-  //   if (null != project && null != data) {
-  //     List<Task> tasks = [];
-  //     // Fetch and add the tasks
-  //     for (String taskId in data["tasks"]) {
-  //       Task? task = await taskService.getTask(taskId);
-  //       if (null != task) {
-  //         tasks.add(task);
-  //       }
-  //     }
-  //     project.tasks = tasks;
-
-  //     // Fetch and add the collaborators
-  //     List<String> collaborators = [];
-  //     for (String userId in data["collaborators"]) {
-  //       User? user = await userService.getUser(userId).first;
-  //       // if (null != user) {
-  //       collaborators.add(userId);
-  //       // }
-  //     }
-  //     project.collaborators = collaborators;
-
-  //     // Fetch and add the tags
-  //     List<Tag> tags = [];
-  //     for (String tagId in data["tags"]) {
-  //       Tag? tag = await tagService.getTag(tagId);
-  //       if (null != tag) {
-  //         tags.add(tag);
-  //       }
-  //     }
-  //     project.tags = tags;
-  //   }
-  //   return project;
-  // }
+  @override
+  Future<void> deleteProject(String projectId) async {
+    taskService.getTasks(projectId).first.then((tasks) {
+      for (Task? task in tasks) {
+        if (task != null) {
+          taskService.deleteTask(task.taskId);
+        }
+      }
+    }).whenComplete(() => projectCollection.doc(projectId).delete());
+  }
 }

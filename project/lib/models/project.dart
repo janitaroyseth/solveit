@@ -49,15 +49,18 @@ class Project {
     final bool isPublic = data['isPublic'];
     final String? lastUpdated = data['lastUpdated'];
     final String imageUrl = data['imageUrl'];
+    final List<Tag> tags = Tag.fromMaps(data["tags"]);
 
     return Project(
-        projectId: id,
-        title: title,
-        imageUrl: imageUrl,
-        description: description,
-        collaborators: collaborators,
-        isPublic: isPublic,
-        lastUpdated: lastUpdated);
+      projectId: id,
+      title: title,
+      imageUrl: imageUrl,
+      description: description,
+      collaborators: collaborators,
+      isPublic: isPublic,
+      lastUpdated: lastUpdated,
+      tags: tags,
+    );
   }
 
   static List<Project> fromMaps(var data) {
@@ -76,7 +79,7 @@ class Project {
       "projectId": projectId,
       "title": title,
       "tasks": tasks.map((e) => e.taskId).toList(),
-      "tags": tags.map((e) => e.tagId).toList(),
+      "tags": tags.map((e) => e.toMap()).toList(),
       "collaborators": collaborators,
       "owner": owner,
       "imageUrl": imageUrl,
@@ -91,7 +94,7 @@ class Project {
     this.projectId = "",
     this.title = "project title",
     this.tasks = const [],
-    this.tags = const [],
+    List<Tag>? tags,
     this.owner,
     List<dynamic>? collaborators,
     String? imageUrl,
@@ -99,5 +102,6 @@ class Project {
     this.lastUpdated,
     this.isPublic = false,
   })  : imageUrl = imageUrl ?? projectAvatars[0],
-        collaborators = collaborators ?? [];
+        collaborators = collaborators ?? [],
+        tags = tags ?? [];
 }

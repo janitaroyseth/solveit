@@ -1,17 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
-import 'package:project/data/example_data.dart';
 import 'package:project/data/project_avatar_options.dart';
 import 'package:project/models/project.dart';
 import 'package:project/providers/auth_provider.dart';
 import 'package:project/providers/project_provider.dart';
-import 'package:project/screens/profile_screen.dart';
 import 'package:project/styles/theme.dart';
 import 'package:project/widgets/appbar_button.dart';
 import 'package:project/widgets/input_field.dart';
 import 'package:project/widgets/search_bar.dart';
-import 'package:project/widgets/user_list_item.dart';
 
 enum _EditProjectMode {
   create,
@@ -38,8 +35,7 @@ class EditProjectScreen extends ConsumerWidget {
         ? _EditProjectMode.create
         : _EditProjectMode.edit;
 
-    final Project project =
-        existingProject ?? Project(owner: ExampleData.user1.userId);
+    final Project project = existingProject ?? Project();
 
     titleController.text = _EditProjectMode.edit == mode ? project.title : "";
 
@@ -196,16 +192,16 @@ class _CollaboratorsDialog extends StatelessWidget {
                 ),
                 child: ListView(
                   children: [
-                    UserListItem(
-                      handler: () => Navigator.of(context)
-                          .pushNamed(ProfileScreen.routeName),
-                      userId: ExampleData.user1.userId,
-                    ),
-                    UserListItem(
-                      handler: () => Navigator.of(context)
-                          .pushNamed(ProfileScreen.routeName),
-                      userId: ExampleData.user2.userId,
-                    ),
+                    // UserListItem(
+                    //   handler: () => Navigator.of(context)
+                    //       .pushNamed(ProfileScreen.routeName),
+                    //   userId: ExampleData.user1.userId,
+                    // ),
+                    // UserListItem(
+                    //   handler: () => Navigator.of(context)
+                    //       .pushNamed(ProfileScreen.routeName),
+                    //   userId: ExampleData.user2.userId,
+                    // ),
                   ],
                 ),
               ),

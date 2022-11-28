@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
-import 'package:project/data/example_data.dart';
 import 'package:project/models/project.dart';
 import 'package:project/providers/auth_provider.dart';
 import 'package:project/models/user.dart';
@@ -24,7 +23,6 @@ class ProfileScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final List<Project> projects = ExampleData.projects;
     final Stream<User?> user = ref
         .watch(userProvider)
         .getUser(ref.watch(authProvider).currentUser!.uid);
@@ -171,7 +169,7 @@ class ProfileScreen extends ConsumerWidget {
               ),
             ),
           ),
-          _ProfileProjectList(projects: projects),
+          _ProfileProjectList(),
         ],
       ),
     );
@@ -290,9 +288,7 @@ class ProfileScreen extends ConsumerWidget {
 }
 
 class _ProfileProjectList extends ConsumerStatefulWidget {
-  final List<Project> projects;
-
-  const _ProfileProjectList({super.key, required this.projects});
+  const _ProfileProjectList();
 
   @override
   ConsumerState<_ProfileProjectList> createState() =>
@@ -364,10 +360,12 @@ class _ProfileProjectListState extends ConsumerState<_ProfileProjectList> {
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: StreamBuilder<List<Project>?>(
-                  stream: ref.watch(projectProvider).getProjectsByUserIdAsOwner(
-                        ref.watch(authProvider).currentUser!.uid,
-                      ),
-                  builder: (context, snapshot) {
+                stream: ref.watch(projectProvider).getProjectsByUserIdAsOwner(
+                      ref.watch(authProvider).currentUser!.uid,
+                    ),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    List<Project> projects = snapshot.data!;
                     return GridView.builder(
                       gridDelegate:
                           const SliverGridDelegateWithFixedCrossAxisCount(
@@ -376,14 +374,17 @@ class _ProfileProjectListState extends ConsumerState<_ProfileProjectList> {
                         crossAxisSpacing: 16,
                         mainAxisSpacing: 16,
                       ),
-                      itemCount: widget.projects.length,
+                      itemCount: projects.length,
                       itemBuilder: (context, index) => ProjectCard(
-                          project: widget.projects[index],
+                          project: projects[index],
                           handler: () => Navigator.of(context).pushNamed(
                               ProjectPreviewScreen.routeName,
-                              arguments: widget.projects[index])),
+                              arguments: projects[index])),
                     );
-                  }),
+                  }
+                  return const Center(child: CircularProgressIndicator());
+                },
+              ),
             ),
           ),
         ],
