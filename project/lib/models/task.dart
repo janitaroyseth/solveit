@@ -22,8 +22,8 @@ class Task {
   // List of comments of this task.
   List<Comment> comments;
 
-  /// List of user id of the users assigned ot this task.
-  List<String> assigned;
+  /// List of the users assigned ot this task.
+  List<User> assigned;
 
   Task({
     this.taskId = "",
@@ -34,7 +34,7 @@ class Task {
     this.done = false,
     this.deadline,
     List<Comment>? comments,
-    List<String>? assigned,
+    List<User>? assigned,
   })  : comments = comments ?? [],
         assigned = assigned ?? [],
         tags = tags ?? [];
@@ -53,7 +53,7 @@ class Task {
         ? (data['deadline'] as Timestamp).toDate()
         : null;
     final List<Comment> comments = [];
-    final List<User> assigned = [];
+    final List<User> assigned = User.fromMaps(data["assigned"]);
     final tags = Tag.fromMaps(data["tags"]);
 
     return Task(
@@ -63,6 +63,7 @@ class Task {
       description: description,
       done: done,
       deadline: deadline,
+      assigned: assigned,
       tags: tags,
     );
   }
@@ -102,7 +103,7 @@ class Task {
       "done": done,
       "deadline": deadline,
       "comments": comments.map((e) => e.commentId).toList(),
-      "assigned": assigned.map((e) => e).toList(),
+      "assigned": assigned.map((e) => User.toMap(e)).toList(),
       "tags": tags.map((e) => e.toMap()).toList(),
     };
   }

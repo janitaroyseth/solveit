@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:project/models/user.dart';
+import 'package:project/providers/project_provider.dart';
 import 'package:project/providers/user_provider.dart';
 import 'package:project/widgets/search_bar.dart';
 import 'package:project/widgets/user_list_item.dart';
@@ -10,14 +11,13 @@ enum CollaboratorsSearchType {
   assignees,
 }
 
+/// Screen/Scaffold for picking a collaborator or a assignee.
 class CollaboratorsScreen extends ConsumerStatefulWidget {
+  /// Named route for this screen.
   static const routeName = "/collaborators";
-  final CollaboratorsSearchType searchType;
 
-  const CollaboratorsScreen({
-    super.key,
-    this.searchType = CollaboratorsSearchType.collaborators,
-  });
+  /// Creates an instance of [CollaboratorScreen].
+  const CollaboratorsScreen({super.key});
 
   @override
   ConsumerState<CollaboratorsScreen> createState() =>
@@ -26,30 +26,50 @@ class CollaboratorsScreen extends ConsumerStatefulWidget {
 
 class _CollaboratorsScreenState extends ConsumerState<CollaboratorsScreen> {
   final TextEditingController _searchController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
-    final List<User?> collaborators =
-        ModalRoute.of(context)!.settings.arguments as List<User?>;
+    final List<User?> users =
+        (ModalRoute.of(context)!.settings.arguments as List)[0] as List<User?>;
+    final CollaboratorsSearchType? searchType =
+        (ModalRoute.of(context)!.settings.arguments as List)[1] ??
+            CollaboratorsSearchType.collaborators;
+    final String projectId =
+        (ModalRoute.of(context)!.settings.arguments as List)[2];
+
+    /// Gets list of collaborators in a project, used for when
+    /// picking an assignee as options should only be a collaborator.
+    Stream<List<User>> getCollaborators() {
+      return ref
+          .watch(projectProvider)
+          .getProject(projectId)
+          .first
+          .then((value) => value!.collaborators)
+          .asStream();
+    }
+
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.searchType == CollaboratorsSearchType.collaborators
+        title: Text(searchType == CollaboratorsSearchType.collaborators
             ? "add collaborator"
             : "add assignee"),
       ),
       body: Column(
         children: <Widget>[
           SearchBar(
-            placeholderText: "search for ${widget.searchType.name}",
+            placeholderText: "search for ${searchType!.name}",
             searchFunction: (String query) {
               setState(() {});
             },
             textEditingController: _searchController,
           ),
           StreamBuilder<List<User?>>(
-            stream: ref.watch(userProvider).searchUsers(_searchController.text),
+            stream: searchType == CollaboratorsSearchType.collaborators
+                ? ref.watch(userProvider).searchUsers(_searchController.text)
+                : getCollaborators(),
             builder: (context, snapshot) {
               if (snapshot.hasData) {
-                for (User? user in collaborators) {
+                for (User? user in users) {
                   if (snapshot.data!.contains(user)) {
                     snapshot.data!.remove(user);
                   }
@@ -70,7 +90,7 @@ class _CollaboratorsScreenState extends ConsumerState<CollaboratorsScreen> {
                         child: UserListItem(
                           user: user,
                           handler: () {
-                            collaborators.add(user);
+                            users.add(user);
                             Navigator.of(context).pop();
                           },
                         ),

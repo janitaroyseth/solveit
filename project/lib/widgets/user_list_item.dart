@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:project/models/user.dart';
-import 'package:project/providers/user_provider.dart';
 
 /// Enums for deciding the size of the userlist item.
 enum UserListItemSize {
@@ -29,11 +28,6 @@ class UserListItem extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // return StreamBuilder<User?>(
-    //   stream: ref.watch(userProvider).getUser(userId),
-    //   builder: (context, snapshot) {
-    //     if (snapshot.hasData) {
-    //       User user = snapshot.data!;
     return GestureDetector(
       onTap: handler,
       child: Padding(
@@ -54,23 +48,18 @@ class UserListItem extends ConsumerWidget {
                   ? const TextStyle(fontSize: 13)
                   : const TextStyle(fontSize: 12),
             ),
-            isOwner
-                ? const Text(
-                    " - owner",
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  )
-                : const Text(""),
+            Visibility(
+              visible: isOwner,
+              child: const Text(
+                " - owner",
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            )
           ],
         ),
       ),
     );
-    // }
-    //   return const Center(
-    //     child: CircularProgressIndicator(),
-    //   );
-    // },
-    // );
   }
 }

@@ -20,7 +20,7 @@ class Project {
   /// User id of the owner of this project.
   String? owner;
 
-  /// List of user ids for collaborators on this project.
+  /// List of users collaborating on this project.
   List<User> collaborators;
 
   /// Path to project avatar.s
@@ -45,6 +45,7 @@ class Project {
     final String description = data['description'];
     final List<User> collaborators = User.fromMaps(data["collaborators"]);
     final bool isPublic = data['isPublic'];
+    final String owner = data["owner"];
     final String? lastUpdated = data['lastUpdated'];
     final String imageUrl = data['imageUrl'];
     final List<Tag> tags = Tag.fromMaps(data["tags"]);
@@ -54,6 +55,7 @@ class Project {
       title: title,
       imageUrl: imageUrl,
       description: description,
+      owner: owner,
       collaborators: collaborators,
       isPublic: isPublic,
       lastUpdated: lastUpdated,
@@ -61,6 +63,7 @@ class Project {
     );
   }
 
+  /// Creates a list of projects from a list of maps.
   static List<Project> fromMaps(var data) {
     List<Project> projects = [];
     for (var value in data) {
@@ -72,6 +75,7 @@ class Project {
     return projects;
   }
 
+  /// Creates a map of string and dynamics of the project.
   Map<String, dynamic> toMap() {
     return {
       "projectId": projectId,

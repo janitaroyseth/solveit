@@ -200,12 +200,14 @@ class _CollaboratorsListState extends ConsumerState<_CollaboratorsList> {
       BuildContext context, WidgetRef ref, Project project) {
     return TextButton(
       style: ButtonStyle(padding: MaterialStateProperty.all(EdgeInsets.zero)),
-      onPressed: () => Navigator.of(context)
-          .pushNamed(
-            CollaboratorsScreen.routeName,
-            arguments: project.collaborators,
-          )
-          .then((value) => setState(() {})),
+      onPressed: () => Navigator.of(context).pushNamed(
+        CollaboratorsScreen.routeName,
+        arguments: [
+          project.collaborators,
+          CollaboratorsSearchType.collaborators,
+          project.projectId,
+        ],
+      ).then((value) => setState(() {})),
       child: Row(
         children: <Widget>[
           CircleAvatar(

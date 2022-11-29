@@ -2,19 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
-import 'package:project/providers/auth_provider.dart';
 import 'package:project/providers/project_provider.dart';
 import 'package:project/providers/task_provider.dart';
+import 'package:project/screens/collaborators_screen.dart';
 import 'package:project/widgets/tag_widget.dart';
 
-import '../data/example_data.dart';
 import '../models/project.dart';
 import '../models/tag.dart';
 import '../models/task.dart';
 import '../models/user.dart';
 import '../styles/theme.dart';
 import '../widgets/appbar_button.dart';
-import '../widgets/search_bar.dart';
 import '../widgets/user_list_item.dart';
 
 enum _EditTaskMode {
@@ -22,6 +20,7 @@ enum _EditTaskMode {
   edit,
 }
 
+/// Screen/Scaffold for creating and editing tasks.
 class ConfigureTaskScreen extends ConsumerWidget {
   static const routeName = "/configure-task";
   const ConfigureTaskScreen({super.key});
@@ -37,7 +36,6 @@ class ConfigureTaskScreen extends ConsumerWidget {
     Task task = existingTask ?? Task();
 
     void saveTask() {
-      //task.tags = [];
       ref.read(taskProvider).saveTask(task);
 
       Navigator.of(context).pop();
@@ -333,100 +331,14 @@ class _TaskScreenBodyState extends State<_TaskScreenBody> {
 
   Widget _createAssignedSection(WidgetRef ref) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: <Widget>[
         Text(
           "assigned",
+          textAlign: TextAlign.left,
           style: Theme.of(context).textTheme.labelMedium,
         ),
-        _createAssignedList(context, ref),
-      ],
-    );
-  }
-
-  Widget _createAssignedList(BuildContext context, WidgetRef ref) {
-    return Column(
-      children: [
-        // ...task.assigned
-        //     .map(
-        //       (e) => UserListItem(
-        //         handler: () => {setState(() => task.assigned.remove(e))},
-        //         userId: e,
-        //         size: UserListItemSize.small,
-        //       ),
-        //     )
-        //     .toList(),
-        TextButton(
-          onPressed: () => showDialog(
-            context: context,
-            builder: (context) => Dialog(
-              child: SizedBox(
-                width: double.infinity - 20,
-                height: 350,
-                child: Column(
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.only(top: 8.0),
-                      child: SearchBar(
-                        placeholderText: "search for collaborators...",
-                        searchFunction: () {},
-                        textEditingController: TextEditingController(),
-                      ),
-                    ),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16.0,
-                          vertical: 0.0,
-                        ),
-                        child: ListView(
-                          children: [
-                            // UserListItem(
-                            //   handler: () =>
-                            //       Navigator.of(context, rootNavigator: true)
-                            //           .pop(ExampleData.user1),
-                            //   userId: ExampleData.user1.userId,
-                            // ),
-                            // UserListItem(
-                            //   handler: () =>
-                            //       Navigator.of(context, rootNavigator: true)
-                            //           .pop(ExampleData.user2),
-                            //   userId: ExampleData.user2.userId,
-                            // ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ).then((value) => setState((() {
-                task.assigned.add(value);
-              }))),
-          child: Row(
-            children: <Widget>[
-              CircleAvatar(
-                radius: 15,
-                backgroundColor: Themes.primaryColor.shade100,
-                backgroundImage: const AssetImage(
-                  "assets/images/profile_placeholder.png",
-                ),
-              ),
-              const SizedBox(
-                width: 8,
-              ),
-              Text(
-                "add collaborator...",
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w400,
-                  color: Themes.textColor(ref),
-                ),
-              )
-            ],
-          ),
-        ),
+        _AssigneesList(task),
       ],
     );
   }
@@ -446,6 +358,76 @@ class _TaskScreenBodyState extends State<_TaskScreenBody> {
               "detailed description of the task at hand..."),
         ),
       ],
+    );
+  }
+}
+
+/// Displays a list of currently selected assignees.
+class _AssigneesList extends ConsumerStatefulWidget {
+  /// Creates an instance of [_AssigneesList].
+  const _AssigneesList(this.task);
+
+  /// The task to display current list of assignees for.
+  final Task task;
+
+  @override
+  ConsumerState<_AssigneesList> createState() => _AssigneesListState();
+}
+
+class _AssigneesListState extends ConsumerState<_AssigneesList> {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        ListView.builder(
+          padding: EdgeInsets.zero,
+          shrinkWrap: true,
+          itemCount: widget.task.assigned.length,
+          itemBuilder: (context, index) => UserListItem(
+            user: widget.task.assigned[index],
+            handler: () {},
+            size: UserListItemSize.small,
+          ),
+        ),
+        addAssigneeButton(context, ref, widget.task)
+      ],
+    );
+  }
+
+  /// Button for opening a new screen where new assignees can be added.
+  TextButton addAssigneeButton(BuildContext context, WidgetRef ref, Task task) {
+    return TextButton(
+      style: ButtonStyle(padding: MaterialStateProperty.all(EdgeInsets.zero)),
+      onPressed: () => Navigator.of(context).pushNamed(
+        CollaboratorsScreen.routeName,
+        arguments: [
+          task.assigned,
+          CollaboratorsSearchType.assignees,
+          task.projectId,
+        ],
+      ).then((value) => setState(() {})),
+      child: Row(
+        children: <Widget>[
+          CircleAvatar(
+            radius: 15,
+            backgroundColor: Themes.primaryColor.shade100,
+            backgroundImage:
+                const AssetImage("assets/images/profile_placeholder.png"),
+          ),
+          const SizedBox(
+            width: 8,
+          ),
+          Text(
+            "add assignee...",
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w400,
+              color: Themes.textColor(ref),
+            ),
+          )
+        ],
+      ),
     );
   }
 }

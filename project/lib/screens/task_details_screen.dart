@@ -178,6 +178,7 @@ class _OverviewTabView extends StatelessWidget {
   Widget _assigned(BuildContext context) {
     return Consumer(
       builder: (context, ref, child) => Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(
             "assigned",
@@ -187,24 +188,18 @@ class _OverviewTabView extends StatelessWidget {
           Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              ...task.assigned.map((e) => StreamBuilder<User?>(
-                  stream: ref.watch(userProvider).getUser(e),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      User user = snapshot.data!;
-                      return UserListItem(
-                        user: user,
-                        handler: () => Navigator.of(context).pushNamed(
-                          ProfileScreen.routeName,
-                          arguments: {
-                            "user": user.userId,
-                            "projects": <Project>[],
-                          },
-                        ),
-                      );
-                    }
-                    return const Center(child: CircularProgressIndicator());
-                  }))
+              ...task.assigned.map(
+                (e) => UserListItem(
+                  user: e,
+                  handler: () => Navigator.of(context).pushNamed(
+                    ProfileScreen.routeName,
+                    arguments: {
+                      "user": e.userId,
+                      "projects": <Project>[],
+                    },
+                  ),
+                ),
+              ),
             ],
           ),
         ],
