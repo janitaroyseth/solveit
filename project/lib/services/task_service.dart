@@ -72,9 +72,25 @@ class FirebaseTaskService extends TaskService {
         .map((event) {
       List<Task?> tasks = Task.fromMaps(event);
       if (descending) {
-        tasks.sort((b, a) => (a!.toMap()[field]).compareTo(b!.toMap()[field]));
+        tasks.sort((b, a) {
+          if (a!.toMap()[field] == null) {
+            return -1;
+          }
+          if (b!.toMap()[field] == null) {
+            return 1;
+          }
+          return (a.toMap()[field]).compareTo(b.toMap()[field]);
+        });
       } else {
-        tasks.sort((a, b) => (a!.toMap()[field]).compareTo(b!.toMap()[field]));
+        tasks.sort((a, b) {
+          if (a!.toMap()[field] == null) {
+            return -1;
+          }
+          if (b!.toMap()[field] == null) {
+            return 1;
+          }
+          return (a.toMap()[field]).compareTo(b.toMap()[field]);
+        });
       }
       return tasks;
     });

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:project/models/tag.dart';
+import 'package:project/utilities/color_utility.dart';
 
 /// Options for sizing of tags.
 enum TagSize { small, large }
@@ -23,74 +24,70 @@ class TagWidget extends StatelessWidget {
     required this.tagText,
   });
 
+  /// Creates an instance of [TagWidget] from the given [Tag], defaults to size large.
   TagWidget.fromTag(Tag tag, {super.key, this.size = TagSize.large})
       : tagText = tag.text,
-        color = tag.color.length > 7
-            ? Color(int.parse(tag.color.substring(1), radix: 16))
-            : Color(
-                int.parse(tag.color.substring(1), radix: 16) + 0xFF000000,
-              );
-
-  @override
-  int get hashCode => color.hashCode + tagText.hashCode;
-
-  @override
-  bool operator ==(Object other) {
-    return hashCode == other.hashCode;
-  }
+        color = colorFromString(tag.color);
 
   @override
   Widget build(BuildContext context) {
-    Color contrastColor =
-        color.computeLuminance() * color.alpha.clamp(0, 1) < 0.45
-            ? Colors.white
-            : Colors.black;
-    return size == TagSize.small
-        ? Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 1.2),
-            child: Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 3.0,
-                vertical: 1.5,
-              ),
-              decoration: BoxDecoration(
-                color: color,
-                //border: Border.all(color: contrastColor, width: 0.5),
-                borderRadius: const BorderRadius.all(
-                  Radius.circular(50),
-                ),
-              ),
-              child: Text(
+    return size == TagSize.small ? _smallTag() : _largeTag();
+  }
+
+  Padding _largeTag() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 1.8),
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 5.0,
+          vertical: 3.5,
+        ),
+        decoration: BoxDecoration(
+          color: color,
+          //border: Border.all(color: contrastColor, width: 0.5),
+          borderRadius: const BorderRadius.all(
+            Radius.circular(50),
+          ),
+        ),
+        child: tagText.isNotEmpty
+            ? Text(
                 tagText,
                 style: TextStyle(
-                  color: contrastColor,
-                  fontSize: 9.5,
-                ),
-              ),
-            ),
-          )
-        : Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 1.8),
-            child: Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 5.0,
-                vertical: 3.5,
-              ),
-              decoration: BoxDecoration(
-                color: color,
-                //border: Border.all(color: contrastColor, width: 0.5),
-                borderRadius: const BorderRadius.all(
-                  Radius.circular(50),
-                ),
-              ),
-              child: Text(
-                tagText,
-                style: TextStyle(
-                  color: contrastColor,
+                  color: getContrastColor(color),
                   fontSize: 12,
                 ),
+              )
+            : const SizedBox(
+                width: 50,
+                height: 16,
               ),
-            ),
-          );
+      ),
+    );
+  }
+
+  Padding _smallTag() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 1.2),
+      child: Container(
+        padding: const EdgeInsets.symmetric(
+          horizontal: 6.0,
+          vertical: 3,
+        ),
+        decoration: BoxDecoration(
+          color: color,
+          //border: Border.all(color: contrastColor, width: 0.5),
+          borderRadius: const BorderRadius.all(
+            Radius.circular(50),
+          ),
+        ),
+        child: Text(
+          tagText,
+          style: TextStyle(
+            color: getContrastColor(color),
+            fontSize: 10,
+          ),
+        ),
+      ),
+    );
   }
 }

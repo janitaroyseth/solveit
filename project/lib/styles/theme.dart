@@ -62,7 +62,7 @@ class Themes {
       ),
 
       appBarTheme: AppBarTheme(
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.transparent,
         foregroundColor: Colors.black,
         elevation: 0,
         centerTitle: true,
@@ -86,77 +86,79 @@ class Themes {
 
   static ThemeData darkTheme(WidgetRef ref) {
     return ThemeData(
-        primarySwatch: primaryColor,
-        errorColor: Colors.red.shade400,
-        backgroundColor: Colors.black,
-        scaffoldBackgroundColor: Colors.grey.shade900,
-        fontFamily: "Comfortaa",
-        indicatorColor: primaryColor,
-        radioTheme: RadioThemeData(
-            fillColor: MaterialStateProperty.all(primaryColor.shade100)),
-        popupMenuTheme: PopupMenuThemeData(
-          color: Colors.grey.shade900,
-          textStyle: const TextStyle(
-              color: Colors.white, fontFamily: fontFamily, fontSize: 16),
-        ),
-        bottomSheetTheme: BottomSheetThemeData(
-          backgroundColor: Colors.grey.shade900,
-          shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(20.0),
-              topRight: Radius.circular(20.0),
-            ),
+      primarySwatch: primaryColor,
+      errorColor: Colors.red.shade400,
+      backgroundColor: Colors.black,
+      scaffoldBackgroundColor: Colors.grey.shade900,
+      fontFamily: "Comfortaa",
+      indicatorColor: primaryColor,
+      radioTheme: RadioThemeData(
+          fillColor: MaterialStateProperty.all(primaryColor.shade100)),
+      popupMenuTheme: PopupMenuThemeData(
+        color: Colors.grey.shade900,
+        textStyle: const TextStyle(
+            color: Colors.white, fontFamily: fontFamily, fontSize: 16),
+      ),
+      bottomSheetTheme: BottomSheetThemeData(
+        backgroundColor: Colors.grey.shade900,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20.0),
+            topRight: Radius.circular(20.0),
           ),
         ),
-        bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-          backgroundColor: Color.fromARGB(255, 21, 21, 21),
-          unselectedLabelStyle: TextStyle(
-            color: Colors.white,
+      ),
+      bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+        backgroundColor: Color.fromARGB(255, 21, 21, 21),
+        unselectedLabelStyle: TextStyle(
+          color: Colors.white,
+        ),
+      ),
+      bottomAppBarColor: const Color.fromARGB(255, 21, 21, 21),
+      appBarTheme: AppBarTheme(
+        surfaceTintColor: Colors.black,
+        backgroundColor: Colors.transparent,
+        foregroundColor: Colors.white,
+        elevation: 0,
+        centerTitle: true,
+        titleTextStyle: TextStyle(
+          color: textColor(ref),
+          fontWeight: FontWeight.w300,
+          fontSize: 18,
+          fontFamily: fontFamily,
+        ),
+      ),
+      dialogBackgroundColor: Colors.grey.shade900,
+      textTheme: textTheme(ref),
+      tabBarTheme: TabBarTheme(
+        indicator: UnderlineTabIndicator(
+          borderSide: BorderSide(color: primaryColor.shade50, width: 3),
+        ),
+        labelColor: primaryColor.shade50,
+        unselectedLabelColor: Colors.white,
+        overlayColor: MaterialStateProperty.all(Colors.black),
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        labelStyle: textTheme(ref).labelLarge,
+        hintStyle: textTheme(ref).labelSmall,
+        helperStyle: textTheme(ref).labelSmall,
+        floatingLabelBehavior: FloatingLabelBehavior.always,
+        border: UnderlineInputBorder(
+          borderSide: BorderSide(
+            color: Themes.textColor(ref).withOpacity(0.4),
           ),
         ),
-        bottomAppBarColor: const Color.fromARGB(255, 21, 21, 21),
-        appBarTheme: AppBarTheme(
-          surfaceTintColor: Colors.black,
-          backgroundColor: const Color.fromRGBO(21, 21, 21, 1),
-          foregroundColor: Colors.white,
-          elevation: 0,
-          centerTitle: true,
-          titleTextStyle: TextStyle(
-            color: textColor(ref),
-            fontWeight: FontWeight.w300,
-            fontSize: 18,
-            fontFamily: fontFamily,
+        enabledBorder: UnderlineInputBorder(
+          borderSide: BorderSide(
+            color: Themes.textColor(ref).withOpacity(0.4),
           ),
         ),
-        dialogBackgroundColor: Colors.grey.shade900,
-        textTheme: textTheme(ref),
-        tabBarTheme: TabBarTheme(
-          indicator: UnderlineTabIndicator(
-            borderSide: BorderSide(color: primaryColor.shade50, width: 3),
-          ),
-          labelColor: primaryColor.shade50,
-          unselectedLabelColor: Colors.white,
-          overlayColor: MaterialStateProperty.all(Colors.black),
-        ),
-        inputDecorationTheme: InputDecorationTheme(
-          labelStyle: textTheme(ref).labelLarge,
-          hintStyle: textTheme(ref).labelSmall,
-          helperStyle: textTheme(ref).labelSmall,
-          floatingLabelBehavior: FloatingLabelBehavior.always,
-          border: UnderlineInputBorder(
-            borderSide: BorderSide(
-              color: Themes.textColor(ref).withOpacity(0.4),
-            ),
-          ),
-          enabledBorder: UnderlineInputBorder(
-            borderSide: BorderSide(
-              color: Themes.textColor(ref).withOpacity(0.4),
-            ),
-          ),
-        ),
-        dialogTheme: DialogTheme(
-            titleTextStyle: TextStyle(
-                fontSize: 16, color: textColor(ref), fontFamily: fontFamily)));
+      ),
+      dialogTheme: DialogTheme(
+        titleTextStyle: TextStyle(
+            fontSize: 16, color: textColor(ref), fontFamily: fontFamily),
+      ),
+    );
   }
 
   static InputDecoration inputDecoration(
@@ -369,8 +371,9 @@ class Themes {
     );
   }
 
-  static ButtonStyle datePickerButtonStyle(WidgetRef ref) {
+  static ButtonStyle formButtonStyle(WidgetRef ref) {
     return ButtonStyle(
+      padding: MaterialStateProperty.all(EdgeInsets.zero),
       foregroundColor: MaterialStateProperty.all<Color>(textColor(ref)),
       textStyle: MaterialStateProperty.all<TextStyle>(
         const TextStyle(
