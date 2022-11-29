@@ -1,6 +1,5 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:project/firebase_options.dart';
@@ -11,19 +10,19 @@ import 'package:project/screens/create_profile_screen.dart';
 import 'package:project/screens/edit_profile_screen.dart';
 import 'package:project/screens/edit_project_screen.dart';
 import 'package:project/screens/configure_task_screen.dart';
+import 'package:project/screens/edit_tag_screen.dart';
 import 'package:project/screens/profile_screen.dart';
 import 'package:project/screens/project_overview_screen.dart';
 import 'package:project/screens/project_preview_screen.dart';
-import 'package:project/data/example_data.dart';
 import 'package:project/screens/project_calendar_screen.dart';
 import 'package:project/screens/sign_in_screen.dart';
+import 'package:project/screens/tags_screen.dart';
 import 'package:project/screens/user_settings_screen.dart';
 import 'package:project/services/preferences_service.dart';
 import 'package:project/styles/theme.dart';
 import 'package:project/screens/task_details_screen.dart';
 import 'package:project/screens/task_overview_screen.dart';
 import 'package:project/screens/home_screen.dart';
-import './models/project.dart';
 
 Future<void> main() async {
   await dotenv.load(fileName: "variables.env");
@@ -47,9 +46,8 @@ class MyApp extends StatelessWidget {
 
     return userAsyncData.when(
       data: (user) {
-        String userId = user != null ? user.uid : "<unknown>";
-        print("User = $userId");
-        return user != null ? const HomeScreen() : SignInScreen();
+        //String userId = user != null ? user.uid : "<unknown>";
+        return user != null ? const HomeScreen() : const SignInScreen();
       },
       error: (err, stack) => Text("Error in auth stream: $err"),
       loading: () => const CircularProgressIndicator(),
@@ -87,6 +85,8 @@ class MyApp extends StatelessWidget {
           UserSettingsScreen.routeName: (context) => const UserSettingsScreen(),
           CollaboratorsScreen.routeName: (context) =>
               const CollaboratorsScreen(),
+          TagsScreen.routeName: (context) => const TagsScreen(),
+          EditTagScreen.routeName: (context) => const EditTagScreen(),
         },
       ),
     );

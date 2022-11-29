@@ -58,9 +58,17 @@ class FirebaseCommentService extends CommentService {
         .map((event) {
       List<Comment> comments = Comment.fromMaps(event);
 
-      comments.sort((b, a) => (Comment.toMap(a)["date"]).compareTo(
-            Comment.toMap(b)["date"],
-          ));
+      comments.sort((b, a) {
+        if (a == null) {
+          return -1;
+        }
+        if (b == null) {
+          return 1;
+        }
+        return (Comment.toMap(a)["date"]).compareTo(
+          Comment.toMap(b)["date"],
+        );
+      });
 
       return comments;
     });

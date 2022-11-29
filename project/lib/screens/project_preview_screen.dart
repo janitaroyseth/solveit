@@ -36,30 +36,13 @@ class ProjectPreviewScreen extends ConsumerWidget {
             backgroundColor: Colors.transparent,
             leading: _backButton(context),
             actions: <Widget>[
-              ProjectPopUpMenu(
-                project: project,
-                currentRouteName: "/project-preview",
-              ),
+              _projectPopUpButton(project),
             ],
           ),
           body: SingleChildScrollView(
             child: Column(
               children: <Widget>[
-                ClipPath(
-                  clipper: CurveClipper(),
-                  child: Container(
-                    height: 370,
-                    width: double.infinity,
-                    color: const Color.fromRGBO(92, 0, 241, 1),
-                    child: Column(
-                      children: <Widget>[
-                        const SizedBox(height: 40),
-                        _projectImage(project),
-                        _projectTitle(project),
-                      ],
-                    ),
-                  ),
-                ),
+                _projectHeader(project),
                 _projectDescription(project),
                 Padding(
                   padding:
@@ -81,9 +64,37 @@ class ProjectPreviewScreen extends ConsumerWidget {
     );
   }
 
+  /// Button for opening pop up for this project.
+  ProjectPopUpMenu _projectPopUpButton(Project project) {
+    return ProjectPopUpMenu(
+      project: project,
+      currentRouteName: "/project-preview",
+    );
+  }
+
+  /// Header of the screen showing the projects avatar and title.
+  ClipPath _projectHeader(Project project) {
+    return ClipPath(
+      clipper: CurveClipper(),
+      child: Container(
+        height: 370,
+        width: double.infinity,
+        color: const Color.fromRGBO(92, 0, 241, 1),
+        child: Column(
+          children: <Widget>[
+            const SizedBox(height: 40),
+            _projectImage(project),
+            _projectTitle(project),
+          ],
+        ),
+      ),
+    );
+  }
+
   /// Displaying when the project was last updated.
   Column _projectLastUpdated(Project project) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         const Text(
           "last updated",

@@ -5,6 +5,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/providers/project_provider.dart';
 import 'package:project/providers/task_provider.dart';
 import 'package:project/screens/collaborators_screen.dart';
+import 'package:project/screens/tags_screen.dart';
 import 'package:project/widgets/tag_widget.dart';
 
 import '../models/project.dart';
@@ -120,7 +121,7 @@ class _TaskScreenBodyState extends State<_TaskScreenBody> {
           children: <Widget>[
             _createTaskTitleSection(ref),
             _verticalPadding(),
-            _createTagsSection(),
+            _createTagsSection(ref),
             _verticalPadding(),
             _createDeadlineSection(ref),
             _verticalPadding(),
@@ -151,7 +152,7 @@ class _TaskScreenBodyState extends State<_TaskScreenBody> {
     );
   }
 
-  Widget _createTagsSection() {
+  Widget _createTagsSection(WidgetRef ref) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
@@ -162,14 +163,15 @@ class _TaskScreenBodyState extends State<_TaskScreenBody> {
         const SizedBox(
           height: 5,
         ),
-        _createTagsList(),
+        _createTagsList(ref),
         _createAddTagList(),
       ],
     );
   }
 
-  Widget _createTagsList() {
+  Widget _createTagsList(WidgetRef ref) {
     List<Widget> tagWidgets = [];
+
     for (Tag tag in task.tags) {
       tagWidgets.add(
         InkWell(
@@ -187,9 +189,17 @@ class _TaskScreenBodyState extends State<_TaskScreenBody> {
     tagWidgets.add(
       InkWell(
         onTap: () {
-          setState(() {
-            isTagPickerShown = !isTagPickerShown;
-          });
+          ref.read(currentProjectProvider.notifier).setProject(
+              ref.watch(projectProvider).getProject(task.projectId));
+          ref
+              .watch(currentProjectProvider)
+              .first
+              .then((value) => Navigator.of(context)
+                  .pushNamed(TagsScreen.routeName, arguments: [value, task])
+                  .then(
+                    (value) => setState(() {}),
+                  )
+                  .whenComplete(() => setState(() {})));
         },
         borderRadius: BorderRadius.circular(50),
         child: Padding(
@@ -215,8 +225,6 @@ class _TaskScreenBodyState extends State<_TaskScreenBody> {
             ),
           ),
         ),
-        // child: const TagWidget(
-        //     size: TagSize.large, color: Color(0xffffffff), tagText: "add +"),
       ),
     );
 
@@ -236,7 +244,6 @@ class _TaskScreenBodyState extends State<_TaskScreenBody> {
     );
   }
 
-  // TODO: Temporary
   Widget _createAddTagList() {
     if (!isTagPickerShown) {
       return Container();
@@ -260,34 +267,17 @@ class _TaskScreenBodyState extends State<_TaskScreenBody> {
           ));
         }
       }
-      // CREATION OF NEW TAGS IMPLEMENTED LATER.
-      // tagWidgets.add(
-      //   Material(
-      //     elevation: 5,
-      //     borderRadius: BorderRadius.circular(500),
-      //     color: Colors.transparent,
-      //     child: InkWell(
-      //       onTap: () {
-      //         // TODO: add new tag.
-      //       },
-      //       borderRadius: BorderRadius.circular(50),
-      //       child: const TagWidget(
-      //           size: TagSize.large,
-      //           color: Color(0xffffffff),
-      //           tagText: "new +"),
-      //     ),
-      //   ),
-      // );
       return Row(
         children: [
           Flexible(
             child: Wrap(
-                spacing: 2.0,
-                runSpacing: 4.0,
-                direction: Axis.horizontal,
-                crossAxisAlignment: WrapCrossAlignment.center,
-                alignment: WrapAlignment.start,
-                children: tagWidgets),
+              spacing: 2.0,
+              runSpacing: 4.0,
+              direction: Axis.horizontal,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              alignment: WrapAlignment.start,
+              children: tagWidgets,
+            ),
           ),
         ],
       );
@@ -306,7 +296,7 @@ class _TaskScreenBodyState extends State<_TaskScreenBody> {
           height: 5,
         ),
         TextButton(
-          style: Themes.datePickerButtonStyle(ref),
+          style: Themes.formButtonStyle(ref),
           child: Text(task.deadline != null
               ? Jiffy(task.deadline!).format("dd/MM/yyyy")
               : "click to pick a date..."),

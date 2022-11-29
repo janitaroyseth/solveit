@@ -8,17 +8,17 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/models/comment.dart';
 import 'package:project/models/project.dart';
 import 'package:project/models/task.dart';
-import 'package:project/models/user.dart';
 import 'package:project/providers/auth_provider.dart';
 import 'package:project/providers/comment_image_provider.dart';
 import 'package:project/providers/comment_provider.dart';
 import 'package:project/providers/project_provider.dart';
+import 'package:project/providers/settings_provider.dart';
 import 'package:project/providers/task_provider.dart';
-import 'package:project/providers/user_provider.dart';
 import 'package:project/screens/profile_screen.dart';
 import 'package:project/styles/theme.dart';
 import 'package:project/widgets/appbar_button.dart';
 import 'package:project/widgets/comment_list.dart';
+import 'package:project/widgets/loading_spinner.dart';
 import 'package:project/widgets/message_input_field.dart';
 import 'package:project/widgets/tag_widget.dart';
 import 'package:project/widgets/tags_list.dart';
@@ -40,51 +40,68 @@ class TaskDetailsScreen extends ConsumerWidget {
     FocusNode focusNode = FocusNode();
 
     return StreamBuilder<Task?>(
-        stream: ref.watch(currentTaskProvider),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            Task? task = snapshot.data ?? Task();
-            return DefaultTabController(
-              length: 2,
-              child: Scaffold(
-                appBar: AppBar(
-                  centerTitle: true,
-                  elevation: 0,
-                  title: ToggleTaskStatusButton(task: task),
-                  leading: AppBarButton(
-                    handler: () {
-                      focusNode.dispose();
-                      Navigator.pop(context);
-                    },
-                    tooltip: "Go back",
-                    icon: PhosphorIcons.caretLeftLight,
-                  ),
-                  actions: <Widget>[
-                    _TaskPopUpMenu(task: task),
+      stream: ref.watch(currentTaskProvider),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          Task? task = snapshot.data ?? Task();
+          return DefaultTabController(
+            length: 2,
+            child: Scaffold(
+              appBar: AppBar(
+                centerTitle: true,
+                elevation: 0,
+                backgroundColor: _appBarBackground(ref),
+                title: ToggleTaskStatusButton(task: task),
+                leading: _backButton(focusNode, context),
+                actions: [_TaskPopUpMenu(task: task)],
+                bottom: _appBarBottomTab(),
+              ),
+              body: GestureDetector(
+                onTap: () => focusNode.unfocus(),
+                child: TabBarView(
+                  children: [
+                    _OverviewTabView(task: task),
+                    _CommentTabView(task: task, focusNode: focusNode),
                   ],
-                  bottom: const TabBar(
-                    //labelColor: Colors.black,
-                    indicatorColor: Themes.primaryColor,
-                    tabs: <Tab>[
-                      Tab(text: "overview"),
-                      Tab(text: "comments"),
-                    ],
-                  ),
-                ),
-                body: GestureDetector(
-                  onTap: () => focusNode.unfocus(),
-                  child: TabBarView(
-                    children: [
-                      _OverviewTabView(task: task),
-                      _CommentTabView(task: task, focusNode: focusNode),
-                    ],
-                  ),
                 ),
               ),
-            );
-          }
-          return const Center(child: CircularProgressIndicator());
-        });
+            ),
+          );
+        }
+        return const LoadingSpinner();
+      },
+    );
+  }
+
+  /// [TabBar] toggling between overview and comments.
+  TabBar _appBarBottomTab() {
+    return const TabBar(
+      indicatorColor: Themes.primaryColor,
+      tabs: <Tab>[
+        Tab(text: "overview"),
+        Tab(text: "comments"),
+      ],
+    );
+  }
+
+  /// Button that navigates to previous screen.
+  AppBarButton _backButton(FocusNode focusNode, BuildContext context) {
+    return AppBarButton(
+      handler: () {
+        focusNode.dispose();
+        Navigator.pop(context);
+      },
+      tooltip: "Go back",
+      icon: PhosphorIcons.caretLeftLight,
+    );
+  }
+
+  /// Returns the background color of the appbar depending
+  /// on which theme mode is selected.
+  Color _appBarBackground(WidgetRef ref) {
+    return ref.watch(darkModeProvider)
+        ? const Color.fromRGBO(21, 21, 21, 1)
+        : Colors.transparent;
   }
 }
 
@@ -299,7 +316,7 @@ class _CommentTabViewState extends ConsumerState<_CommentTabView> {
                   ],
                 );
               }
-              return const Center(child: CircularProgressIndicator());
+              return const LoadingSpinner();
             }),
       ),
     );
@@ -408,6 +425,9 @@ class _TaskPopUpMenu extends ConsumerWidget {
                 task.projectId,
               ),
         );
+    ref
+        .read(currentProjectProvider.notifier)
+        .setProject(ref.watch(projectProvider).getProject(task.projectId));
     Navigator.of(context).pushNamed(
       ConfigureTaskScreen.routeName,
       arguments: task,
@@ -420,43 +440,7 @@ class _TaskPopUpMenu extends ConsumerWidget {
       const Duration(seconds: 0),
       () => showDialog(
         context: context,
-        builder: (context) => AlertDialog(
-          title: const Text(
-            "deleting task",
-          ),
-          content: Text(
-            "Are you sure you want to delete the task \"${task.title.toLowerCase()}\"",
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: Text(
-                "no",
-                style: TextStyle(
-                  color: Themes.textColor(ref),
-                ),
-              ),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                Navigator.of(context).pop();
-                ref.read(currentProjectProvider.notifier).setProject(
-                    ref.read(projectProvider).getProject(task.projectId));
-
-                ref.read(taskProvider).deleteTask(task.taskId);
-              },
-              child: Text(
-                "yes",
-                style: TextStyle(
-                  color: Colors.red.shade900,
-                ),
-              ),
-            ),
-          ],
-        ),
+        builder: (context) => _deleteTaskDialog(context, ref),
       ),
     );
   }
@@ -491,6 +475,48 @@ class _TaskPopUpMenu extends ConsumerWidget {
           child: Text(
             "delete task",
             style: TextStyle(color: Theme.of(context).errorColor),
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// Displays a dialog letting user confirm that they do want to
+  /// delete the task.
+  AlertDialog _deleteTaskDialog(BuildContext context, WidgetRef ref) {
+    return AlertDialog(
+      title: const Text(
+        "deleting task",
+      ),
+      content: Text(
+        "Are you sure you want to delete the task \"${task.title.toLowerCase()}\"",
+      ),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: Text(
+            "no",
+            style: TextStyle(
+              color: Themes.textColor(ref),
+            ),
+          ),
+        ),
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+            Navigator.of(context).pop();
+            ref.read(currentProjectProvider.notifier).setProject(
+                ref.read(projectProvider).getProject(task.projectId));
+
+            ref.read(taskProvider).deleteTask(task.taskId);
+          },
+          child: Text(
+            "yes",
+            style: TextStyle(
+              color: Colors.red.shade900,
+            ),
           ),
         ),
       ],
