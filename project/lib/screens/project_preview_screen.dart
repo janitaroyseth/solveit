@@ -34,12 +34,7 @@ class ProjectPreviewScreen extends ConsumerWidget {
           appBar: AppBar(
             elevation: 0,
             backgroundColor: Colors.transparent,
-            leading: AppBarButton(
-              icon: PhosphorIcons.caretLeftLight,
-              handler: () => Navigator.of(context).pop(),
-              tooltip: "Go back",
-              color: Colors.white,
-            ),
+            leading: _backButton(context),
             actions: <Widget>[
               ProjectPopUpMenu(
                 project: project,
@@ -59,82 +54,22 @@ class ProjectPreviewScreen extends ConsumerWidget {
                     child: Column(
                       children: <Widget>[
                         const SizedBox(height: 40),
-                        Image.asset(
-                          project.imageUrl,
-                          height: 250,
-                        ),
-                        Text(
-                          project.title.toLowerCase(),
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 22,
-                          ),
-                        ),
+                        _projectImage(project),
+                        _projectTitle(project),
                       ],
                     ),
                   ),
                 ),
+                _projectDescription(project),
                 Padding(
-                  padding: const EdgeInsets.symmetric(
-                    vertical: 4.0,
-                    horizontal: 16.0,
-                  ),
-                  child: Text(
-                    project.description,
-                    style: const TextStyle(
-                      fontSize: 13,
-                      fontWeight: FontWeight.w300,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(24.0),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 24.0, vertical: 0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: <Widget>[
-                      const Text(
-                        "collaborators",
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 12.0,
-                      ),
-                      ...project.collaborators.map((userId) => UserListItem(
-                            userId: userId,
-                            isOwner: project.owner == userId,
-                            handler: () => Navigator.of(context).pushNamed(
-                              ProfileScreen.routeName,
-                              arguments: {
-                                "user": userId,
-                                "projects": <Project>[],
-                              },
-                            ),
-                          )),
-                      const SizedBox(
-                        height: 24.0,
-                      ),
-                      const Text(
-                        "last updated",
-                        style: TextStyle(
-                          //fontSize: 14,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 8.0,
-                      ),
-                      Text(
-                        project.lastUpdated != null &&
-                                project.lastUpdated!.isNotEmpty
-                            ? Jiffy(project.lastUpdated)
-                                .format("EEEE, MMMM do yyyy")
-                                .toLowerCase()
-                            : "never updated",
-                      )
+                      _collaboratorsList(context, project),
+                      const SizedBox(height: 24.0),
+                      _projectLastUpdated(project),
                     ],
                   ),
                 )
@@ -143,6 +78,112 @@ class ProjectPreviewScreen extends ConsumerWidget {
           ),
         );
       },
+    );
+  }
+
+  /// Displaying when the project was last updated.
+  Column _projectLastUpdated(Project project) {
+    return Column(
+      children: [
+        const Text(
+          "last updated",
+          style: TextStyle(
+            //fontSize: 14,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        const SizedBox(
+          height: 8.0,
+        ),
+        Text(
+          project.lastUpdated != null && project.lastUpdated!.isNotEmpty
+              ? Jiffy(project.lastUpdated)
+                  .format("EEEE, MMMM do yyyy")
+                  .toLowerCase()
+              : "never updated",
+        )
+      ],
+    );
+  }
+
+  /// Column containing list of collaborators.
+  Column _collaboratorsList(BuildContext context, Project project) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const Text(
+          "collaborators",
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        const SizedBox(
+          height: 12.0,
+        ),
+        ...project.collaborators.map(
+          (user) {
+            return UserListItem(
+              user: user,
+              isOwner: project.owner == user.userId,
+              handler: () => Navigator.of(context).pushNamed(
+                ProfileScreen.routeName,
+                arguments: {
+                  "user": user.userId,
+                  "projects": <Project>[],
+                },
+              ),
+            );
+          },
+        ),
+      ],
+    );
+  }
+
+  /// The description of the project.
+  Padding _projectDescription(Project project) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        vertical: 4.0,
+        horizontal: 16.0,
+      ),
+      child: Text(
+        project.description,
+        style: const TextStyle(
+          fontSize: 13,
+          fontWeight: FontWeight.w300,
+        ),
+        textAlign: TextAlign.center,
+      ),
+    );
+  }
+
+  /// The title of the project.
+  Text _projectTitle(Project project) {
+    return Text(
+      project.title.toLowerCase(),
+      style: const TextStyle(
+        color: Colors.white,
+        fontSize: 22,
+      ),
+    );
+  }
+
+  /// Image displaying the project avatar.
+  Image _projectImage(Project project) {
+    return Image.asset(
+      project.imageUrl,
+      height: 250,
+    );
+  }
+
+  /// Button goign back to previous screen.
+  AppBarButton _backButton(BuildContext context) {
+    return AppBarButton(
+      icon: PhosphorIcons.caretLeftLight,
+      handler: () => Navigator.of(context).pop(),
+      tooltip: "Go back",
+      color: Colors.white,
     );
   }
 }

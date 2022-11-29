@@ -1,7 +1,9 @@
+import 'package:project/models/project.dart';
 import 'package:project/models/tag.dart';
 import 'package:project/models/task.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:project/services/comment_service.dart';
+import 'package:project/services/project_service.dart';
 import 'package:project/services/tag_service.dart';
 
 abstract class TaskService {
@@ -40,6 +42,11 @@ class FirebaseTaskService extends TaskService {
     } else {
       await taskCollection.doc(task.taskId).set(task.toMap());
     }
+    Project? project =
+        await FirebaseProjectService().getProject(task.projectId).first;
+    project!.lastUpdated = DateTime.now().toIso8601String();
+    await FirebaseProjectService().saveProject(project);
+
     return task;
   }
 

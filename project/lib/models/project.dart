@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:project/data/project_avatar_options.dart';
 import 'package:project/models/tag.dart';
 import 'package:project/models/task.dart';
@@ -21,8 +20,8 @@ class Project {
   /// User id of the owner of this project.
   String? owner;
 
-  /// List of user ids for collaborators on this project.
-  List<dynamic> collaborators;
+  /// List of users collaborating on this project.
+  List<User> collaborators;
 
   /// Path to project avatar.s
   String imageUrl;
@@ -41,12 +40,12 @@ class Project {
     if (null == data) {
       return null;
     }
-    print(data["collaborators"]);
     final String id = data["projectId"];
     final String title = data['title'];
     final String description = data['description'];
-    final collaborators = data["collaborators"];
+    final List<User> collaborators = User.fromMaps(data["collaborators"]);
     final bool isPublic = data['isPublic'];
+    final String owner = data["owner"];
     final String? lastUpdated = data['lastUpdated'];
     final String imageUrl = data['imageUrl'];
     final List<Tag> tags = Tag.fromMaps(data["tags"]);
@@ -56,6 +55,7 @@ class Project {
       title: title,
       imageUrl: imageUrl,
       description: description,
+      owner: owner,
       collaborators: collaborators,
       isPublic: isPublic,
       lastUpdated: lastUpdated,
@@ -63,24 +63,26 @@ class Project {
     );
   }
 
+  /// Creates a list of projects from a list of maps.
   static List<Project> fromMaps(var data) {
     List<Project> projects = [];
     for (var value in data) {
       Project? project = fromMap(value.data());
-      if (null != project) {
+      if (project != null) {
         projects.add(project);
       }
     }
     return projects;
   }
 
+  /// Creates a map of string and dynamics of the project.
   Map<String, dynamic> toMap() {
     return {
       "projectId": projectId,
       "title": title,
       "tasks": tasks.map((e) => e.taskId).toList(),
       "tags": tags.map((e) => e.toMap()).toList(),
-      "collaborators": collaborators,
+      "collaborators": collaborators.map((e) => User.toMap(e)).toList(),
       "owner": owner,
       "imageUrl": imageUrl,
       "description": description,
@@ -96,7 +98,7 @@ class Project {
     this.tasks = const [],
     List<Tag>? tags,
     this.owner,
-    List<dynamic>? collaborators,
+    List<User>? collaborators,
     String? imageUrl,
     this.description = "",
     this.lastUpdated,

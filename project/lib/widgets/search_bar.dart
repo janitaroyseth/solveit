@@ -45,7 +45,9 @@ class _SearchBarState extends State<SearchBar> {
                   const EdgeInsets.symmetric(horizontal: 0.0, vertical: 4.0),
               child: TextField(
                 controller: widget.textEditingController,
-                onChanged: (value) => widget.searchFunction(value),
+                onChanged: (value) {
+                  widget.searchFunction(value);
+                },
                 style: TextStyle(
                   fontSize: 12,
                   color: Themes.textColor(ref),
