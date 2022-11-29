@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:project/data/project_avatar_options.dart';
 import 'package:project/models/tag.dart';
 import 'package:project/models/task.dart';
@@ -22,7 +21,7 @@ class Project {
   String? owner;
 
   /// List of user ids for collaborators on this project.
-  List<dynamic> collaborators;
+  List<User> collaborators;
 
   /// Path to project avatar.s
   String imageUrl;
@@ -41,11 +40,10 @@ class Project {
     if (null == data) {
       return null;
     }
-    print(data["collaborators"]);
     final String id = data["projectId"];
     final String title = data['title'];
     final String description = data['description'];
-    final collaborators = data["collaborators"];
+    final List<User> collaborators = User.fromMaps(data["collaborators"]);
     final bool isPublic = data['isPublic'];
     final String? lastUpdated = data['lastUpdated'];
     final String imageUrl = data['imageUrl'];
@@ -67,7 +65,7 @@ class Project {
     List<Project> projects = [];
     for (var value in data) {
       Project? project = fromMap(value.data());
-      if (null != project) {
+      if (project != null) {
         projects.add(project);
       }
     }
@@ -80,7 +78,7 @@ class Project {
       "title": title,
       "tasks": tasks.map((e) => e.taskId).toList(),
       "tags": tags.map((e) => e.toMap()).toList(),
-      "collaborators": collaborators,
+      "collaborators": collaborators.map((e) => User.toMap(e)).toList(),
       "owner": owner,
       "imageUrl": imageUrl,
       "description": description,
@@ -96,7 +94,7 @@ class Project {
     this.tasks = const [],
     List<Tag>? tags,
     this.owner,
-    List<dynamic>? collaborators,
+    List<User>? collaborators,
     String? imageUrl,
     this.description = "",
     this.lastUpdated,

@@ -8,11 +8,13 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/models/comment.dart';
 import 'package:project/models/project.dart';
 import 'package:project/models/task.dart';
+import 'package:project/models/user.dart';
 import 'package:project/providers/auth_provider.dart';
 import 'package:project/providers/comment_image_provider.dart';
 import 'package:project/providers/comment_provider.dart';
 import 'package:project/providers/project_provider.dart';
 import 'package:project/providers/task_provider.dart';
+import 'package:project/providers/user_provider.dart';
 import 'package:project/screens/profile_screen.dart';
 import 'package:project/styles/theme.dart';
 import 'package:project/widgets/appbar_button.dart';
@@ -140,9 +142,11 @@ class _OverviewTabView extends StatelessWidget {
   /// Returns the task tags section.
   Column _tags(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
           "tags",
+          textAlign: TextAlign.left,
           style: Theme.of(context).textTheme.labelMedium,
         ),
         _verticalPaddingSmall(),
@@ -172,34 +176,39 @@ class _OverviewTabView extends StatelessWidget {
 
   /// Returns the section for displaying assignees,
   Widget _assigned(BuildContext context) {
-    return Column(
-      children: [
-        Text(
-          "assigned",
-          style: Theme.of(context).textTheme.labelMedium,
-        ),
-        _verticalPaddingSmall(),
-        Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ...task.assigned
-                .map(
-                  (e) => UserListItem(
-                    handler: () => Navigator.of(context).pushNamed(
-                      ProfileScreen.routeName,
-                      arguments: {
-                        "user": e,
-                        "projects": <Project>[],
-                      },
-                    ),
-                    userId: e,
-                    size: UserListItemSize.small,
-                  ),
-                )
-                .toList(),
-          ],
-        ),
-      ],
+    return Consumer(
+      builder: (context, ref, child) => Column(
+        children: [
+          Text(
+            "assigned",
+            style: Theme.of(context).textTheme.labelMedium,
+          ),
+          _verticalPaddingSmall(),
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ...task.assigned.map((e) => StreamBuilder<User?>(
+                  stream: ref.watch(userProvider).getUser(e),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      User user = snapshot.data!;
+                      return UserListItem(
+                        user: user,
+                        handler: () => Navigator.of(context).pushNamed(
+                          ProfileScreen.routeName,
+                          arguments: {
+                            "user": user.userId,
+                            "projects": <Project>[],
+                          },
+                        ),
+                      );
+                    }
+                    return const Center(child: CircularProgressIndicator());
+                  }))
+            ],
+          ),
+        ],
+      ),
     );
   }
 

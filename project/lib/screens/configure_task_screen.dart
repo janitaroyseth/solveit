@@ -347,15 +347,15 @@ class _TaskScreenBodyState extends State<_TaskScreenBody> {
   Widget _createAssignedList(BuildContext context, WidgetRef ref) {
     return Column(
       children: [
-        ...task.assigned
-            .map(
-              (e) => UserListItem(
-                handler: () => {setState(() => task.assigned.remove(e))},
-                userId: e,
-                size: UserListItemSize.small,
-              ),
-            )
-            .toList(),
+        // ...task.assigned
+        //     .map(
+        //       (e) => UserListItem(
+        //         handler: () => {setState(() => task.assigned.remove(e))},
+        //         userId: e,
+        //         size: UserListItemSize.small,
+        //       ),
+        //     )
+        //     .toList(),
         TextButton(
           onPressed: () => showDialog(
             context: context,

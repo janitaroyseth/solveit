@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:project/models/user.dart';
@@ -17,6 +18,10 @@ abstract class UserService {
 
   /// Returns a future with the user with the given [userId].
   Stream<User?> getUser(String userId);
+
+  Stream<List<User?>> getUsers();
+
+  Stream<List<User?>> searchUsers(String query);
 
   /// Updated the user with the given [UserId], with the given [User].
   Future<void> updateUser(String userId, User user);
@@ -41,6 +46,7 @@ class FirebaseUserService implements UserService {
     String imageUrl = await userImageService.addUserImage(userId, image);
 
     User user = User(
+      userId: userId,
       username: username,
       email: email,
       bio: bio,
@@ -70,5 +76,34 @@ class FirebaseUserService implements UserService {
     userImageService
         .deleteUserImage(userId)
         .then((value) => userCollection.doc(userId).delete());
+  }
+
+  @override
+  Stream<List<User?>> getUsers() {
+    return userCollection
+        .snapshots()
+        .map((event) => event.docs)
+        .map((event) => User.fromMaps(event));
+  }
+
+  @override
+  Stream<List<User?>> searchUsers(String query) {
+    return userCollection.snapshots().map((event) => event.docs).map((event) {
+      List<User?> users = [];
+      if (query.isEmpty) {
+        for (var element in event) {
+          users.add(User.fromMap(element.data()));
+        }
+      } else {
+        for (var element in event) {
+          User? user = User.fromMap(element.data());
+          if (user!.username.toLowerCase().contains(query.toLowerCase()) ||
+              user.email.toLowerCase().contains(query.toLowerCase())) {
+            users.add(user);
+          }
+        }
+      }
+      return users;
+    });
   }
 }

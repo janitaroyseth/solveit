@@ -5,10 +5,11 @@ import 'package:project/data/project_avatar_options.dart';
 import 'package:project/models/project.dart';
 import 'package:project/providers/auth_provider.dart';
 import 'package:project/providers/project_provider.dart';
+import 'package:project/providers/user_provider.dart';
+import 'package:project/screens/collaborators_screen.dart';
 import 'package:project/styles/theme.dart';
 import 'package:project/widgets/appbar_button.dart';
-import 'package:project/widgets/input_field.dart';
-import 'package:project/widgets/search_bar.dart';
+import 'package:project/widgets/user_list_item.dart';
 
 enum _EditProjectMode {
   create,
@@ -24,50 +25,48 @@ class EditProjectScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final titleController = TextEditingController();
-
-    final descriptionController = TextEditingController();
-
     final Project? existingProject =
         (ModalRoute.of(context)?.settings.arguments as Project?);
-
     final mode = existingProject == null
         ? _EditProjectMode.create
         : _EditProjectMode.edit;
-
     final Project project = existingProject ?? Project();
 
+    final titleController = TextEditingController();
+    final descriptionController = TextEditingController();
     titleController.text = _EditProjectMode.edit == mode ? project.title : "";
-
     descriptionController.text =
         _EditProjectMode.edit == mode ? project.description : "";
 
     /// Saves the project and adds it to the list.
     void saveProject() {
-      project.title = titleController.text;
-      project.description = descriptionController.text;
-      project.owner = ref.watch(authProvider).currentUser!.uid;
-      project.collaborators.add(ref.watch(authProvider).currentUser!.uid);
-      project.lastUpdated = DateTime.now().toIso8601String();
+      ref
+          .watch(userProvider)
+          .getUser(ref.watch(authProvider).currentUser!.uid)
+          .first
+          .then((user) {
+        project.title = titleController.text;
+        project.description = descriptionController.text;
+        project.owner = ref.watch(authProvider).currentUser!.uid;
+        if (!project.collaborators.contains(user)) {
+          project.collaborators.add(user!);
+        }
+        project.lastUpdated = DateTime.now().toIso8601String();
 
-      ref.read(projectProvider).saveProject(project);
+        ref.read(projectProvider).saveProject(project);
 
-      Navigator.of(context).pop();
+        Navigator.of(context).pop();
+      });
     }
 
     return Scaffold(
       appBar: AppBar(
-        title: appBarTitle(mode),
-        leading: backButton(context),
+        title: _appBarTitle(mode),
+        leading: _backButton(context),
         backgroundColor: Themes.primaryColor,
         foregroundColor: Colors.white,
         actions: <Widget>[
-          AppBarButton(
-            handler: saveProject,
-            tooltip: "Save project",
-            icon: PhosphorIcons.floppyDiskLight,
-            color: Colors.white,
-          )
+          _saveButton(saveProject),
         ],
       ),
       body: Padding(
@@ -75,38 +74,15 @@ class EditProjectScreen extends ConsumerWidget {
         child: Form(
           child: ListView(
             children: <Widget>[
-              InputField(
-                label: "title",
-                placeholderText: "a concise description of your project",
-                keyboardAction: TextInputAction.next,
-                textEditingController: titleController,
-              ),
+              _titleInputField(titleController, ref),
               _verticalPadding,
-              InputField(
-                label: "description",
-                placeholderText: "describe your project",
-                keyboardAction: TextInputAction.next,
-                textEditingController: descriptionController,
-              ),
+              _descriptionInputField(descriptionController, ref),
               _verticalPadding,
               _PublicProjectOptions(project),
               _verticalPadding,
-              const Text(
-                "collaborators",
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-              ),
-              addCollaboratorButton(context, ref),
+              _CollaboratorsList(project),
               _verticalPadding,
-              Text(
-                "choose a project avatar",
-                style: Theme.of(context).textTheme.labelMedium,
-              ),
               _ProjectAvatarPicker(project),
-              ElevatedButton(
-                onPressed: saveProject,
-                style: Themes.primaryElevatedButtonStyle,
-                child: const Text("create project"),
-              )
             ],
           ),
         ),
@@ -114,7 +90,46 @@ class EditProjectScreen extends ConsumerWidget {
     );
   }
 
-  Text appBarTitle(mode) {
+  /// Saves the project.
+  AppBarButton _saveButton(void Function() saveProject) {
+    return AppBarButton(
+      handler: saveProject,
+      tooltip: "Save project",
+      icon: PhosphorIcons.floppyDiskLight,
+      color: Colors.white,
+    );
+  }
+
+  /// Input field for adding description of project.
+  TextFormField _descriptionInputField(
+      TextEditingController descriptionController, WidgetRef ref) {
+    return TextFormField(
+      textInputAction: TextInputAction.next,
+      controller: descriptionController,
+      decoration: Themes.inputDecoration(
+        ref,
+        "description",
+        "descrive your project",
+      ),
+    );
+  }
+
+  /// Input field for adding title of project.
+  TextFormField _titleInputField(
+      TextEditingController titleController, WidgetRef ref) {
+    return TextFormField(
+      textInputAction: TextInputAction.next,
+      controller: titleController,
+      decoration: Themes.inputDecoration(
+        ref,
+        "title",
+        "a concise description of your project",
+      ),
+    );
+  }
+
+  /// The title of the screen, depending on which mode it is.
+  Text _appBarTitle(mode) {
     return Text(
       mode == _EditProjectMode.create ? "create project" : "edit project",
       style: const TextStyle(
@@ -123,7 +138,8 @@ class EditProjectScreen extends ConsumerWidget {
     );
   }
 
-  AppBarButton backButton(BuildContext context) {
+  /// Goes back to previoud screen without saving.
+  AppBarButton _backButton(BuildContext context) {
     return AppBarButton(
       handler: () => Navigator.of(context).pop(),
       tooltip: "Go back",
@@ -131,13 +147,65 @@ class EditProjectScreen extends ConsumerWidget {
       color: Colors.white,
     );
   }
+}
 
-  TextButton addCollaboratorButton(BuildContext context, WidgetRef ref) {
+/// Displays a list of currently selected collaborators.
+class _CollaboratorsList extends ConsumerStatefulWidget {
+  /// Creates an instance of [_CollaboratorsList].
+  const _CollaboratorsList(this.project);
+
+  /// The project to display current list of collaborators for.
+  final Project project;
+
+  @override
+  ConsumerState<_CollaboratorsList> createState() => _CollaboratorsListState();
+}
+
+class _CollaboratorsListState extends ConsumerState<_CollaboratorsList> {
+  @override
+  Widget build(BuildContext context) {
+    ref
+        .watch(userProvider)
+        .getUser(ref.watch(authProvider).currentUser!.uid)
+        .first
+        .then((user) {
+      if (!widget.project.collaborators.contains(user)) {
+        widget.project.collaborators.add(user!);
+      }
+    }).whenComplete(() => setState(() {}));
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const Text(
+          "collaborators",
+          textAlign: TextAlign.left,
+          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+        ),
+        ListView.builder(
+          shrinkWrap: true,
+          itemCount: widget.project.collaborators.length,
+          itemBuilder: (context, index) => UserListItem(
+            user: widget.project.collaborators[index],
+            handler: () {},
+            size: UserListItemSize.small,
+          ),
+        ),
+        addCollaboratorButton(context, ref, widget.project)
+      ],
+    );
+  }
+
+  /// Button for opening a new screen where new collaborators can be added.
+  TextButton addCollaboratorButton(
+      BuildContext context, WidgetRef ref, Project project) {
     return TextButton(
-      onPressed: () => showDialog(
-        context: context,
-        builder: (context) => const _CollaboratorsDialog(),
-      ),
+      style: ButtonStyle(padding: MaterialStateProperty.all(EdgeInsets.zero)),
+      onPressed: () => Navigator.of(context)
+          .pushNamed(
+            CollaboratorsScreen.routeName,
+            arguments: project.collaborators,
+          )
+          .then((value) => setState(() {})),
       child: Row(
         children: <Widget>[
           CircleAvatar(
@@ -158,56 +226,6 @@ class EditProjectScreen extends ConsumerWidget {
             ),
           )
         ],
-      ),
-    );
-  }
-}
-
-/// A dialog showing some dummy data.
-class _CollaboratorsDialog extends StatelessWidget {
-  /// Creates content for a dialog which shows some dummy data users.
-  const _CollaboratorsDialog();
-
-  @override
-  Widget build(BuildContext context) {
-    return Dialog(
-      child: SizedBox(
-        width: double.infinity - 20,
-        height: 350,
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.only(top: 8.0),
-              child: SearchBar(
-                placeholderText: "search for collaborators...",
-                searchFunction: () {},
-                textEditingController: TextEditingController(),
-              ),
-            ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16.0,
-                  vertical: 0.0,
-                ),
-                child: ListView(
-                  children: [
-                    // UserListItem(
-                    //   handler: () => Navigator.of(context)
-                    //       .pushNamed(ProfileScreen.routeName),
-                    //   userId: ExampleData.user1.userId,
-                    // ),
-                    // UserListItem(
-                    //   handler: () => Navigator.of(context)
-                    //       .pushNamed(ProfileScreen.routeName),
-                    //   userId: ExampleData.user2.userId,
-                    // ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
       ),
     );
   }
@@ -305,33 +323,46 @@ class __ProjectAvatarPickerState extends State<_ProjectAvatarPicker> {
 
   @override
   Widget build(BuildContext context) {
-    return GridView.builder(
-      gridDelegate:
-          const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3),
-      itemCount: projectAvatars.length,
-      physics:
-          const NeverScrollableScrollPhysics(), // to disable GridView's scrolling
-      shrinkWrap: true,
-      itemBuilder: (context, index) => GestureDetector(
-        onTap: () => setState(() {
-          chosenIndex = index;
-          widget.project!.imageUrl = projectAvatars[chosenIndex];
-        }),
-        child: Stack(
-          children: [
-            Image.asset(projectAvatars[index]),
-            index == chosenIndex
-                ? const Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Icon(
-                      PhosphorIcons.check,
-                      color: Themes.primaryColor,
-                      size: 36,
-                    ),
-                  )
-                : Container(),
-          ],
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(
+          "choose a project avatar",
+          style: Theme.of(context).textTheme.labelMedium,
         ),
+        GridView.builder(
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3),
+          itemCount: projectAvatars.length,
+          physics:
+              const NeverScrollableScrollPhysics(), // to disable GridView's scrolling
+          shrinkWrap: true,
+          itemBuilder: (context, index) => _projectAvatarItem(index),
+        ),
+      ],
+    );
+  }
+
+  GestureDetector _projectAvatarItem(int index) {
+    return GestureDetector(
+      onTap: () => setState(() {
+        chosenIndex = index;
+        widget.project!.imageUrl = projectAvatars[chosenIndex];
+      }),
+      child: Stack(
+        children: [
+          Image.asset(projectAvatars[index]),
+          index == chosenIndex
+              ? const Padding(
+                  padding: EdgeInsets.all(8.0),
+                  child: Icon(
+                    PhosphorIcons.check,
+                    color: Themes.primaryColor,
+                    size: 36,
+                  ),
+                )
+              : Container(),
+        ],
       ),
     );
   }

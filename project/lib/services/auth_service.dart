@@ -97,6 +97,7 @@ class Auth implements AuthService {
           idToken: googleAuth.idToken,
           accessToken: googleAuth.accessToken,
         ));
+
         return userCredential;
       } else {
         throw FirebaseAuthException(

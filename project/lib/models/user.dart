@@ -33,6 +33,17 @@ class User {
     );
   }
 
+  static List<User> fromMaps(var data) {
+    List<User> users = [];
+    for (var value in data) {
+      User? user = fromMap(value);
+      if (user != null) {
+        users.add(user);
+      }
+    }
+    return users;
+  }
+
   static Map<String, dynamic> toMap(User user) {
     return {
       "userId": user.userId,
@@ -42,4 +53,12 @@ class User {
       "imageUrl": user.imageUrl
     };
   }
+
+  @override
+  bool operator ==(Object other) {
+    return userId == (other as User).userId;
+  }
+
+  @override
+  int get hashCode => userId.hashCode;
 }

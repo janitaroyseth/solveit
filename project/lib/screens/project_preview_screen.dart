@@ -4,6 +4,7 @@ import 'package:jiffy/jiffy.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/models/project.dart';
 import 'package:project/providers/project_provider.dart';
+import 'package:project/providers/user_provider.dart';
 import 'package:project/screens/profile_screen.dart';
 import 'package:project/styles/curve_clipper.dart';
 import 'package:project/widgets/appbar_button.dart';
@@ -103,17 +104,19 @@ class ProjectPreviewScreen extends ConsumerWidget {
                       const SizedBox(
                         height: 12.0,
                       ),
-                      ...project.collaborators.map((userId) => UserListItem(
-                            userId: userId,
-                            isOwner: project.owner == userId,
-                            handler: () => Navigator.of(context).pushNamed(
-                              ProfileScreen.routeName,
-                              arguments: {
-                                "user": userId,
-                                "projects": <Project>[],
-                              },
-                            ),
-                          )),
+                      ...project.collaborators.map((user) {
+                        return UserListItem(
+                          user: user,
+                          isOwner: project.owner == user.userId,
+                          handler: () => Navigator.of(context).pushNamed(
+                            ProfileScreen.routeName,
+                            arguments: {
+                              "user": user.userId,
+                              "projects": <Project>[],
+                            },
+                          ),
+                        );
+                      }),
                       const SizedBox(
                         height: 24.0,
                       ),

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:project/models/project.dart';
 import 'package:project/models/task.dart';
+import 'package:project/models/user.dart';
 import 'package:project/services/tag_service.dart';
 import 'package:project/services/task_service.dart';
 import 'package:project/services/user_service.dart';
@@ -57,10 +58,16 @@ class FirebaseProjectService implements ProjectService {
   @override
   Stream<List<Project>> getProjectsByUserIdAsCollaborator(String userId) {
     return projectCollection
-        .where("collaborators", arrayContains: userId)
         .snapshots()
         .map((event) => event.docs)
-        .map((event) => Project.fromMaps(event));
+        .map((event) => Project.fromMaps(event).where((element) {
+              for (var user in element.collaborators) {
+                if (user.userId == userId) {
+                  return true;
+                }
+              }
+              return false;
+            }).toList());
   }
 
   @override
