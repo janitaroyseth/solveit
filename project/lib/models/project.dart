@@ -39,7 +39,7 @@ class Project {
     final String title = data['title'];
     final String description = data['description'];
     final List<String> collaborators = data["collaborators"].cast<String>();
-    final bool isPublic = data['isPublic'];
+    final bool isPublic = data["isPublic"];
     final String owner = data["owner"];
     final String? lastUpdated = data['lastUpdated'];
     final String imageUrl = data['imageUrl'];
@@ -105,6 +105,6 @@ class Project {
 
   @override
   bool operator ==(Object other) {
-    return projectId == projectId;
+    return projectId == (other as Project).projectId;
   }
 }

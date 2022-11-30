@@ -1,11 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:project/models/project.dart';
 import 'package:project/models/task.dart';
-import 'package:project/models/user.dart';
 import 'package:project/services/auth_service.dart';
 import 'package:project/services/tag_service.dart';
 import 'package:project/services/task_service.dart';
 import 'package:project/services/user_service.dart';
+import 'dart:async';
+
+import 'package:rxdart/rxdart.dart';
 
 /// Business logic for projects.
 abstract class ProjectService {
@@ -96,38 +98,51 @@ class FirebaseProjectService implements ProjectService {
 
   @override
   Stream<List<Project?>>? searchProjects(String query) {
-    return projectCollection
+    List<Project?> projects = [];
+
+    final collaborators = projectCollection
         .where("collaborators", arrayContains: Auth().currentUser!.uid)
         .snapshots()
         .map((snapshot) => snapshot.docs)
         .map((snapshotList) {
-      List<Project?> projects = [];
+      List<Project> collaboratorsList = [];
       if (query.isEmpty) {
         for (var snapshot in snapshotList) {
-          projects.add(Project.fromMap(snapshot.data()));
+          Project project = Project.fromMap(snapshot.data())!;
+          projects.add(project);
+          collaboratorsList.add(project);
         }
       } else {
         for (var snapshot in snapshotList) {
           Project? project = Project.fromMap(snapshot.data());
           if (project!.title.contains(query)) {
             projects.add(project);
+            collaboratorsList.add(project);
           }
         }
       }
-      projectCollection
-          .where("isPublic", isEqualTo: true)
-          .snapshots()
-          .map((snapshot) => snapshot.docs)
-          .map((list) {
-        for (var element in list) {
-          Project project = Project.fromMap(element.data())!;
-          if (!projects.contains(project)) {
-            projects.add(project);
-          }
-        }
-      });
-
-      return projects;
+      return collaboratorsList;
     });
+
+    final public = projectCollection
+        .where("isPublic", isEqualTo: true)
+        .snapshots()
+        .map((event) => event.docs)
+        .map((list) {
+      List<Project> publicProjects = [];
+      for (var element in list) {
+        Project project = Project.fromMap(element.data())!;
+        if ((project.title.toLowerCase().contains(query.toLowerCase()) ||
+                query.isEmpty) &&
+            !projects.contains(project)) {
+          publicProjects.add(project);
+          projects.add(project);
+        }
+      }
+
+      return publicProjects;
+    });
+
+    return CombineLatestStream([collaborators, public], (values) => projects);
   }
 }
