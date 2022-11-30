@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:project/models/project.dart';
 import 'package:project/models/task.dart';
 import 'package:project/models/user.dart';
+import 'package:project/services/auth_service.dart';
 import 'package:project/services/tag_service.dart';
 import 'package:project/services/task_service.dart';
 import 'package:project/services/user_service.dart';
@@ -25,6 +26,8 @@ abstract class ProjectService {
 
   /// Deletes the project with the given project id.
   Future<void> deleteProject(String projectId);
+
+  Stream<List<Project?>>? searchProjects(String query);
 }
 
 /// Firebase implementation of [ProjectService].
@@ -58,11 +61,12 @@ class FirebaseProjectService implements ProjectService {
   @override
   Stream<List<Project>> getProjectsByUserIdAsCollaborator(String userId) {
     return projectCollection
+        .where("collaborators", arrayContains: Auth().currentUser!.uid)
         .snapshots()
         .map((event) => event.docs)
         .map((event) => Project.fromMaps(event).where((element) {
               for (var user in element.collaborators) {
-                if (user.userId == userId) {
+                if (user == userId) {
                   return true;
                 }
               }
@@ -84,9 +88,46 @@ class FirebaseProjectService implements ProjectService {
     taskService.getTasks(projectId).first.then((tasks) {
       for (Task? task in tasks) {
         if (task != null) {
-          taskService.deleteTask(task.taskId);
+          taskService.deleteTask(projectId, task.taskId);
         }
       }
     }).whenComplete(() => projectCollection.doc(projectId).delete());
+  }
+
+  @override
+  Stream<List<Project?>>? searchProjects(String query) {
+    return projectCollection
+        .where("collaborators", arrayContains: Auth().currentUser!.uid)
+        .snapshots()
+        .map((snapshot) => snapshot.docs)
+        .map((snapshotList) {
+      List<Project?> projects = [];
+      if (query.isEmpty) {
+        for (var snapshot in snapshotList) {
+          projects.add(Project.fromMap(snapshot.data()));
+        }
+      } else {
+        for (var snapshot in snapshotList) {
+          Project? project = Project.fromMap(snapshot.data());
+          if (project!.title.contains(query)) {
+            projects.add(project);
+          }
+        }
+      }
+      projectCollection
+          .where("isPublic", isEqualTo: true)
+          .snapshots()
+          .map((snapshot) => snapshot.docs)
+          .map((list) {
+        for (var element in list) {
+          Project project = Project.fromMap(element.data())!;
+          if (!projects.contains(project)) {
+            projects.add(project);
+          }
+        }
+      });
+
+      return projects;
+    });
   }
 }

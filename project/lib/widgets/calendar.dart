@@ -5,7 +5,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:project/models/project.dart';
 import 'package:project/models/task.dart';
+import 'package:project/providers/task_provider.dart';
 import 'package:project/styles/theme.dart';
+import 'package:project/widgets/loading_spinner.dart';
 import 'package:project/widgets/task_list_item.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -14,9 +16,11 @@ class Calendar extends StatefulWidget {
   /// [Project] project to display deadline of tasks in calendar for.
   final Project project;
 
+  final Function selectDay;
+
   /// Creates an instance of [Calendar], which displays the deadline of the tasks
   /// in the given `project`.
-  const Calendar({super.key, required this.project});
+  const Calendar({super.key, required this.project, required this.selectDay});
 
   @override
   State<Calendar> createState() => _CalendarState();
@@ -38,31 +42,37 @@ class _CalendarState extends State<Calendar> {
   @override
   void initState() {
     super.initState();
-
     _selectedDay = _focusedDay;
+
     _selectedTasks = ValueNotifier(_getTasksForDay(_selectedDay!));
 
-    /// Creates and returns a [Map] where each deadline in the tasks is a key, and the values
-    /// a list of tasks for the deadline.
-    Map<DateTime, dynamic> groupTasks() {
-      Map<DateTime, dynamic> groupedTasks = {};
-      for (var task in widget.project.tasks) {
-        DateTime key = DateTime.parse(task.deadline as String);
+    // /// Creates and returns a [Map] where each deadline in the tasks is a key, and the values
+    // /// a list of tasks for the deadline.
+    // Map<DateTime, dynamic> groupTasks() {
+    //   Map<DateTime, dynamic> groupedTasks = {};
+    //   for (var task in widget.project.tasks) {
+    //     DateTime key = DateTime.parse(task.deadline as String);
 
-        List<Task> values = widget.project.tasks
-            .where(
-                (element) => DateTime.parse(element.deadline as String) == key)
-            .toList();
-        groupedTasks[key] = values;
-      }
-      return groupedTasks;
-    }
+    //     List<Task> values = widget.project.tasks
+    //         .where(
+    //             (element) => DateTime.parse(element.deadline as String) == key)
+    //         .toList();
+    //     groupedTasks[key] = values;
+    //   }
+    //   return groupedTasks;
+    // }
 
-    tasks = LinkedHashMap<DateTime, dynamic>(
-      equals: isSameDay,
-      hashCode: (DateTime key) =>
-          key.day * 1000000 + key.month * 10000 + key.year,
-    )..addAll(groupTasks());
+    // tasks = LinkedHashMap<DateTime, dynamic>(
+    //   equals: isSameDay,
+    //   hashCode: (DateTime key) =>
+    //       key.day * 1000000 + key.month * 10000 + key.year,
+    // )..addAll(groupTasks());
+  }
+
+  @override
+  void didChangeDependencies() {
+    //widget.selectDay(_selectedDay);
+    super.didChangeDependencies();
   }
 
   @override
@@ -76,6 +86,7 @@ class _CalendarState extends State<Calendar> {
     if (!isSameDay(_selectedDay, selectedDay)) {
       setState(() {
         _selectedDay = selectedDay;
+        widget.selectDay(_selectedDay);
         _focusedDay = focusedDay;
       });
       _selectedTasks.value = _getTasksForDay(selectedDay);
@@ -90,53 +101,87 @@ class _CalendarState extends State<Calendar> {
   @override
   Widget build(BuildContext context) {
     return Consumer(
-      builder: (context, ref, child) => Column(
-        children: <Widget>[
-          TableCalendar(
-            rowHeight: 45.0,
-            headerStyle: Themes.calendarHeaderTheme(ref),
-            daysOfWeekStyle: Themes.daysOfWeekStyle(),
-            firstDay: DateTime.utc(2021, 10, 16),
-            lastDay: DateTime.utc(DateTime.now().year + 2, 3, 14),
-            focusedDay: _focusedDay,
-            startingDayOfWeek: StartingDayOfWeek.monday,
-            selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
-            onDaySelected: _onDaySelected,
-            eventLoader: _getTasksForDay,
-            calendarStyle: Themes.calendarTheme(ref),
-            onPageChanged: (newFocusedDay) {
-              _focusedDay = newFocusedDay;
-            },
-          ),
-          Expanded(
-            child: ValueListenableBuilder(
-              valueListenable: _selectedTasks,
-              builder: (context, List<dynamic> value, child) =>
-                  ListView.builder(
-                padding: EdgeInsets.zero,
-                scrollDirection: Axis.vertical,
-                itemCount: value.isEmpty ? 0 : value.length + 1,
-                itemBuilder: (context, index) {
-                  if (index == 0) {
-                    return Container(
-                      padding: const EdgeInsets.only(top: 16.0),
-                      child: Text(
-                        Jiffy(_selectedDay).format("EEEE, do of MMMM yyyy"),
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                    );
+      builder: (context, ref, child) => StreamBuilder<List<Task?>>(
+          stream: ref.watch(taskProvider).getTasks(widget.project.projectId),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              List<Task?> taskss = snapshot.data!;
+
+              /// Creates and returns a [Map] where each deadline in the tasks is a key, and the values
+              /// a list of tasks for the deadline.
+              Map<DateTime, dynamic> groupTasks() {
+                Map<DateTime, dynamic> groupedTasks = {};
+                for (var task in taskss) {
+                  DateTime? key;
+                  if (task!.deadline != null) {
+                    key = task.deadline;
                   }
-                  return TaskListItem(task: value[index - 1]);
-                },
-              ),
-            ),
-          ),
-        ],
-      ),
+                  if (key != null) {
+                    List<Task?> values = taskss
+                        .where((element) => element!.deadline == key)
+                        .toList();
+                    groupedTasks[key] = values;
+                  }
+                }
+                return groupedTasks;
+              }
+
+              tasks = LinkedHashMap<DateTime, dynamic>(
+                equals: isSameDay,
+                hashCode: (DateTime key) =>
+                    key.day * 1000000 + key.month * 10000 + key.year,
+              )..addAll(groupTasks());
+              return Column(
+                children: <Widget>[
+                  TableCalendar(
+                    rowHeight: 45.0,
+                    headerStyle: Themes.calendarHeaderTheme(ref),
+                    daysOfWeekStyle: Themes.daysOfWeekStyle(),
+                    firstDay: DateTime.utc(2021, 10, 16),
+                    lastDay: DateTime.utc(DateTime.now().year + 2, 3, 14),
+                    focusedDay: _focusedDay,
+                    startingDayOfWeek: StartingDayOfWeek.monday,
+                    selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
+                    onDaySelected: _onDaySelected,
+                    eventLoader: _getTasksForDay,
+                    calendarStyle: Themes.calendarTheme(ref),
+                    onPageChanged: (newFocusedDay) {
+                      _focusedDay = newFocusedDay;
+                    },
+                  ),
+                  Expanded(
+                    child: ValueListenableBuilder(
+                      valueListenable: _selectedTasks,
+                      builder: (context, List<dynamic> value, child) =>
+                          ListView.builder(
+                        padding: EdgeInsets.zero,
+                        scrollDirection: Axis.vertical,
+                        itemCount: value.isEmpty ? 0 : value.length + 1,
+                        itemBuilder: (context, index) {
+                          if (index == 0) {
+                            return Container(
+                              padding: const EdgeInsets.only(top: 16.0),
+                              child: Text(
+                                Jiffy(_selectedDay)
+                                    .format("EEEE, do of MMMM yyyy"),
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                            );
+                          }
+                          return TaskListItem(task: value[index - 1]);
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            }
+            return const LoadingSpinner();
+          }),
     );
   }
 }

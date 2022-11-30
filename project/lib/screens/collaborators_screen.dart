@@ -33,8 +33,8 @@ class _CollaboratorsScreenState extends ConsumerState<CollaboratorsScreen> {
   @override
   Widget build(BuildContext context) {
     /// List of collaborators or assigneed to add the selected user to.
-    final List<User?> users =
-        (ModalRoute.of(context)!.settings.arguments as List)[0] as List<User?>;
+    final List<String?> users = (ModalRoute.of(context)!.settings.arguments
+        as List)[0] as List<String?>;
 
     /// The searchtype for the screen, whether to browse all users or just
     /// users in a project.
@@ -53,8 +53,17 @@ class _CollaboratorsScreenState extends ConsumerState<CollaboratorsScreen> {
           .watch(projectProvider)
           .getProject(projectId)
           .first
-          .then((value) => value!.collaborators)
-          .asStream();
+          .then((value) {
+        List<User> users = [];
+        for (var userId in value!.collaborators) {
+          ref
+              .watch(userProvider)
+              .getUser(userId)
+              .first
+              .then((value) => users.add(value!));
+        }
+        return users;
+      }).asStream();
     }
 
     /// Returns the appropriate [Stream<List<User>>] depending on the
@@ -82,16 +91,18 @@ class _CollaboratorsScreenState extends ConsumerState<CollaboratorsScreen> {
   StreamBuilder<List<User?>> _usersList(
     CollaboratorsSearchType? searchType,
     Stream<List<User?>> Function() getStream,
-    List<User?> users,
+    List<String?> users,
   ) {
     return StreamBuilder<List<User?>>(
       stream: getStream(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          for (User? user in users) {
-            if (snapshot.data!.contains(user)) {
-              snapshot.data!.remove(user);
-            }
+          for (String? userId in users) {
+            snapshot.data!.map((User? e) {
+              if (e!.userId == userId) {
+                snapshot.data!.remove(e);
+              }
+            });
           }
 
           return Expanded(
@@ -111,7 +122,7 @@ class _CollaboratorsScreenState extends ConsumerState<CollaboratorsScreen> {
 
   /// List item for displaying user in collaborators list.
   Padding _collaboratorsListItem(
-      User user, List<User?> users, BuildContext context) {
+      User user, List<String?> users, BuildContext context) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(
         16.0,
@@ -122,7 +133,7 @@ class _CollaboratorsScreenState extends ConsumerState<CollaboratorsScreen> {
       child: UserListItem(
         user: user,
         handler: () {
-          users.add(user);
+          users.add(user.userId);
           Navigator.of(context).pop();
         },
       ),

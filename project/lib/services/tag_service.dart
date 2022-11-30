@@ -67,7 +67,7 @@ class FirebaseTagService extends TagService {
       FirebaseTaskService().getTasks(projectId).first.then((tasks) {
         for (Task? task in tasks) {
           task!.tags.remove(tag);
-          FirebaseTaskService().saveTask(task);
+          FirebaseTaskService().saveTask(projectId, task);
         }
       }).then((_) => FirebaseProjectService().saveProject(project));
     });

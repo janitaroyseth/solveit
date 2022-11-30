@@ -382,6 +382,7 @@ class _ProfileProjectListState extends ConsumerState<_ProfileProjectList> {
                               arguments: projects[index])),
                     );
                   }
+                  if (snapshot.hasError) print(snapshot.error);
                   return const Center(child: CircularProgressIndicator());
                 },
               ),

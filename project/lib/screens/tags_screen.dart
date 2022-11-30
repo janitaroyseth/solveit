@@ -133,7 +133,7 @@ class _TagsScreenState extends ConsumerState<TagsScreen> {
             if (!task.tags.contains(items[index])) {
               task.tags.add(items[index]);
             }
-            ref.read(taskProvider).saveTask(task).then(
+            ref.read(taskProvider).saveTask(task.projectId, task).then(
                   (value) => Navigator.of(context).pop(),
                 );
           },

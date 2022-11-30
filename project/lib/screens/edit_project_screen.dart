@@ -3,12 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/data/project_avatar_options.dart';
 import 'package:project/models/project.dart';
+import 'package:project/models/user.dart';
 import 'package:project/providers/auth_provider.dart';
 import 'package:project/providers/project_provider.dart';
 import 'package:project/providers/user_provider.dart';
 import 'package:project/screens/collaborators_screen.dart';
 import 'package:project/styles/theme.dart';
 import 'package:project/widgets/appbar_button.dart';
+import 'package:project/widgets/loading_spinner.dart';
 import 'package:project/widgets/user_list_item.dart';
 
 enum _EditProjectMode {
@@ -48,8 +50,8 @@ class EditProjectScreen extends ConsumerWidget {
         project.title = titleController.text;
         project.description = descriptionController.text;
         project.owner = ref.watch(authProvider).currentUser!.uid;
-        if (!project.collaborators.contains(user)) {
-          project.collaborators.add(user!);
+        if (!project.collaborators.contains(user!.userId)) {
+          project.collaborators.add(user.userId);
         }
         project.lastUpdated = DateTime.now().toIso8601String();
 
@@ -169,8 +171,8 @@ class _CollaboratorsListState extends ConsumerState<_CollaboratorsList> {
         .getUser(ref.watch(authProvider).currentUser!.uid)
         .first
         .then((user) {
-      if (!widget.project.collaborators.contains(user)) {
-        widget.project.collaborators.add(user!);
+      if (!widget.project.collaborators.contains(user!.userId)) {
+        widget.project.collaborators.add(user.userId);
       }
     }).whenComplete(() => setState(() {}));
     return Column(
@@ -184,11 +186,21 @@ class _CollaboratorsListState extends ConsumerState<_CollaboratorsList> {
         ListView.builder(
           shrinkWrap: true,
           itemCount: widget.project.collaborators.length,
-          itemBuilder: (context, index) => UserListItem(
-            user: widget.project.collaborators[index],
-            handler: () {},
-            size: UserListItemSize.small,
-          ),
+          itemBuilder: (context, index) => StreamBuilder<User?>(
+              stream: ref.watch(userProvider).getUser(
+                    widget.project.collaborators[index],
+                  ),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  User user = snapshot.data!;
+                  return UserListItem(
+                    user: user,
+                    handler: () {},
+                    size: UserListItemSize.small,
+                  );
+                }
+                return const LoadingSpinner();
+              }),
         ),
         addCollaboratorButton(context, ref, widget.project)
       ],
