@@ -61,7 +61,6 @@ class ProjectOverviewScreenState extends ConsumerState<ProjectOverviewScreen> {
           builder: (context, snapshot) {
             if (snapshot.hasData) {
               var data = snapshot.data;
-              print("Projects: $data");
               List<Project> projects = data as List<Project>;
               return Padding(
                 padding: const EdgeInsets.all(0),

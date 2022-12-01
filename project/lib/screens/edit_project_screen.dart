@@ -3,12 +3,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/data/project_avatar_options.dart';
 import 'package:project/models/project.dart';
+import 'package:project/models/user.dart';
 import 'package:project/providers/auth_provider.dart';
 import 'package:project/providers/project_provider.dart';
 import 'package:project/providers/user_provider.dart';
 import 'package:project/screens/collaborators_screen.dart';
 import 'package:project/styles/theme.dart';
 import 'package:project/widgets/appbar_button.dart';
+import 'package:project/widgets/loading_spinner.dart';
 import 'package:project/widgets/user_list_item.dart';
 
 enum _EditProjectMode {
@@ -18,10 +20,11 @@ enum _EditProjectMode {
 
 /// Screen/Scaffold for creating a new project or editing an existing one.
 class EditProjectScreen extends ConsumerWidget {
+  /// Named route for this screen.
   static const routeName = "/edit-project";
-  const EditProjectScreen({super.key});
 
-  final Widget _verticalPadding = const SizedBox(height: 24);
+  /// Creates an instance of [EditProjectScreen].
+  const EditProjectScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -48,8 +51,8 @@ class EditProjectScreen extends ConsumerWidget {
         project.title = titleController.text;
         project.description = descriptionController.text;
         project.owner = ref.watch(authProvider).currentUser!.uid;
-        if (!project.collaborators.contains(user)) {
-          project.collaborators.add(user!);
+        if (!project.collaborators.contains(user!.userId)) {
+          project.collaborators.add(user.userId);
         }
         project.lastUpdated = DateTime.now().toIso8601String();
 
@@ -89,6 +92,8 @@ class EditProjectScreen extends ConsumerWidget {
       ),
     );
   }
+
+  final Widget _verticalPadding = const SizedBox(height: 24);
 
   /// Saves the project.
   AppBarButton _saveButton(void Function() saveProject) {
@@ -163,36 +168,96 @@ class _CollaboratorsList extends ConsumerStatefulWidget {
 
 class _CollaboratorsListState extends ConsumerState<_CollaboratorsList> {
   @override
-  Widget build(BuildContext context) {
+  void didChangeDependencies() {
     ref
         .watch(userProvider)
         .getUser(ref.watch(authProvider).currentUser!.uid)
         .first
         .then((user) {
-      if (!widget.project.collaborators.contains(user)) {
-        widget.project.collaborators.add(user!);
+      if (!widget.project.collaborators.contains(user!.userId)) {
+        widget.project.collaborators.add(user.userId);
       }
     }).whenComplete(() => setState(() {}));
+    super.didChangeDependencies();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const Text(
-          "collaborators",
-          textAlign: TextAlign.left,
-          style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-        ),
-        ListView.builder(
-          shrinkWrap: true,
-          itemCount: widget.project.collaborators.length,
-          itemBuilder: (context, index) => UserListItem(
-            user: widget.project.collaborators[index],
-            handler: () {},
-            size: UserListItemSize.small,
-          ),
-        ),
+        _collaboratorsLabel(),
+        _collaboratorsList(),
         addCollaboratorButton(context, ref, widget.project)
       ],
     );
+  }
+
+  /// Returns a listview displaying the collaborators for this project.
+  ListView _collaboratorsList() {
+    return ListView.builder(
+      shrinkWrap: true,
+      itemCount: widget.project.collaborators.length,
+      itemBuilder: (context, index) => StreamBuilder<User?>(
+          stream: ref.watch(userProvider).getUser(
+                widget.project.collaborators[index],
+              ),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              User user = snapshot.data!;
+              return UserListItem(
+                user: user,
+                handler: () {},
+                size: UserListItemSize.small,
+                widget: _userListItemMenu(user),
+              );
+            }
+            return const LoadingSpinner();
+          }),
+    );
+  }
+
+  /// Returns a [Text] displaying the collaborators label for this section.
+  Text _collaboratorsLabel() {
+    return const Text(
+      "collaborators",
+      textAlign: TextAlign.left,
+      style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+    );
+  }
+
+  /// If the given user is not the owner a [PopUpMenuButton] is returned, if not
+  /// [null] is returned.
+  Widget? _userListItemMenu(User user) {
+    return user.userId != widget.project.owner
+        ? PopupMenuButton(
+            padding: EdgeInsets.zero,
+            onSelected: (value) {
+              switch (value) {
+                case 1:
+                  widget.project.collaborators.remove(user.userId);
+                  ref.read(projectProvider).saveProject(widget.project);
+                  setState(() {});
+                  break;
+                default:
+              }
+            },
+            icon: Icon(
+              PhosphorIcons.dotsThreeVerticalBold,
+              color: Themes.textColor(ref),
+            ),
+            itemBuilder: (context) => [
+              PopupMenuItem(
+                height: 40,
+                value: 1,
+                child: Text(
+                  "remove collaborator",
+                  style: TextStyle(color: Theme.of(context).errorColor),
+                ),
+              ),
+            ],
+          )
+        : null;
   }
 
   /// Button for opening a new screen where new collaborators can be added.

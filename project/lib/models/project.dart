@@ -1,7 +1,5 @@
 import 'package:project/data/project_avatar_options.dart';
 import 'package:project/models/tag.dart';
-import 'package:project/models/task.dart';
-import 'package:project/models/user.dart';
 
 /// The data content of a project in the application.
 class Project {
@@ -11,9 +9,6 @@ class Project {
   // The name of the project.
   String title;
 
-  // The list of tasks in the project.
-  List<Task> tasks;
-
   // The list of tags in the project.
   List<Tag> tags;
 
@@ -21,7 +16,7 @@ class Project {
   String? owner;
 
   /// List of users collaborating on this project.
-  List<User> collaborators;
+  List<String> collaborators;
 
   /// Path to project avatar.s
   String imageUrl;
@@ -43,8 +38,8 @@ class Project {
     final String id = data["projectId"];
     final String title = data['title'];
     final String description = data['description'];
-    final List<User> collaborators = User.fromMaps(data["collaborators"]);
-    final bool isPublic = data['isPublic'];
+    final List<String> collaborators = data["collaborators"].cast<String>();
+    final bool isPublic = data["isPublic"];
     final String owner = data["owner"];
     final String? lastUpdated = data['lastUpdated'];
     final String imageUrl = data['imageUrl'];
@@ -80,9 +75,8 @@ class Project {
     return {
       "projectId": projectId,
       "title": title,
-      "tasks": tasks.map((e) => e.taskId).toList(),
       "tags": tags.map((e) => e.toMap()).toList(),
-      "collaborators": collaborators.map((e) => User.toMap(e)).toList(),
+      "collaborators": collaborators,
       "owner": owner,
       "imageUrl": imageUrl,
       "description": description,
@@ -95,10 +89,9 @@ class Project {
   Project({
     this.projectId = "",
     this.title = "project title",
-    this.tasks = const [],
     List<Tag>? tags,
     this.owner,
-    List<User>? collaborators,
+    List<String>? collaborators,
     String? imageUrl,
     this.description = "",
     this.lastUpdated,
@@ -106,4 +99,12 @@ class Project {
   })  : imageUrl = imageUrl ?? projectAvatars[0],
         collaborators = collaborators ?? [],
         tags = tags ?? [];
+
+  @override
+  int get hashCode => projectId.hashCode;
+
+  @override
+  bool operator ==(Object other) {
+    return projectId == (other as Project).projectId;
+  }
 }

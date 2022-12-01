@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:project/screens/explore_screen.dart';
 import 'package:project/screens/profile_screen.dart';
 import 'package:project/screens/project_overview_screen.dart';
 import 'package:project/styles/theme.dart';
@@ -29,7 +29,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   /// The screens the tab bar can navigate to.
   final screens = [
     const ProjectOverviewScreen(),
-    const ProjectOverviewScreen(),
+    const ExploreScreen(),
     const ProjectOverviewScreen(),
     const ProfileScreen(),
   ];

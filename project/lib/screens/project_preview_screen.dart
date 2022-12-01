@@ -3,10 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/models/project.dart';
+import 'package:project/models/user.dart';
 import 'package:project/providers/project_provider.dart';
+import 'package:project/providers/user_provider.dart';
 import 'package:project/screens/profile_screen.dart';
 import 'package:project/styles/curve_clipper.dart';
 import 'package:project/widgets/appbar_button.dart';
+import 'package:project/widgets/loading_spinner.dart';
 import 'package:project/widgets/project_pop_up_menu.dart';
 import 'package:project/widgets/user_list_item.dart';
 
@@ -50,7 +53,7 @@ class ProjectPreviewScreen extends ConsumerWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: <Widget>[
-                      _collaboratorsList(context, project),
+                      _collaboratorsList(context, ref, project),
                       const SizedBox(height: 24.0),
                       _projectLastUpdated(project),
                     ],
@@ -118,7 +121,8 @@ class ProjectPreviewScreen extends ConsumerWidget {
   }
 
   /// Column containing list of collaborators.
-  Column _collaboratorsList(BuildContext context, Project project) {
+  Column _collaboratorsList(
+      BuildContext context, WidgetRef ref, Project project) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -133,18 +137,27 @@ class ProjectPreviewScreen extends ConsumerWidget {
           height: 12.0,
         ),
         ...project.collaborators.map(
-          (user) {
-            return UserListItem(
-              user: user,
-              isOwner: project.owner == user.userId,
-              handler: () => Navigator.of(context).pushNamed(
-                ProfileScreen.routeName,
-                arguments: {
-                  "user": user.userId,
-                  "projects": <Project>[],
-                },
-              ),
-            );
+          (userId) {
+            return StreamBuilder<User?>(
+                stream: ref.watch(userProvider).getUser(userId),
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    User user = snapshot.data!;
+                    return UserListItem(
+                      user: user,
+                      isOwner: project.owner == user.userId,
+                      handler: () => Navigator.of(context).pushNamed(
+                        ProfileScreen.routeName,
+                        arguments: {
+                          "user": user.userId,
+                          "projects": <Project>[],
+                        },
+                      ),
+                    );
+                  }
+                  if (snapshot.hasError) print(snapshot.error);
+                  return const LoadingSpinner();
+                });
           },
         ),
       ],

@@ -8,12 +8,14 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/models/comment.dart';
 import 'package:project/models/project.dart';
 import 'package:project/models/task.dart';
+import 'package:project/models/user.dart';
 import 'package:project/providers/auth_provider.dart';
 import 'package:project/providers/comment_image_provider.dart';
 import 'package:project/providers/comment_provider.dart';
 import 'package:project/providers/project_provider.dart';
 import 'package:project/providers/settings_provider.dart';
 import 'package:project/providers/task_provider.dart';
+import 'package:project/providers/user_provider.dart';
 import 'package:project/screens/profile_screen.dart';
 import 'package:project/styles/theme.dart';
 import 'package:project/widgets/appbar_button.dart';
@@ -206,15 +208,24 @@ class _OverviewTabView extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               ...task.assigned.map(
-                (e) => UserListItem(
-                  user: e,
-                  handler: () => Navigator.of(context).pushNamed(
-                    ProfileScreen.routeName,
-                    arguments: {
-                      "user": e.userId,
-                      "projects": <Project>[],
-                    },
-                  ),
+                (e) => StreamBuilder<User?>(
+                  stream: ref.watch(userProvider).getUser(e),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      User user = snapshot.data!;
+                      return UserListItem(
+                        user: user,
+                        handler: () => Navigator.of(context).pushNamed(
+                          ProfileScreen.routeName,
+                          arguments: {
+                            "user": e,
+                            "projects": <Project>[],
+                          },
+                        ),
+                      );
+                    }
+                    return const LoadingSpinner();
+                  },
                 ),
               ),
             ],
@@ -420,11 +431,9 @@ class _TaskPopUpMenu extends ConsumerWidget {
 
   /// Navigates to screen for editing tasks.
   void editTask(WidgetRef ref, BuildContext context) {
-    ref.read(currentProjectProvider.notifier).setProject(
-          ref.watch(projectProvider).getProject(
-                task.projectId,
-              ),
-        );
+    ref
+        .read(currentTaskProvider.notifier)
+        .setTask(ref.watch(taskProvider).getTask(task.projectId, task.taskId));
     ref
         .read(currentProjectProvider.notifier)
         .setProject(ref.watch(projectProvider).getProject(task.projectId));
@@ -510,7 +519,7 @@ class _TaskPopUpMenu extends ConsumerWidget {
             ref.read(currentProjectProvider.notifier).setProject(
                 ref.read(projectProvider).getProject(task.projectId));
 
-            ref.read(taskProvider).deleteTask(task.taskId);
+            ref.read(taskProvider).deleteTask(task.projectId, task.taskId);
           },
           child: Text(
             "yes",

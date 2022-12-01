@@ -4,8 +4,10 @@ import 'package:jiffy/jiffy.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/providers/project_provider.dart';
 import 'package:project/providers/task_provider.dart';
+import 'package:project/providers/user_provider.dart';
 import 'package:project/screens/collaborators_screen.dart';
 import 'package:project/screens/tags_screen.dart';
+import 'package:project/widgets/loading_spinner.dart';
 import 'package:project/widgets/tag_widget.dart';
 
 import '../models/project.dart';
@@ -37,7 +39,7 @@ class ConfigureTaskScreen extends ConsumerWidget {
     Task task = existingTask ?? Task();
 
     void saveTask() {
-      ref.read(taskProvider).saveTask(task);
+      ref.read(taskProvider).saveTask(task.projectId, task);
 
       Navigator.of(context).pop();
     }
@@ -374,11 +376,50 @@ class _AssigneesListState extends ConsumerState<_AssigneesList> {
           padding: EdgeInsets.zero,
           shrinkWrap: true,
           itemCount: widget.task.assigned.length,
-          itemBuilder: (context, index) => UserListItem(
-            user: widget.task.assigned[index],
-            handler: () {},
-            size: UserListItemSize.small,
-          ),
+          itemBuilder: (context, index) => StreamBuilder<User?>(
+              stream:
+                  ref.watch(userProvider).getUser(widget.task.assigned[index]),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  User user = snapshot.data!;
+                  return UserListItem(
+                    user: user,
+                    handler: () {},
+                    size: UserListItemSize.small,
+                    widget: PopupMenuButton(
+                      padding: EdgeInsets.zero,
+                      onSelected: (value) {
+                        switch (value) {
+                          case 1:
+                            widget.task.assigned.remove(user.userId);
+                            ref
+                                .read(taskProvider)
+                                .saveTask(widget.task.projectId, widget.task);
+                            setState(() {});
+                            break;
+                          default:
+                        }
+                      },
+                      icon: Icon(
+                        PhosphorIcons.dotsThreeVerticalBold,
+                        color: Themes.textColor(ref),
+                      ),
+                      itemBuilder: (context) => [
+                        PopupMenuItem(
+                          height: 40,
+                          value: 1,
+                          child: Text(
+                            "remove assignee",
+                            style:
+                                TextStyle(color: Theme.of(context).errorColor),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+                return const LoadingSpinner();
+              }),
         ),
         addAssigneeButton(context, ref, widget.task)
       ],
@@ -389,14 +430,18 @@ class _AssigneesListState extends ConsumerState<_AssigneesList> {
   TextButton addAssigneeButton(BuildContext context, WidgetRef ref, Task task) {
     return TextButton(
       style: ButtonStyle(padding: MaterialStateProperty.all(EdgeInsets.zero)),
-      onPressed: () => Navigator.of(context).pushNamed(
-        CollaboratorsScreen.routeName,
-        arguments: [
-          task.assigned,
-          CollaboratorsSearchType.assignees,
-          task.projectId,
-        ],
-      ).then((value) => setState(() {})),
+      onPressed: () {
+        ref.read(currentTaskProvider.notifier).setTask(
+            ref.watch(taskProvider).getTask(task.projectId, task.taskId));
+        Navigator.of(context).pushNamed(
+          CollaboratorsScreen.routeName,
+          arguments: [
+            task.assigned,
+            CollaboratorsSearchType.assignees,
+            task.projectId,
+          ],
+        ).then((value) => setState(() {}));
+      },
       child: Row(
         children: <Widget>[
           CircleAvatar(
