@@ -17,12 +17,14 @@ class UserListItem extends ConsumerWidget {
   final User user;
   final bool isOwner;
   final UserListItemSize size;
+  final Widget? widget;
 
   const UserListItem({
     super.key,
     required this.user,
     this.isOwner = false,
     this.size = UserListItemSize.large,
+    this.widget,
     required this.handler,
   });
 
@@ -31,32 +33,38 @@ class UserListItem extends ConsumerWidget {
     return GestureDetector(
       onTap: handler,
       child: Padding(
-        padding: const EdgeInsets.symmetric(
-          vertical: 4.0,
+        padding: EdgeInsets.symmetric(
+          vertical: widget != null ? 0.0 : 4.0,
           horizontal: 0.0,
         ),
         child: Row(
-          children: <Widget>[
-            CircleAvatar(
-              radius: size == UserListItemSize.large ? 20 : 15,
-              backgroundImage: NetworkImage(user.imageUrl!),
-            ),
-            const SizedBox(width: 8.0),
-            Text(
-              user.username,
-              style: size == UserListItemSize.large
-                  ? const TextStyle(fontSize: 13)
-                  : const TextStyle(fontSize: 12),
-            ),
-            Visibility(
-              visible: isOwner,
-              child: const Text(
-                " - owner",
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Row(
+              children: <Widget>[
+                CircleAvatar(
+                  radius: size == UserListItemSize.large ? 20 : 15,
+                  backgroundImage: NetworkImage(user.imageUrl!),
                 ),
-              ),
-            )
+                const SizedBox(width: 8.0),
+                Text(
+                  user.username,
+                  style: size == UserListItemSize.large
+                      ? const TextStyle(fontSize: 13)
+                      : const TextStyle(fontSize: 12),
+                ),
+                Visibility(
+                  visible: isOwner,
+                  child: const Text(
+                    " - owner",
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                )
+              ],
+            ),
+            if (widget != null) widget!,
           ],
         ),
       ),
