@@ -28,52 +28,67 @@ class CollaboratorsScreen extends ConsumerStatefulWidget {
 }
 
 class _CollaboratorsScreenState extends ConsumerState<CollaboratorsScreen> {
+  /// Textediting controller for the search field.
   final TextEditingController _searchController = TextEditingController();
+
+  /// List of collaborators or assignees to add the selected user to.
+  late List<String?> users;
+
+  /// The searchtype for the screen, whether to browse all users or just
+  /// users in a project.
+  late CollaboratorsSearchType? searchType;
+
+  /// The project id of the project to add collaborators too.
+  late String projectId;
+
+  /// Filters through the listt of all users and only leaves users that is
+  /// not already currently in a collaborator or assignee list.
+  List<User?> _filterCollaborators(List<User?>? allUsers) {
+    return allUsers!
+        .where((element) => !users.contains(element!.userId))
+        .toList();
+  }
+
+  /// Returns list of collaborators in a project, removes users which are assigned
+  /// to the current task.
+  Stream<List<User>> _getCollaborators() {
+    return ref.watch(projectProvider).getProject(projectId).first.then((value) {
+      List<User> collaborators = [];
+
+      for (var userId in value!.collaborators) {
+        ref.watch(userProvider).getUser(userId).first.then((user) {
+          collaborators.add(user!);
+        });
+      }
+      return collaborators;
+    }).asStream();
+  }
+
+  /// Returns the appropriate [Stream<List<User>>] depending on the
+  /// [searchType].
+  Stream<List<User?>> _getStream() {
+    return searchType == CollaboratorsSearchType.collaborators
+        ? ref.watch(userProvider).searchUsers(_searchController.text)
+        : _getCollaborators();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    users = (ModalRoute.of(context)!.settings.arguments as List)[0]
+        as List<String?>;
+    searchType = (ModalRoute.of(context)!.settings.arguments as List)[1] ??
+        CollaboratorsSearchType.collaborators;
+    projectId = (ModalRoute.of(context)!.settings.arguments as List)[2];
+    super.didChangeDependencies();
+  }
 
   @override
   Widget build(BuildContext context) {
-    /// List of collaborators or assigneed to add the selected user to.
-    final List<String?> users = (ModalRoute.of(context)!.settings.arguments
-        as List)[0] as List<String?>;
-
-    /// The searchtype for the screen, whether to browse all users or just
-    /// users in a project.
-    final CollaboratorsSearchType? searchType =
-        (ModalRoute.of(context)!.settings.arguments as List)[1] ??
-            CollaboratorsSearchType.collaborators;
-
-    /// The project id of the project to add collaborators too.
-    final String projectId =
-        (ModalRoute.of(context)!.settings.arguments as List)[2];
-
-    /// Gets list of collaborators in a project, used for when
-    /// picking an assignee as options should only be a collaborator.
-    Stream<List<User>> getCollaborators() {
-      return ref
-          .watch(projectProvider)
-          .getProject(projectId)
-          .first
-          .then((value) {
-        List<User> users = [];
-        for (var userId in value!.collaborators) {
-          ref
-              .watch(userProvider)
-              .getUser(userId)
-              .first
-              .then((value) => users.add(value!));
-        }
-        return users;
-      }).asStream();
-    }
-
-    /// Returns the appropriate [Stream<List<User>>] depending on the
-    /// [searchType].
-    Stream<List<User?>> getStream() {
-      return searchType == CollaboratorsSearchType.collaborators
-          ? ref.watch(userProvider).searchUsers(_searchController.text)
-          : getCollaborators();
-    }
-
     return Scaffold(
       appBar: AppBar(
         title: _appBarTitle(searchType),
@@ -82,7 +97,7 @@ class _CollaboratorsScreenState extends ConsumerState<CollaboratorsScreen> {
       body: Column(
         children: <Widget>[
           _searchBar(searchType),
-          _usersList(searchType, getStream, users)
+          _usersList(searchType, _getStream, users)
         ],
       ),
     );
@@ -97,19 +112,13 @@ class _CollaboratorsScreenState extends ConsumerState<CollaboratorsScreen> {
       stream: getStream(),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          for (String? userId in users) {
-            snapshot.data!.map((User? e) {
-              if (e!.userId == userId) {
-                snapshot.data!.remove(e);
-              }
-            });
-          }
+          List<User?> collaborators = _filterCollaborators(snapshot.data);
 
           return Expanded(
             child: ListView.builder(
-              itemCount: snapshot.data!.length,
+              itemCount: collaborators.length,
               itemBuilder: (context, index) {
-                User user = snapshot.data![index]!;
+                User user = collaborators[index]!;
                 return _collaboratorsListItem(user, users, context);
               },
             ),
@@ -124,12 +133,7 @@ class _CollaboratorsScreenState extends ConsumerState<CollaboratorsScreen> {
   Padding _collaboratorsListItem(
       User user, List<String?> users, BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.fromLTRB(
-        16.0,
-        0.0,
-        16.0,
-        0.0,
-      ),
+      padding: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 0.0),
       child: UserListItem(
         user: user,
         handler: () {

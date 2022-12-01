@@ -386,6 +386,36 @@ class _AssigneesListState extends ConsumerState<_AssigneesList> {
                     user: user,
                     handler: () {},
                     size: UserListItemSize.small,
+                    widget: PopupMenuButton(
+                      padding: EdgeInsets.zero,
+                      onSelected: (value) {
+                        switch (value) {
+                          case 1:
+                            widget.task.assigned.remove(user.userId);
+                            ref
+                                .read(taskProvider)
+                                .saveTask(widget.task.projectId, widget.task);
+                            setState(() {});
+                            break;
+                          default:
+                        }
+                      },
+                      icon: Icon(
+                        PhosphorIcons.dotsThreeVerticalBold,
+                        color: Themes.textColor(ref),
+                      ),
+                      itemBuilder: (context) => [
+                        PopupMenuItem(
+                          height: 40,
+                          value: 1,
+                          child: Text(
+                            "remove assignee",
+                            style:
+                                TextStyle(color: Theme.of(context).errorColor),
+                          ),
+                        ),
+                      ],
+                    ),
                   );
                 }
                 return const LoadingSpinner();
@@ -400,14 +430,18 @@ class _AssigneesListState extends ConsumerState<_AssigneesList> {
   TextButton addAssigneeButton(BuildContext context, WidgetRef ref, Task task) {
     return TextButton(
       style: ButtonStyle(padding: MaterialStateProperty.all(EdgeInsets.zero)),
-      onPressed: () => Navigator.of(context).pushNamed(
-        CollaboratorsScreen.routeName,
-        arguments: [
-          task.assigned,
-          CollaboratorsSearchType.assignees,
-          task.projectId,
-        ],
-      ).then((value) => setState(() {})),
+      onPressed: () {
+        ref.read(currentTaskProvider.notifier).setTask(
+            ref.watch(taskProvider).getTask(task.projectId, task.taskId));
+        Navigator.of(context).pushNamed(
+          CollaboratorsScreen.routeName,
+          arguments: [
+            task.assigned,
+            CollaboratorsSearchType.assignees,
+            task.projectId,
+          ],
+        ).then((value) => setState(() {}));
+      },
       child: Row(
         children: <Widget>[
           CircleAvatar(

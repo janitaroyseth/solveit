@@ -233,7 +233,10 @@ class _TagsScreenState extends ConsumerState<TagsScreen> {
           default:
         }
       },
-      icon: const Icon(PhosphorIcons.dotsThreeVerticalBold),
+      icon: Icon(
+        PhosphorIcons.dotsThreeVerticalBold,
+        color: Themes.textColor(ref),
+      ),
       itemBuilder: (context) => [
         const PopupMenuItem(
           height: 40,

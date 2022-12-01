@@ -431,11 +431,9 @@ class _TaskPopUpMenu extends ConsumerWidget {
 
   /// Navigates to screen for editing tasks.
   void editTask(WidgetRef ref, BuildContext context) {
-    ref.read(currentProjectProvider.notifier).setProject(
-          ref.watch(projectProvider).getProject(
-                task.projectId,
-              ),
-        );
+    ref
+        .read(currentTaskProvider.notifier)
+        .setTask(ref.watch(taskProvider).getTask(task.projectId, task.taskId));
     ref
         .read(currentProjectProvider.notifier)
         .setProject(ref.watch(projectProvider).getProject(task.projectId));
