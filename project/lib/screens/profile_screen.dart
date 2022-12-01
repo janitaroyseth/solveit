@@ -12,45 +12,45 @@ import 'package:project/styles/curve_clipper.dart';
 import 'package:project/styles/theme.dart';
 import 'package:project/screens/user_settings_screen.dart';
 import 'package:project/widgets/appbar_button.dart';
+import 'package:project/widgets/loading_spinner.dart';
 import 'package:project/widgets/modal_list_item.dart';
+import 'package:project/widgets/project_card.dart';
 
-import '../widgets/project_card.dart';
+enum _ProfileScreenView {
+  current,
+  other,
+}
 
 /// Screen/Scaffold for the profile of the user.
 class ProfileScreen extends ConsumerWidget {
+  /// Named route for this screen.
   static const routeName = "/user";
+
+  /// Creates an instance of [ProfileScreen].
   const ProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final Stream<User?> user = ref
-        .watch(userProvider)
-        .getUser(ref.watch(authProvider).currentUser!.uid);
+    String? userId = ModalRoute.of(context)!.settings.arguments as String?;
+    _ProfileScreenView? userType;
+
+    /// Returns a [Stream] of a [User].
+    Stream<User?> getUserStream() {
+      if (userId == null ||
+          userId == ref.watch(authProvider).currentUser!.uid) {
+        userType = _ProfileScreenView.current;
+        userId = ref.watch(authProvider).currentUser!.uid;
+        return ref.watch(userProvider).getUser(userId!);
+      }
+      userType = _ProfileScreenView.other;
+      return ref.watch(userProvider).getUser(userId!);
+    }
 
     return Scaffold(
       appBar: AppBar(
-        centerTitle: true,
-        elevation: 0,
         foregroundColor: Colors.white,
         backgroundColor: Themes.primaryColor,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              "solve",
-              style: Theme.of(context).appBarTheme.titleTextStyle!.copyWith(
-                    color: Colors.white,
-                  ),
-            ),
-            Text(
-              "it",
-              style: Theme.of(context).appBarTheme.titleTextStyle!.copyWith(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w600,
-                  ),
-            )
-          ],
-        ),
+        title: appBarTitle(ref),
         actions: [profileMenuButton(context, ref)],
       ),
       body: Column(
@@ -69,112 +69,71 @@ class ProfileScreen extends ConsumerWidget {
                   bottom: 16.0,
                 ),
                 child: StreamBuilder<User?>(
-                  stream: user,
+                  stream: getUserStream(),
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
                       return Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
-                          CircleAvatar(
-                            radius: MediaQuery.of(context).size.width / 6,
-                            backgroundImage:
-                                NetworkImage(snapshot.data!.imageUrl!),
-                          ),
+                          _profilePicture(context, snapshot),
                           const SizedBox(width: 16.0),
-                          Expanded(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Text(
-                                  snapshot.data!.username,
-                                  style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600),
-                                ),
-                                const SizedBox(height: 4.0),
-                                Flexible(
-                                  child: Text(
-                                    snapshot.data!.bio,
-                                    overflow: TextOverflow.clip,
-                                    style: const TextStyle(
-                                      overflow: TextOverflow.clip,
-                                      color: Colors.white,
-                                      fontSize: 14,
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 36.0),
-                                Row(
-                                  children: const <Widget>[
-                                    Text(
-                                      "3 ",
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w700,
-                                        fontSize: 12,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                    Text(
-                                      "projects",
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                    SizedBox(width: 8.0),
-                                    Text(
-                                      "3 ",
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w700,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                    Text(
-                                      "friends",
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                    SizedBox(width: 8.0),
-                                    Text(
-                                      "3 ",
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w700,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                    Text(
-                                      "stars",
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ],
-                                )
-                              ],
-                            ),
-                          ),
+                          _profileInfo(snapshot),
                         ],
                       );
                     }
+                    if (snapshot.hasError) print(snapshot.error);
                     return const SizedBox();
                   },
                 ),
               ),
             ),
           ),
-          _ProfileProjectList(),
+          _ProfileProjectList(userId!, userType!),
         ],
       ),
     );
   }
 
+  /// Returns a [Column] displaying the users username and bio.
+  Widget _profileInfo(AsyncSnapshot<User?> snapshot) {
+    return Expanded(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          Text(
+            snapshot.data!.username,
+            style: const TextStyle(
+                color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
+          ),
+          const SizedBox(height: 4.0),
+          Flexible(
+            child: Text(
+              snapshot.data!.bio,
+              overflow: TextOverflow.clip,
+              style: const TextStyle(
+                overflow: TextOverflow.clip,
+                color: Colors.white,
+                fontSize: 14,
+              ),
+            ),
+          ),
+          const SizedBox(height: 36.0),
+        ],
+      ),
+    );
+  }
+
+  /// Returns a [CircleAvatar] displaying the users profile picture
+  CircleAvatar _profilePicture(
+      BuildContext context, AsyncSnapshot<User?> snapshot) {
+    return CircleAvatar(
+      radius: MediaQuery.of(context).size.width / 6,
+      backgroundImage: NetworkImage(snapshot.data!.imageUrl!),
+    );
+  }
+
+  /// Returns a [AppBarButton] for opening menu for the user.
   AppBarButton profileMenuButton(BuildContext context, WidgetRef ref) {
     return AppBarButton(
       handler: () => showModalBottomSheet(
@@ -221,6 +180,7 @@ class ProfileScreen extends ConsumerWidget {
                   icon: PhosphorIcons.gearSixLight,
                   label: "settings",
                   handler: () {
+                    Navigator.of(context).pop();
                     Navigator.of(context).pushNamed(
                       UserSettingsScreen.routeName,
                     );
@@ -252,13 +212,14 @@ class ProfileScreen extends ConsumerWidget {
           ),
         ),
       ),
-      tooltip: "Settings",
+      tooltip: "User menu",
       icon: PhosphorIcons.list,
       color: Colors.white,
     );
   }
 
-  Row appBarTitle() {
+  /// Returns two texts in a row displaying the solveit title.
+  Row appBarTitle(WidgetRef ref) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: const <Widget>[
@@ -267,6 +228,7 @@ class ProfileScreen extends ConsumerWidget {
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w300,
+            color: Colors.white,
           ),
         ),
         Text(
@@ -274,6 +236,7 @@ class ProfileScreen extends ConsumerWidget {
           style: TextStyle(
             fontWeight: FontWeight.w600,
             fontSize: 18,
+            color: Colors.white,
           ),
         )
       ],
@@ -287,8 +250,19 @@ class ProfileScreen extends ConsumerWidget {
   }
 }
 
+/// Displays the projects of a user.
 class _ProfileProjectList extends ConsumerStatefulWidget {
-  const _ProfileProjectList();
+  /// The id of the user to display projects for.
+  final String userId;
+
+  /// The type of view the profile screen is in.
+  final _ProfileScreenView userType;
+
+  /// Creates an instance of [_ProfileProjectList].
+  const _ProfileProjectList(
+    this.userId,
+    this.userType,
+  );
 
   @override
   ConsumerState<_ProfileProjectList> createState() =>
@@ -296,13 +270,25 @@ class _ProfileProjectList extends ConsumerStatefulWidget {
 }
 
 class _ProfileProjectListState extends ConsumerState<_ProfileProjectList> {
-  String projects = "projects";
-  String starred = "starred";
+  String owner = "owner";
+  String collaborator = "collaborator";
   late String isSelected;
   @override
   void initState() {
-    isSelected = projects;
+    isSelected = owner;
     super.initState();
+  }
+
+  /// Returs a [Stream] of projects depending on the value of [isSelected].
+  Stream<List<Project>> getProjectStream() {
+    if (isSelected == owner) {
+      return ref
+          .watch(projectProvider)
+          .getProjectsByUserIdAsOwner(widget.userId);
+    }
+    return ref
+        .watch(projectProvider)
+        .getProjectsByUserIdAsCollaborator(widget.userId);
   }
 
   @override
@@ -310,84 +296,99 @@ class _ProfileProjectListState extends ConsumerState<_ProfileProjectList> {
     return Expanded(
       child: Column(
         children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.only(left: 16.0),
-            child: Row(
-              children: <Widget>[
-                isSelected == projects
-                    ? ElevatedButton(
-                        onPressed: () {
-                          setState(() {
-                            isSelected = projects;
-                          });
-                        },
-                        style: Themes.softPrimaryElevatedButtonStyle,
-                        child: Text(projects),
-                      )
-                    : TextButton(
-                        style: Themes.textButtonStyle(ref),
-                        onPressed: () {
-                          setState(() {
-                            isSelected = projects;
-                          });
-                        },
-                        child: Text(projects),
-                      ),
-                const SizedBox(width: 4.0),
-                isSelected == starred
-                    ? ElevatedButton(
-                        onPressed: () {
-                          setState(() {
-                            isSelected = starred;
-                          });
-                        },
-                        style: Themes.softPrimaryElevatedButtonStyle,
-                        child: Text(starred),
-                      )
-                    : TextButton(
-                        style: Themes.textButtonStyle(ref),
-                        onPressed: () {
-                          setState(() {
-                            isSelected = starred;
-                          });
-                        },
-                        child: Text(starred),
-                      ),
-              ],
-            ),
-          ),
+          _projectsTabBar(),
           Expanded(
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: StreamBuilder<List<Project>?>(
-                stream: ref.watch(projectProvider).getProjectsByUserIdAsOwner(
-                      ref.watch(authProvider).currentUser!.uid,
-                    ),
+                stream: getProjectStream(),
                 builder: (context, snapshot) {
                   if (snapshot.hasData) {
                     List<Project> projects = snapshot.data!;
-                    return GridView.builder(
-                      gridDelegate:
-                          const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        mainAxisExtent: 120,
-                        crossAxisSpacing: 16,
-                        mainAxisSpacing: 16,
-                      ),
-                      itemCount: projects.length,
-                      itemBuilder: (context, index) => ProjectCard(
-                          project: projects[index],
-                          handler: () => Navigator.of(context).pushNamed(
-                              ProjectPreviewScreen.routeName,
-                              arguments: projects[index])),
-                    );
+                    return _projectsList(projects);
                   }
                   if (snapshot.hasError) print(snapshot.error);
-                  return const Center(child: CircularProgressIndicator());
+                  return const LoadingSpinner();
                 },
               ),
             ),
           ),
+        ],
+      ),
+    );
+  }
+
+  /// Returns a [GridView] displaying the given [projects].
+  GridView _projectsList(List<Project> projects) {
+    return GridView.builder(
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        mainAxisExtent: 120,
+        crossAxisSpacing: 16,
+        mainAxisSpacing: 16,
+      ),
+      itemCount: projects.length,
+      itemBuilder: (context, index) => _projectCard(projects[index], context),
+    );
+  }
+
+  /// Returns a projectcard for the given [project].
+  ProjectCard _projectCard(Project project, BuildContext context) {
+    return ProjectCard(
+        project: project,
+        handler: () {
+          ref.read(currentProjectProvider.notifier).setProject(
+              ref.watch(projectProvider).getProject(project.projectId));
+          Navigator.of(context)
+              .pushNamed(ProjectPreviewScreen.routeName, arguments: project);
+        });
+  }
+
+  /// Returns bottoms in a row to decide which projects to display in the list.
+  Padding _projectsTabBar() {
+    return Padding(
+      padding: const EdgeInsets.only(left: 16.0),
+      child: Row(
+        children: <Widget>[
+          isSelected == owner
+              ? ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      isSelected = owner;
+                    });
+                  },
+                  style: Themes.softPrimaryElevatedButtonStyle,
+                  child: Text(owner),
+                )
+              : TextButton(
+                  style: Themes.textButtonStyle(ref),
+                  onPressed: () {
+                    setState(() {
+                      isSelected = owner;
+                    });
+                  },
+                  child: Text(owner),
+                ),
+          const SizedBox(width: 4.0),
+          isSelected == collaborator
+              ? ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      isSelected = collaborator;
+                    });
+                  },
+                  style: Themes.softPrimaryElevatedButtonStyle,
+                  child: Text(collaborator),
+                )
+              : TextButton(
+                  style: Themes.textButtonStyle(ref),
+                  onPressed: () {
+                    setState(() {
+                      isSelected = collaborator;
+                    });
+                  },
+                  child: Text(collaborator),
+                ),
         ],
       ),
     );

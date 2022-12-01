@@ -62,27 +62,44 @@ class FirebaseProjectService implements ProjectService {
 
   @override
   Stream<List<Project>> getProjectsByUserIdAsCollaborator(String userId) {
-    return projectCollection
-        .where("collaborators", arrayContains: Auth().currentUser!.uid)
-        .snapshots()
-        .map((event) => event.docs)
-        .map((event) => Project.fromMaps(event).where((element) {
-              for (var user in element.collaborators) {
-                if (user == userId) {
-                  return true;
-                }
-              }
-              return false;
-            }).toList());
+    if (Auth().currentUser!.uid == userId) {
+      return projectCollection
+          .where("collaborators", arrayContains: Auth().currentUser!.uid)
+          .snapshots()
+          .map((event) => event.docs)
+          .map((event) => Project.fromMaps(event));
+    } else {
+      return projectCollection
+          .where("isPublic", isEqualTo: true)
+          .snapshots()
+          .map((snapshot) => snapshot.docs)
+          .map((lists) {
+        return Project.fromMaps(lists)
+            .where((project) => project.collaborators.contains(userId))
+            .toList();
+      });
+    }
   }
 
   @override
   Stream<List<Project>> getProjectsByUserIdAsOwner(String userId) {
-    return projectCollection
-        .where("owner", isEqualTo: userId)
-        .snapshots()
-        .map((event) => event.docs)
-        .map((event) => Project.fromMaps(event));
+    if (Auth().currentUser!.uid == userId) {
+      return projectCollection
+          .where("owner", isEqualTo: userId)
+          .snapshots()
+          .map((event) => event.docs)
+          .map((event) => Project.fromMaps(event));
+    } else {
+      return projectCollection
+          .where("isPublic", isEqualTo: true)
+          .snapshots()
+          .map((snapshot) => snapshot.docs)
+          .map((lists) {
+        return Project.fromMaps(lists)
+            .where((project) => project.owner == userId)
+            .toList();
+      });
+    }
   }
 
   @override
