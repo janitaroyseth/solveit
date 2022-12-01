@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:project/firebase_options.dart';
 import 'package:project/providers/settings_provider.dart';
 import 'package:project/providers/user_provider.dart';
+import 'package:project/screens/chat_screen.dart';
 import 'package:project/screens/collaborators_screen.dart';
 import 'package:project/screens/create_profile_screen.dart';
 import 'package:project/screens/edit_profile_screen.dart';
@@ -87,6 +88,7 @@ class MyApp extends StatelessWidget {
               const CollaboratorsScreen(),
           TagsScreen.routeName: (context) => const TagsScreen(),
           EditTagScreen.routeName: (context) => const EditTagScreen(),
+          ChatScreen.routeName: (context) => ChatScreen(),
         },
       ),
     );

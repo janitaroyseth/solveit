@@ -39,7 +39,7 @@ class _CollaboratorsScreenState extends ConsumerState<CollaboratorsScreen> {
   late CollaboratorsSearchType? searchType;
 
   /// The project id of the project to add collaborators too.
-  late String projectId;
+  late String? projectId;
 
   /// Filters through the listt of all users and only leaves users that is
   /// not already currently in a collaborator or assignee list.
@@ -52,7 +52,11 @@ class _CollaboratorsScreenState extends ConsumerState<CollaboratorsScreen> {
   /// Returns list of collaborators in a project, removes users which are assigned
   /// to the current task.
   Stream<List<User>> _getCollaborators() {
-    return ref.watch(projectProvider).getProject(projectId).first.then((value) {
+    return ref
+        .watch(projectProvider)
+        .getProject(projectId!)
+        .first
+        .then((value) {
       List<User> collaborators = [];
 
       for (var userId in value!.collaborators) {
