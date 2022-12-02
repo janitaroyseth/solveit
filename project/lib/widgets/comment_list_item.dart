@@ -4,6 +4,7 @@ import 'package:project/models/message.dart';
 import 'package:project/providers/auth_provider.dart';
 import 'package:project/providers/comment_image_provider.dart';
 import 'package:project/providers/comment_provider.dart';
+import 'package:project/providers/task_provider.dart';
 import 'package:project/providers/user_provider.dart';
 import 'package:project/styles/theme.dart';
 import 'package:project/utilities/date_formatting.dart';
@@ -94,14 +95,16 @@ class CommentListItem extends StatelessWidget {
                   .read(commentImageProvider)
                   .deleteCommentImage(
                       comment.otherId, (comment as ImageMessage).imageUrl)
-                  .then((value) => ref
-                      .read(commentProvider)
-                      .deleteComment(comment.messageId))
+                  .then((value) => ref.read(commentProvider).deleteComment(
+                      ref.read(editTaskProvider)!.projectId,
+                      ref.read(editTaskProvider)!.taskId,
+                      comment.messageId))
                   .then((value) => Navigator.of(context).pop());
             } else {
               ref
                   .read(commentProvider)
-                  .deleteComment(comment.messageId)
+                  .deleteComment(ref.read(editTaskProvider)!.projectId,
+                      ref.read(editTaskProvider)!.taskId, comment.messageId)
                   .then((value) => Navigator.of(context).pop());
             }
           },

@@ -4,6 +4,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/models/project.dart';
 import 'package:project/models/tag.dart';
 import 'package:project/models/task.dart';
+import 'package:project/providers/project_provider.dart';
 import 'package:project/providers/tag_provider.dart';
 import 'package:project/providers/task_provider.dart';
 import 'package:project/screens/edit_tag_screen.dart';
@@ -36,8 +37,8 @@ class _TagsScreenState extends ConsumerState<TagsScreen> {
 
   @override
   void didChangeDependencies() {
-    project = (ModalRoute.of(context)!.settings.arguments as List)[0]!;
-    task = (ModalRoute.of(context)!.settings.arguments as List)[1]!;
+    project = ref.read(editProjectProvider)!;
+    task = ref.read(editTaskProvider)!;
 
     tags = project.tags;
     items.clear();
@@ -85,7 +86,7 @@ class _TagsScreenState extends ConsumerState<TagsScreen> {
     );
   }
 
-  /// Returns a list of tags which are connected to the curren task.
+  /// Returns a list of tags which are connected to the current task.
   /// If no tags are connected on current task, the list is not visible.
   Visibility _selectedTagsList(BuildContext context) {
     return Visibility(
@@ -133,9 +134,10 @@ class _TagsScreenState extends ConsumerState<TagsScreen> {
             if (!task.tags.contains(items[index])) {
               task.tags.add(items[index]);
             }
-            ref.read(taskProvider).saveTask(task.projectId, task).then(
-                  (value) => Navigator.of(context).pop(),
-                );
+            Navigator.of(context).pop();
+            // ref.read(taskProvider).saveTask(task.projectId, task).then(
+            //       (value) => Navigator.of(context).pop(),
+            //     );
           },
         ),
       ),
@@ -160,7 +162,9 @@ class _TagsScreenState extends ConsumerState<TagsScreen> {
           (value) => setState(
             () {
               items.clear();
-              items.addAll(project.tags
+              items.addAll(ref
+                  .read(editProjectProvider)!
+                  .tags
                   .where((element) => !task.tags.contains(element)));
             },
           ),

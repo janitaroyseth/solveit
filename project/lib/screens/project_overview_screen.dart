@@ -91,6 +91,9 @@ class ProjectOverviewScreenState extends ConsumerState<ProjectOverviewScreen> {
                                   .setProject(ref
                                       .watch(projectProvider)
                                       .getProject(projects[index].projectId)),
+                              ref
+                                  .read(editProjectProvider.notifier)
+                                  .setProject(projects[index]),
                               Navigator.of(context).pushNamed(
                                   TaskOverviewScreen.routeName,
                                   arguments: projects[index].projectId),
@@ -113,20 +116,22 @@ class ProjectOverviewScreenState extends ConsumerState<ProjectOverviewScreen> {
   }
 }
 
-class CreateProjectButton extends StatefulWidget {
+class CreateProjectButton extends ConsumerStatefulWidget {
   const CreateProjectButton({
     Key? key,
   }) : super(key: key);
 
   @override
-  State<CreateProjectButton> createState() => _CreateProjectButtonState();
+  ConsumerState<ConsumerStatefulWidget> createState() =>
+      _CreateProjectButtonState();
 }
 
-class _CreateProjectButtonState extends State<CreateProjectButton> {
+class _CreateProjectButtonState extends ConsumerState<CreateProjectButton> {
   @override
   Widget build(BuildContext context) {
     return AppBarButton(
       handler: () {
+        ref.read(editProjectProvider.notifier).setProject(null);
         Navigator.of(context).pushNamed(EditProjectScreen.routeName);
         setState(() {});
       },

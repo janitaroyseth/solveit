@@ -8,12 +8,12 @@ import 'package:project/services/tag_service.dart';
 
 abstract class TaskService {
   /// Adds a new task or updates an existing task.
-  Future<Task> saveTask(String projectId, Task task);
+  Future<Task> saveTask(Task task);
 
   /// Returns a single task by taskId.
   Stream<Task?> getTask(String projectId, String taskId);
 
-  /// Returns all tasks.
+  /// Returns all tasks in the project with given [projectId] and sorts them by the given variable in given direction.
   Stream<List<Task?>> getTasks(
     String projectId, {
     String field = "deadline",
@@ -39,12 +39,13 @@ class FirebaseTaskService extends TaskService {
   final tagService = FirebaseTagService();
 
   @override
-  Future<Task> saveTask(String projectId, Task task) async {
+  Future<Task> saveTask(Task task) async {
     if (task.taskId == "") {
-      task.taskId = (await (taskCollection(projectId).add(task.toMap()))).id;
-      await taskCollection(projectId).doc(task.taskId).set(task.toMap());
+      task.taskId =
+          (await (taskCollection(task.projectId).add(task.toMap()))).id;
+      await taskCollection(task.projectId).doc(task.taskId).set(task.toMap());
     } else {
-      await taskCollection(projectId).doc(task.taskId).set(task.toMap());
+      await taskCollection(task.projectId).doc(task.taskId).set(task.toMap());
     }
     Project? project =
         await FirebaseProjectService().getProject(task.projectId).first;
@@ -139,14 +140,7 @@ class FirebaseTaskService extends TaskService {
   }
 
   @override
-  void deleteTask(String projectId, String taskId) async {
-    Map<String, dynamic>? map =
-        (await taskCollection(projectId).doc(taskId).get()).data();
-    if (null != map) {
-      for (String commentId in map["comments"]) {
-        commentService.deleteComment(commentId);
-      }
-    }
-    taskCollection(projectId).doc(taskId).delete();
+  Future<void> deleteTask(String projectId, String taskId) async {
+    return taskCollection(projectId).doc(taskId).delete();
   }
 }

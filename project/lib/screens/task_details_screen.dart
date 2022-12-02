@@ -344,8 +344,9 @@ class _CommentTabViewState extends ConsumerState<_CommentTabView> {
         ),
         child: Consumer(
           builder: (context, ref, child) => StreamBuilder<List<Message?>>(
-              stream:
-                  ref.watch(commentProvider).getComments(widget.task.taskId),
+              stream: ref
+                  .watch(commentProvider)
+                  .getComments(widget.task.projectId, widget.task.taskId),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   List<Message?> comments = snapshot.data!;
@@ -385,6 +386,8 @@ class _CommentTabViewState extends ConsumerState<_CommentTabView> {
             ref
                 .read(commentProvider)
                 .saveComment(
+                  widget.task.projectId,
+                  widget.task.taskId,
                   TextMessage(
                     otherId: widget.task.taskId,
                     author: currentUserId,
@@ -398,6 +401,8 @@ class _CommentTabViewState extends ConsumerState<_CommentTabView> {
                 .read(commentImageProvider)
                 .addCommentImage(widget.task.taskId, content)
                 .then((value) => ref.read(commentProvider).saveComment(
+                      widget.task.projectId,
+                      widget.task.taskId,
                       ImageMessage(
                         otherId: widget.task.taskId,
                         author: currentUserId,
@@ -410,6 +415,8 @@ class _CommentTabViewState extends ConsumerState<_CommentTabView> {
             ref
                 .read(commentProvider)
                 .saveComment(
+                  widget.task.projectId,
+                  widget.task.taskId,
                   ImageMessage(
                     otherId: widget.task.taskId,
                     author: currentUserId,
@@ -473,12 +480,7 @@ class _TaskPopUpMenu extends ConsumerWidget {
 
   /// Navigates to screen for editing tasks.
   void editTask(WidgetRef ref, BuildContext context) {
-    ref
-        .read(currentTaskProvider.notifier)
-        .setTask(ref.watch(taskProvider).getTask(task.projectId, task.taskId));
-    ref
-        .read(currentProjectProvider.notifier)
-        .setProject(ref.watch(projectProvider).getProject(task.projectId));
+    ref.read(editTaskProvider.notifier).setTask(task);
     Navigator.of(context).pushNamed(
       ConfigureTaskScreen.routeName,
       arguments: task,
