@@ -22,6 +22,7 @@ class TaskListItem extends ConsumerWidget {
         const Divider(),
         InkWell(
           onTap: () {
+            ref.read(editTaskProvider.notifier).setTask(task);
             ref.read(currentTaskProvider.notifier).setTask(
                 ref.watch(taskProvider).getTask(task.projectId, task.taskId));
             Navigator.of(context).pushNamed(TaskDetailsScreen.routeName);

@@ -19,3 +19,16 @@ class CurrentProjectNotifier extends StateNotifier<Stream<Project?>> {
     state = project;
   }
 }
+
+final editProjectProvider =
+    StateNotifierProvider<EditProjectNotifier, Project?>((ref) {
+  return EditProjectNotifier();
+});
+
+class EditProjectNotifier extends StateNotifier<Project?> {
+  EditProjectNotifier() : super(null);
+
+  void setProject(Project? project) {
+    state = project;
+  }
+}

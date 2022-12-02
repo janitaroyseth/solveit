@@ -30,70 +30,66 @@ class ConfigureTaskScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final Task? existingTask =
-        (ModalRoute.of(context)?.settings.arguments as Task?);
+    Task? existingTask = ref.read(editTaskProvider);
 
     final _EditTaskMode mode =
         existingTask == null ? _EditTaskMode.create : _EditTaskMode.edit;
 
     Task task = existingTask ?? Task();
+    task.projectId = ref.read(editProjectProvider)!.projectId;
 
-    void saveTask() {
-      ref.read(taskProvider).saveTask(task.projectId, task);
-
-      Navigator.of(context).pop();
+    void saveTask() async {
+      ref.read(taskProvider).saveTask(task).then(
+            (value) => Navigator.of(context).pop(),
+          );
     }
 
-    return StreamBuilder<Project?>(
-      stream: ref.watch(currentProjectProvider),
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          Project project = snapshot.data!;
-          task.projectId = project.projectId;
-          return Scaffold(
-            appBar: AppBar(
-              title: Text(
-                mode == _EditTaskMode.create ? "create task" : "edit task",
-              ),
-              backgroundColor: Colors.transparent,
-              elevation: 0,
-              leading: AppBarButton(
-                handler: () => Navigator.of(context).pop(),
-                tooltip: "Go back",
-                icon: PhosphorIcons.caretLeftLight,
-                color: Colors.black,
-              ),
-              actions: [
-                AppBarButton(
-                  handler: saveTask,
-                  tooltip: "Save task",
-                  icon: PhosphorIcons.floppyDiskLight,
-                  color: Colors.black,
-                ),
-              ],
-            ),
-            body: SingleChildScrollView(
-              child: Padding(
-                  padding: const EdgeInsets.all(20),
-                  child: _TaskScreenBody(task, project)),
-            ),
-          );
-        }
-        return const Center(child: CircularProgressIndicator());
-      },
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          mode == _EditTaskMode.create ? "create task" : "edit task",
+        ),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: AppBarButton(
+          handler: () {
+            Navigator.of(context).pop();
+          },
+          tooltip: "Go back",
+          icon: PhosphorIcons.caretLeftLight,
+          color: Colors.black,
+        ),
+        actions: [
+          AppBarButton(
+            handler: saveTask,
+            tooltip: "Save task",
+            icon: PhosphorIcons.floppyDiskLight,
+            color: Colors.black,
+          ),
+        ],
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: _TaskScreenBody(task, ref.read(editProjectProvider)!)),
+      ),
     );
   }
+  //return const Center(child: CircularProgressIndicator());
 }
+//     );
+//   }
+// }
 
-class _TaskScreenBody extends StatefulWidget {
+class _TaskScreenBody extends ConsumerStatefulWidget {
   final Task task;
   final Project project;
   const _TaskScreenBody(this.task, this.project);
   @override
-  State<StatefulWidget> createState() => _TaskScreenBodyState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _TaskScreenBodyState();
 }
 
-class _TaskScreenBodyState extends State<_TaskScreenBody> {
+class _TaskScreenBodyState extends ConsumerState<_TaskScreenBody> {
   late Task task;
   final _formKey = GlobalKey<FormState>();
   bool isTagPickerShown = false;
@@ -193,15 +189,16 @@ class _TaskScreenBodyState extends State<_TaskScreenBody> {
         onTap: () {
           ref.read(currentProjectProvider.notifier).setProject(
               ref.watch(projectProvider).getProject(task.projectId));
-          ref
-              .watch(currentProjectProvider)
-              .first
-              .then((value) => Navigator.of(context)
-                  .pushNamed(TagsScreen.routeName, arguments: [value, task])
-                  .then(
-                    (value) => setState(() {}),
-                  )
-                  .whenComplete(() => setState(() {})));
+          ref.watch(currentProjectProvider).first.then((value) {
+            ref.read(editProjectProvider.notifier).setProject(value);
+            ref.read(editTaskProvider.notifier).setTask(task);
+            Navigator.of(context)
+                .pushNamed(TagsScreen.routeName, arguments: [value, task])
+                .then(
+                  (value) => setState(() {}),
+                )
+                .whenComplete(() => setState(() {}));
+          });
         },
         borderRadius: BorderRadius.circular(50),
         child: Padding(
@@ -392,9 +389,7 @@ class _AssigneesListState extends ConsumerState<_AssigneesList> {
                         switch (value) {
                           case 1:
                             widget.task.assigned.remove(user.userId);
-                            ref
-                                .read(taskProvider)
-                                .saveTask(widget.task.projectId, widget.task);
+                            ref.read(taskProvider).saveTask(widget.task);
                             setState(() {});
                             break;
                           default:
@@ -431,8 +426,7 @@ class _AssigneesListState extends ConsumerState<_AssigneesList> {
     return TextButton(
       style: ButtonStyle(padding: MaterialStateProperty.all(EdgeInsets.zero)),
       onPressed: () {
-        ref.read(currentTaskProvider.notifier).setTask(
-            ref.watch(taskProvider).getTask(task.projectId, task.taskId));
+        ref.read(editTaskProvider.notifier).setTask(task);
         Navigator.of(context).pushNamed(
           CollaboratorsScreen.routeName,
           arguments: [

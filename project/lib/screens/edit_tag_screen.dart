@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/models/project.dart';
 import 'package:project/models/tag.dart';
+import 'package:project/providers/project_provider.dart';
 import 'package:project/providers/tag_provider.dart';
 import 'package:project/styles/theme.dart';
 import 'package:project/utilities/color_utility.dart';
@@ -41,8 +42,7 @@ class _EditTagScreenState extends ConsumerState<EditTagScreen> {
   void didChangeDependencies() {
     existingTag =
         (ModalRoute.of(context)?.settings.arguments as List)[0] as Tag?;
-    project =
-        ((ModalRoute.of(context)?.settings.arguments as List)[1] as Project?)!;
+    project = ref.read(editProjectProvider)!;
     mode = existingTag == null ? _EditTagMode.create : _EditTagMode.edit;
     tag = existingTag ?? Tag();
     textController.text = tag.text;
@@ -51,25 +51,20 @@ class _EditTagScreenState extends ConsumerState<EditTagScreen> {
     super.didChangeDependencies();
   }
 
-  void saveTag(Tag tag, Project project) {
+  void saveTag() async {
     bool isValid = formKey.currentState!.validate();
 
     if (isValid && pickedColor != null && pickedColor != Colors.transparent) {
       tag.text = textController.text;
       tag.color = stringFromColor(pickedColor!);
-
-      ref.read(tagProvider).saveTag(
-            oldTag: existingTag,
-            tag: tag,
-            projectId: project.projectId,
-          );
-
-      // START: To immediately display changes
-      project.tags.remove(tag);
-      project.tags.add(tag);
-      // END: To immediatelydisplay changes
-
-      Navigator.of(context).pop();
+      ref
+          .read(tagProvider)
+          .saveTag(
+              tag: tag, projectId: ref.read(editProjectProvider)!.projectId)
+          .then((value) {
+        project.tags.add(value!);
+        Navigator.of(context).pop();
+      });
     } else {
       if (pickedColor == null) showColorError = true;
       setState(() {});
@@ -120,7 +115,7 @@ class _EditTagScreenState extends ConsumerState<EditTagScreen> {
   /// Button for saving the tag.
   AppBarButton _saveButton() {
     return AppBarButton(
-      handler: () => saveTag(tag, project),
+      handler: () => saveTag(),
       tooltip: "Save tag",
       icon: PhosphorIcons.floppyDiskLight,
     );

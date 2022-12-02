@@ -38,7 +38,7 @@ class _ToggleTaskStatusButtonState extends State<ToggleTaskStatusButton> {
         onChanged: (bool i) {
           setState(() {
             widget.task.done = i;
-            ref.read(taskProvider).saveTask(widget.task.projectId, widget.task);
+            ref.read(taskProvider).saveTask(widget.task);
             value = i;
           });
         },

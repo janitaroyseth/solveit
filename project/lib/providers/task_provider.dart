@@ -19,3 +19,15 @@ class CurrentTaskNotifier extends StateNotifier<Stream<Task?>> {
     state = task;
   }
 }
+
+final editTaskProvider = StateNotifierProvider<EditTaskNotifier, Task?>((ref) {
+  return EditTaskNotifier();
+});
+
+class EditTaskNotifier extends StateNotifier<Task?> {
+  EditTaskNotifier() : super(null);
+
+  void setTask(Task? task) {
+    state = task;
+  }
+}
