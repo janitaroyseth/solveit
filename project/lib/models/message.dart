@@ -1,3 +1,4 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:xor_cipher/xor_cipher.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -17,7 +18,7 @@ abstract class Message {
   // The date on which the message was made.
   DateTime date;
 
-  static String encryptionKey = "Group3";
+  static String encryptionKey = "${dotenv.env["MESSAGE_ENCRYPTION_KEY"]}";
 
   /// Creates an instce of [Message].
   Message({
