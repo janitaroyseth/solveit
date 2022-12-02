@@ -54,7 +54,7 @@ abstract class Message {
           otherId: otherId,
           author: author,
           date: date,
-          text: XOR.decrypt(text, "Group3", urlDecode: true));
+          text: XOR.decrypt(text, encryptionKey, urlDecode: true));
     } else {
       return null;
     }
