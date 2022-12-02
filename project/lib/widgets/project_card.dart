@@ -3,10 +3,15 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/models/project.dart';
 import 'package:project/styles/theme.dart';
 
-/// Represents a project as a card used on project screen.
+/// Represents a project as a card.
 class ProjectCard extends StatelessWidget {
+  /// The project to display in a card.
   final Project project;
+
+  /// Function called when tapping the card.
   final VoidCallback handler;
+
+  /// Creates an instance of [ProjectCard].
   const ProjectCard({super.key, required this.project, required this.handler});
 
   @override
@@ -26,72 +31,16 @@ class ProjectCard extends StatelessWidget {
             onTap: handler,
             child: Stack(
               children: <Widget>[
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: <Widget>[
-                    Image.asset(
-                      project.imageUrl,
-                      height: 67,
-                      alignment: Alignment.topRight,
-                    ),
-                  ],
-                ),
+                _projectImage(),
                 Column(
                   mainAxisAlignment: MainAxisAlignment.end,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: <Widget>[
-                    Text(
-                      project.title.toLowerCase(),
-                      textAlign: TextAlign.left,
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
-                      ),
-                    ),
+                    _projectTitle(),
                     const SizedBox(
                       height: 2.0,
                     ),
-                    project.isPublic
-                        ? Row(
-                            children: const <Widget>[
-                              Icon(
-                                PhosphorIcons.usersThin,
-                                color: Colors.white,
-                                size: 16,
-                              ),
-                              SizedBox(
-                                width: 2.0,
-                              ),
-                              Text(
-                                "public",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 10,
-                                ),
-                              ),
-                            ],
-                          )
-                        : Row(
-                            children: const <Widget>[
-                              Icon(
-                                PhosphorIcons.lockSimpleThin,
-                                color: Colors.white,
-                                size: 15,
-                              ),
-                              SizedBox(
-                                width: 2.0,
-                              ),
-                              Text(
-                                "private",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 10,
-                                ),
-                              ),
-                            ],
-                          )
+                    project.isPublic ? _publicLabel() : privateLabel(),
                   ],
                 ),
               ],
@@ -99,6 +48,80 @@ class ProjectCard extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  /// Returns a [Text] widget displaying the title.
+  Text _projectTitle() {
+    return Text(
+      project.title.toLowerCase(),
+      textAlign: TextAlign.left,
+      overflow: TextOverflow.ellipsis,
+      maxLines: 1,
+      style: const TextStyle(
+        color: Colors.white,
+        fontSize: 14,
+      ),
+    );
+  }
+
+  /// Returns a "label" displaying that the project is private.
+  Row privateLabel() {
+    return Row(
+      children: const <Widget>[
+        Icon(
+          PhosphorIcons.lockSimpleThin,
+          color: Colors.white,
+          size: 15,
+        ),
+        SizedBox(
+          width: 2.0,
+        ),
+        Text(
+          "private",
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 10,
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// Returns a "label" displaying that the project is public.
+  Row _publicLabel() {
+    return Row(
+      children: const <Widget>[
+        Icon(
+          PhosphorIcons.usersThin,
+          color: Colors.white,
+          size: 16,
+        ),
+        SizedBox(
+          width: 2.0,
+        ),
+        Text(
+          "public",
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 10,
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// Returns the image of the project.
+  Column _projectImage() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: <Widget>[
+        Image.asset(
+          project.imageUrl,
+          height: 67,
+          alignment: Alignment.topRight,
+        ),
+      ],
     );
   }
 }
