@@ -123,13 +123,12 @@ class TaskOverviewScreenState extends ConsumerState {
     );
   }
 
-  /// Button for adding a new task.
+  /// Button for adding a new task.TaskDetails
   FloatingActionButton _addNewTaskButton(
       Project project, BuildContext context) {
     return FloatingActionButton(
       onPressed: () async {
-        ref.read(currentProjectProvider.notifier).setProject(
-            ref.watch(projectProvider).getProject(project.projectId));
+        ref.read(editTaskProvider.notifier).setTask(null);
         Navigator.of(context)
             .pushNamed(ConfigureTaskScreen.routeName)
             .whenComplete(() => setState(() {}));

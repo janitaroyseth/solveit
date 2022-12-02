@@ -28,8 +28,7 @@ class EditProjectScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final Project? existingProject =
-        (ModalRoute.of(context)?.settings.arguments as Project?);
+    final Project? existingProject = ref.read(editProjectProvider);
     final mode = existingProject == null
         ? _EditProjectMode.create
         : _EditProjectMode.edit;
