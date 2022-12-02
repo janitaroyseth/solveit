@@ -258,6 +258,9 @@ class Themes {
         fontSize: 13,
         color: textColor(ref),
       ),
+      titleSmall: TextStyle(
+        color: textColor(ref),
+      ),
       bodySmall: TextStyle(
         color: textColor(ref).withOpacity(0.8),
         fontSize: 12,

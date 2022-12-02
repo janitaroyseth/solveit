@@ -6,6 +6,7 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/styles/theme.dart';
 import 'package:project/widgets/gif_picker.dart';
 
+/// Type of message to send.
 enum MessageType {
   text,
   image,
@@ -49,47 +50,57 @@ class MessageInputField extends StatefulWidget {
 }
 
 class _MessageInputFieldState extends State<MessageInputField> {
-  late FocusNode focusNode;
+  /// Whether the text field is focused.
   late bool isFocused;
+
+  ///Text editing controller for the text field
   late TextEditingController textEditingController;
+
+  /// Whether to display the multimedia options.
   bool displayOption = true;
+
+  /// Sets [isFocused] to the focusNode's focus.
+  void toggleFocus() => setState(() => isFocused = widget.focusNode.hasFocus);
 
   @override
   void initState() {
-    focusNode = widget.focusNode;
-    isFocused = focusNode.hasFocus;
+    isFocused = widget.focusNode.hasFocus;
     textEditingController = TextEditingController();
     super.initState();
   }
 
   @override
+  void dispose() {
+    widget.focusNode.removeListener(toggleFocus);
+    widget.focusNode.dispose();
+    textEditingController.dispose();
+    super.dispose();
+  }
+
+  /// Returns whether multi media options has been selected for this
+  /// instance of message input.
+  bool _hasMultiMediaOptions() {
+    return widget.camera || widget.gallery || widget.recording;
+  }
+
+  /// Returns whether the display option, a plus button for opening options
+  /// is to be shown or not.
+  bool _shouldShowDisplayOption() {
+    return (isFocused && !displayOption) &&
+        ((widget.camera && widget.gallery) ||
+            (widget.gallery && widget.recording));
+  }
+
+  @override
   Widget build(BuildContext context) {
-    focusNode.addListener(() => setState(() => isFocused = focusNode.hasFocus));
+    widget.focusNode.addListener(toggleFocus);
     return Row(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
         Visibility(
-          visible: widget.camera || widget.gallery || widget.recording,
-          child: (isFocused && !displayOption) &&
-                  ((widget.camera && widget.gallery) ||
-                      (widget.gallery && widget.recording))
-              ? IconButton(
-                  //constraints: const BoxConstraints(),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 6.0,
-                    vertical: 10.0,
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      displayOption = !displayOption;
-                    });
-                  },
-                  icon: Icon(
-                    PhosphorIcons.plusCircleFill,
-                    size: 40,
-                    color: Themes.primaryColor.withOpacity(0.8),
-                  ),
-                )
+          visible: _hasMultiMediaOptions(),
+          child: _shouldShowDisplayOption()
+              ? _displayButton()
               : Row(
                   mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -111,6 +122,28 @@ class _MessageInputFieldState extends State<MessageInputField> {
     );
   }
 
+  /// Returns a display button, a button with a plus for toggling to hide/show
+  /// the multimedia options.
+  IconButton _displayButton() {
+    return IconButton(
+      padding: const EdgeInsets.symmetric(
+        horizontal: 6.0,
+        vertical: 10.0,
+      ),
+      onPressed: () {
+        setState(() {
+          displayOption = !displayOption;
+        });
+      },
+      icon: Icon(
+        PhosphorIcons.plusCircleFill,
+        size: 40,
+        color: Themes.primaryColor.withOpacity(0.8),
+      ),
+    );
+  }
+
+  /// Returns an text field for text input.
   Expanded buildInputField() {
     return Expanded(
       child: Padding(
@@ -119,7 +152,7 @@ class _MessageInputFieldState extends State<MessageInputField> {
           onTap: () => setState(() {
             displayOption = false;
           }),
-          focusNode: focusNode,
+          focusNode: widget.focusNode,
           minLines: 1,
           maxLines: 5,
           onChanged: (value) => setState(() {}),

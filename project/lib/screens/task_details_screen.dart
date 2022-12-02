@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jiffy/jiffy.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
-import 'package:project/models/comment.dart';
+import 'package:project/models/message.dart';
 import 'package:project/models/project.dart';
 import 'package:project/models/task.dart';
 import 'package:project/models/user.dart';
@@ -16,6 +16,7 @@ import 'package:project/providers/project_provider.dart';
 import 'package:project/providers/settings_provider.dart';
 import 'package:project/providers/task_provider.dart';
 import 'package:project/providers/user_provider.dart';
+import 'package:project/screens/configure_task_screen.dart';
 import 'package:project/screens/profile_screen.dart';
 import 'package:project/styles/theme.dart';
 import 'package:project/widgets/appbar_button.dart';
@@ -27,8 +28,6 @@ import 'package:project/widgets/tags_list.dart';
 import 'package:project/widgets/toggle_task_status_button.dart';
 import 'package:project/widgets/user_list_item.dart';
 
-import 'configure_task_screen.dart';
-
 /// Screen/Scaffold for the details of a task in a project
 class TaskDetailsScreen extends ConsumerWidget {
   /// Named route for this screen.
@@ -39,8 +38,6 @@ class TaskDetailsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    FocusNode focusNode = FocusNode();
-
     return StreamBuilder<Task?>(
       stream: ref.watch(currentTaskProvider),
       builder: (context, snapshot) {
@@ -54,18 +51,15 @@ class TaskDetailsScreen extends ConsumerWidget {
                 elevation: 0,
                 backgroundColor: _appBarBackground(ref),
                 title: ToggleTaskStatusButton(task: task),
-                leading: _backButton(focusNode, context),
+                leading: _backButton(context),
                 actions: [_TaskPopUpMenu(task: task)],
                 bottom: _appBarBottomTab(),
               ),
-              body: GestureDetector(
-                onTap: () => focusNode.unfocus(),
-                child: TabBarView(
-                  children: [
-                    _OverviewTabView(task: task),
-                    _CommentTabView(task: task, focusNode: focusNode),
-                  ],
-                ),
+              body: TabBarView(
+                children: [
+                  _OverviewTabView(task: task),
+                  _CommentTabView(task: task),
+                ],
               ),
             ),
           );
@@ -87,10 +81,9 @@ class TaskDetailsScreen extends ConsumerWidget {
   }
 
   /// Button that navigates to previous screen.
-  AppBarButton _backButton(FocusNode focusNode, BuildContext context) {
+  AppBarButton _backButton(BuildContext context) {
     return AppBarButton(
       handler: () {
-        focusNode.dispose();
         Navigator.pop(context);
       },
       tooltip: "Go back",
@@ -204,33 +197,44 @@ class _OverviewTabView extends StatelessWidget {
             style: Theme.of(context).textTheme.labelMedium,
           ),
           _verticalPaddingSmall(),
-          Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ...task.assigned.map(
-                (e) => StreamBuilder<User?>(
-                  stream: ref.watch(userProvider).getUser(e),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      User user = snapshot.data!;
-                      return UserListItem(
-                        user: user,
-                        handler: () => Navigator.of(context).pushNamed(
-                          ProfileScreen.routeName,
-                          arguments: {
-                            "user": e,
-                            "projects": <Project>[],
-                          },
-                        ),
-                      );
-                    }
-                    return const LoadingSpinner();
-                  },
-                ),
-              ),
-            ],
-          ),
+          _assignedList(ref),
         ],
+      ),
+    );
+  }
+
+  /// Returns a column containing task assignees mapped to user list items.
+  Column _assignedList(WidgetRef ref) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        ...task.assigned.map(
+          (e) => StreamBuilder<User?>(
+            stream: ref.watch(userProvider).getUser(e),
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                User user = snapshot.data!;
+                return _assignedUserListItem(user, context, e);
+              }
+              return const LoadingSpinner();
+            },
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// Returns a user list item custimized for assignees.
+  UserListItem _assignedUserListItem(
+      User user, BuildContext context, String e) {
+    return UserListItem(
+      user: user,
+      handler: () => Navigator.of(context).pushNamed(
+        ProfileScreen.routeName,
+        arguments: {
+          "user": e,
+          "projects": <Project>[],
+        },
       ),
     );
   }
@@ -259,12 +263,10 @@ class _CommentTabView extends ConsumerStatefulWidget {
   final Task task;
 
   /// FocusNode to use for the comment text field.
-  final FocusNode focusNode;
 
   /// Creates an instance of [_CommentTabView],
   const _CommentTabView({
     required this.task,
-    required this.focusNode,
   });
 
   @override
@@ -274,6 +276,13 @@ class _CommentTabView extends ConsumerStatefulWidget {
 class _CommentTabViewState extends ConsumerState<_CommentTabView> {
   /// [ScrollController] for the [CommentList].
   final ScrollController controller = ScrollController();
+  late FocusNode focusNode;
+
+  @override
+  void initState() {
+    focusNode = FocusNode();
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -295,40 +304,44 @@ class _CommentTabViewState extends ConsumerState<_CommentTabView> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.fromLTRB(
-        8.0,
-        16.0,
-        8.0,
-        Platform.isIOS ? 30.0 : 20.0,
-      ),
-      child: Consumer(
-        builder: (context, ref, child) => StreamBuilder<List<Comment>>(
-            stream: ref.watch(commentProvider).getComments(widget.task.taskId),
-            builder: (context, snapshot) {
-              if (snapshot.hasData) {
-                List<Comment> comments = snapshot.data!;
+    return GestureDetector(
+      onTap: () => focusNode.unfocus(),
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(
+          8.0,
+          16.0,
+          8.0,
+          Platform.isIOS ? 30.0 : 20.0,
+        ),
+        child: Consumer(
+          builder: (context, ref, child) => StreamBuilder<List<Message?>>(
+              stream:
+                  ref.watch(commentProvider).getComments(widget.task.taskId),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  List<Message?> comments = snapshot.data!;
 
-                return Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: <Widget>[
-                          taskTitle(),
-                          const SizedBox(height: 16.0),
-                          commentListView(comments),
-                        ],
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            taskTitle(),
+                            const SizedBox(height: 16.0),
+                            commentListView(comments),
+                          ],
+                        ),
                       ),
-                    ),
-                    _commentInputField(ref),
-                  ],
-                );
-              }
-              return const LoadingSpinner();
-            }),
+                      _commentInputField(ref),
+                    ],
+                  );
+                }
+                return const LoadingSpinner();
+              }),
+        ),
       ),
     );
   }
@@ -343,8 +356,8 @@ class _CommentTabViewState extends ConsumerState<_CommentTabView> {
             ref
                 .read(commentProvider)
                 .saveComment(
-                  TextComment(
-                    taskId: widget.task.taskId,
+                  TextMessage(
+                    otherId: widget.task.taskId,
                     author: currentUserId,
                     text: content,
                   ),
@@ -356,8 +369,8 @@ class _CommentTabViewState extends ConsumerState<_CommentTabView> {
                 .read(commentImageProvider)
                 .addCommentImage(widget.task.taskId, content)
                 .then((value) => ref.read(commentProvider).saveComment(
-                      ImageComment(
-                        taskId: widget.task.taskId,
+                      ImageMessage(
+                        otherId: widget.task.taskId,
                         author: currentUserId,
                         imageUrl: value!,
                       ),
@@ -368,8 +381,8 @@ class _CommentTabViewState extends ConsumerState<_CommentTabView> {
             ref
                 .read(commentProvider)
                 .saveComment(
-                  ImageComment(
-                    taskId: widget.task.taskId,
+                  ImageMessage(
+                    otherId: widget.task.taskId,
                     author: currentUserId,
                     imageUrl: content,
                   ),
@@ -379,7 +392,7 @@ class _CommentTabViewState extends ConsumerState<_CommentTabView> {
           default:
         }
       },
-      focusNode: widget.focusNode,
+      focusNode: focusNode,
       camera: true,
       gallery: true,
       gif: true,
@@ -395,7 +408,7 @@ class _CommentTabViewState extends ConsumerState<_CommentTabView> {
   }
 
   /// Returns the list of comments.
-  Expanded commentListView(List<Comment> comments) {
+  Expanded commentListView(List<Message?> comments) {
     return Expanded(
       child: Padding(
         padding: const EdgeInsets.all(8.0),
