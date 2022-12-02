@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:jiffy/jiffy.dart';
-import 'package:project/models/message.dart' as model;
+import 'package:project/models/message.dart';
 import 'package:project/providers/auth_provider.dart';
 import 'package:project/providers/comment_image_provider.dart';
 import 'package:project/providers/comment_provider.dart';
 import 'package:project/providers/user_provider.dart';
 import 'package:project/styles/theme.dart';
+import 'package:project/utilities/date_formatting.dart';
 
 import '../models/user.dart';
 
 /// Converts a Comment object to a list item used in a comment list.
 class CommentListItem extends StatelessWidget {
   /// The [Comment] to be present as a list item.
-  final model.Message comment;
+  final Message comment;
 
   /// Creates an instance of [CommentListItem].
   const CommentListItem({
@@ -89,11 +89,11 @@ class CommentListItem extends StatelessWidget {
         ),
         TextButton(
           onPressed: () {
-            if (comment is model.ImageMessage) {
+            if (comment is ImageMessage) {
               ref
                   .read(commentImageProvider)
                   .deleteCommentImage(
-                      comment.otherId, (comment as model.ImageMessage).imageUrl)
+                      comment.otherId, (comment as ImageMessage).imageUrl)
                   .then((value) => ref
                       .read(commentProvider)
                       .deleteComment(comment.messageId))
@@ -121,8 +121,8 @@ class CommentListItem extends StatelessWidget {
     return Column(
       children: [
         const SizedBox(height: 4.0),
-        if (comment is model.TextMessage) _TextComment(comment: comment),
-        if (comment is model.ImageMessage) _ImageComment(comment: comment),
+        if (comment is TextMessage) _TextComment(comment: comment),
+        if (comment is ImageMessage) _ImageComment(comment: comment),
         const SizedBox(height: 4.0),
       ],
     );
@@ -131,7 +131,7 @@ class CommentListItem extends StatelessWidget {
   /// Returns a [Text] widget showing the formatted time since posted.
   Text _formattedTimeSincePosted(BuildContext context) {
     return Text(
-      Jiffy(comment.date).fromNow(),
+      DateFormatting.timeSince(comment.date),
       style: Theme.of(context).textTheme.caption,
     );
   }
@@ -160,12 +160,12 @@ class _TextComment extends StatelessWidget {
   const _TextComment({required this.comment});
 
   /// The [Comment] model to display in a [_TextComment] [Widget].
-  final model.Message comment;
+  final Message comment;
 
   @override
   Widget build(BuildContext context) {
     return Text(
-      (comment as model.TextMessage).text,
+      (comment as TextMessage).text,
       overflow: TextOverflow.clip,
       textAlign: TextAlign.start,
       style: const TextStyle(
@@ -182,14 +182,14 @@ class _ImageComment extends StatelessWidget {
   const _ImageComment({required this.comment});
 
   /// The [Comment] model to display in a [_ImageComment] [Widget].
-  final model.Message comment;
+  final Message comment;
 
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(15.0),
       child: Image.network(
-        (comment as model.ImageMessage).imageUrl,
+        (comment as ImageMessage).imageUrl,
         width: MediaQuery.of(context).size.width / 2,
         fit: BoxFit.contain,
       ),

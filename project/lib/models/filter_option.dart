@@ -12,4 +12,13 @@ class FilterOption {
 
   /// Creates an instance of [FilterOption] with the given filter option description
   FilterOption({required this.description, required this.filterBy, this.tag});
+
+  @override
+  // TODO: implement hashCode
+  int get hashCode => description.hashCode;
+
+  @override
+  bool operator ==(Object other) {
+    return description == (other as FilterOption).description;
+  }
 }

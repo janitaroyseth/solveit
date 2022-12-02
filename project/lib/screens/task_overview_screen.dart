@@ -7,10 +7,12 @@ import 'package:project/data/sorting_methods.dart';
 import 'package:project/models/filter.dart';
 import 'package:project/models/filter_option.dart';
 import 'package:project/models/tag.dart';
+import 'package:project/providers/auth_provider.dart';
 import 'package:project/providers/project_provider.dart';
 import 'package:project/providers/task_provider.dart';
 import 'package:project/screens/configure_task_screen.dart';
 import 'package:project/screens/project_calendar_screen.dart';
+import 'package:project/screens/task_details_screen.dart';
 import 'package:project/styles/curve_clipper.dart';
 import 'package:project/styles/theme.dart';
 import 'package:project/widgets/loading_spinner.dart';
@@ -269,7 +271,26 @@ class _TaskOverviewBodyState extends ConsumerState<_TaskOverviewBody> {
       stream: currentStream,
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          return TaskList(tasks: snapshot.data!);
+          final tasks = snapshot.data!;
+          return Expanded(
+            child: ListView.builder(
+              padding: EdgeInsets.zero,
+              itemBuilder: ((context, index) => TaskListItem(
+                    task: tasks[index]!,
+                    handler: () {
+                      ref.read(currentTaskProvider.notifier).setTask(ref
+                          .watch(taskProvider)
+                          .getTask(
+                              tasks[index]!.projectId, tasks[index]!.taskId));
+                      Navigator.of(context).pushNamed(
+                          TaskDetailsScreen.routeName,
+                          arguments: project.collaborators.contains(
+                              ref.watch(authProvider).currentUser!.uid));
+                    },
+                  )),
+              itemCount: tasks.length,
+            ),
+          );
         }
         if (snapshot.hasError) {
           showDialog(
@@ -362,27 +383,29 @@ class DataErrorDialog extends ConsumerWidget {
   }
 }
 
-/// The list over tasks in the project.
-class TaskList extends StatefulWidget {
-  final List<Task?> tasks;
-  // final Project project;
-  const TaskList({super.key, required this.tasks});
+// /// The list over tasks in the project.
+// class TaskList extends StatefulWidget {
+//   final List<Task?> tasks;
 
-  @override
-  State<TaskList> createState() => _TaskListState();
-}
+//   final 
+//   // final Project project;
+//   const TaskList({super.key, required this.tasks});
 
-class _TaskListState extends State<TaskList> {
-  @override
-  Widget build(BuildContext context) {
-    return Expanded(
-      child: ListView.builder(
-        padding: EdgeInsets.zero,
-        itemBuilder: ((context, index) => TaskListItem(
-              task: widget.tasks[index]!,
-            )),
-        itemCount: widget.tasks.length,
-      ),
-    );
-  }
-}
+//   @override
+//   State<TaskList> createState() => _TaskListState();
+// }
+
+// class _TaskListState extends State<TaskList> {
+//   @override
+//   Widget build(BuildContext context) {
+//     return Expanded(
+//       child: ListView.builder(
+//         padding: EdgeInsets.zero,
+//         itemBuilder: ((context, index) => TaskListItem(
+//               task: widget.tasks[index]!,
+//             )),
+//         itemCount: widget.tasks.length,
+//       ),
+//     );
+//   }
+// }

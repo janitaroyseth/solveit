@@ -2,11 +2,13 @@ import 'dart:collection';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:jiffy/jiffy.dart';
 import 'package:project/models/project.dart';
 import 'package:project/models/task.dart';
+import 'package:project/providers/auth_provider.dart';
 import 'package:project/providers/task_provider.dart';
+import 'package:project/screens/task_details_screen.dart';
 import 'package:project/styles/theme.dart';
+import 'package:project/utilities/date_formatting.dart';
 import 'package:project/widgets/loading_spinner.dart';
 import 'package:project/widgets/task_list_item.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -162,8 +164,7 @@ class _CalendarState extends State<Calendar> {
                           return Container(
                             padding: const EdgeInsets.only(top: 16.0),
                             child: Text(
-                              Jiffy(_selectedDay)
-                                  .format("EEEE, do of MMMM yyyy"),
+                              DateFormatting.longDate(_selectedDay!),
                               style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w700,
@@ -172,7 +173,21 @@ class _CalendarState extends State<Calendar> {
                             ),
                           );
                         }
-                        return TaskListItem(task: value[index - 1]);
+                        return TaskListItem(
+                          task: value[index - 1],
+                          handler: () {
+                            ref.read(currentTaskProvider.notifier).setTask(ref
+                                .watch(taskProvider)
+                                .getTask(value[index - 1].projectId,
+                                    value[index - 1].taskId));
+                            Navigator.of(context).pushNamed(
+                              TaskDetailsScreen.routeName,
+                              arguments: widget.project.collaborators.contains(
+                                ref.watch(authProvider).currentUser!.uid,
+                              ),
+                            );
+                          },
+                        );
                       },
                     ),
                   ),

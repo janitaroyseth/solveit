@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/models/filter.dart';
 import 'package:project/models/filter_option.dart';
+import 'package:project/styles/theme.dart';
 import 'package:project/widgets/checkbox_list_item.dart';
 import 'package:project/widgets/radio_button_group.dart';
 
@@ -53,21 +55,24 @@ class _FilterModalState extends State<FilterModal> {
     List<Widget> filterOptions = [];
 
     for (var filter in widget.filters) {
-      Widget listTile = ListTile(
-        dense: false,
-        title: Text(filter.title.toLowerCase()),
-        trailing: GestureDetector(
-          onTap: () {
-            setState(() {
-              filter.collapsed = !filter.collapsed;
-            });
-          },
-          child: AnimatedRotation(
-            turns: filter.collapsed ? 0 : 0.25,
-            duration: const Duration(milliseconds: 150),
-            child: const Icon(
-              PhosphorIcons.caretRight,
-              semanticLabel: "Show tags to filter the task list by",
+      Widget listTile = Consumer(
+        builder: (context, ref, child) => ListTile(
+          dense: false,
+          title: Text(filter.title.toLowerCase()),
+          trailing: GestureDetector(
+            onTap: () {
+              setState(() {
+                filter.collapsed = !filter.collapsed;
+              });
+            },
+            child: AnimatedRotation(
+              turns: filter.collapsed ? 0 : 0.25,
+              duration: const Duration(milliseconds: 150),
+              child: Icon(
+                PhosphorIcons.caretRight,
+                color: Themes.textColor(ref),
+                semanticLabel: "Show tags to filter the task list by",
+              ),
             ),
           ),
         ),

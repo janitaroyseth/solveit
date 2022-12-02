@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:jiffy/jiffy.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/models/group.dart';
 import 'package:project/models/user.dart';
@@ -10,6 +9,7 @@ import 'package:project/providers/user_provider.dart';
 import 'package:project/screens/chat_screen.dart';
 import 'package:project/screens/collaborators_screen.dart';
 import 'package:project/styles/theme.dart';
+import 'package:project/utilities/date_formatting.dart';
 import 'package:project/widgets/appbar_button.dart';
 import 'package:project/widgets/loading_spinner.dart';
 
@@ -196,7 +196,7 @@ class NotificationsScreen extends ConsumerWidget {
   /// The date the last message was sent.
   Text _lastMessageSentAt(Group group, BuildContext context) {
     return Text(
-      Jiffy(group.lastUpdated).fromNow(),
+      DateFormatting.timeSince(group.lastUpdated),
       style: Theme.of(context).textTheme.caption,
     );
   }

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:jiffy/jiffy.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/providers/project_provider.dart';
 import 'package:project/providers/task_provider.dart';
 import 'package:project/providers/user_provider.dart';
 import 'package:project/screens/collaborators_screen.dart';
 import 'package:project/screens/tags_screen.dart';
+import 'package:project/utilities/date_formatting.dart';
 import 'package:project/widgets/loading_spinner.dart';
 import 'package:project/widgets/tag_widget.dart';
 
@@ -300,7 +300,7 @@ class _TaskScreenBodyState extends State<_TaskScreenBody> {
         TextButton(
           style: Themes.formButtonStyle(ref),
           child: Text(task.deadline != null
-              ? Jiffy(task.deadline!).format("dd/MM/yyyy")
+              ? DateFormatting.shortDate(ref, task.deadline!)
               : "click to pick a date..."),
           onPressed: () => _getDate(),
         ),

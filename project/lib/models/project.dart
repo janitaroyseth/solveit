@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:project/data/project_avatar_options.dart';
 import 'package:project/models/tag.dart';
 
@@ -28,7 +29,7 @@ class Project {
   bool isPublic;
 
   /// When the project was last updated.
-  String? lastUpdated;
+  DateTime? lastUpdated;
 
   /// Creates an instance of [Project],
   Project({
@@ -39,11 +40,12 @@ class Project {
     List<String>? collaborators,
     String? imageUrl,
     this.description = "",
-    this.lastUpdated,
+    DateTime? lastUpdated,
     this.isPublic = false,
   })  : imageUrl = imageUrl ?? projectAvatars[0],
         collaborators = collaborators ?? [],
-        tags = tags ?? [];
+        tags = tags ?? [],
+        lastUpdated = lastUpdated ?? DateTime.now();
 
   /// Converts a [Map] object to a [Project] object.
   static Project? fromMap(Map<String, dynamic>? data) {
@@ -58,7 +60,7 @@ class Project {
         : <String>[];
     final bool? isPublic = data["isPublic"] ?? false;
     final String? owner = data["owner"];
-    final String? lastUpdated = data['lastUpdated'];
+    final DateTime lastUpdated = (data['lastUpdated'] as Timestamp).toDate();
     final String? imageUrl = data['imageUrl'];
     final List<Tag> tags =
         data["tags"] != null ? Tag.fromMaps(data["tags"]) : <Tag>[];
