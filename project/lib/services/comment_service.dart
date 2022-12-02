@@ -1,17 +1,17 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:project/models/comment.dart';
+import 'package:project/models/message.dart';
 import 'package:project/services/user_service.dart';
 
 /// Business logic for comments.
 abstract class CommentService {
   /// Saves a new- or updates an existing comment.
-  Future<Comment> saveComment(Comment comment);
+  Future<Message> saveComment(Message comment);
 
   /// Returns future of a comment with given comment id.
-  Future<Comment?> getComment(String commentId);
+  Future<Message?> getComment(String commentId);
 
   /// Returns a future list with all comments.
-  Stream<List<Comment>> getComments(String taskId);
+  Stream<List<Message?>> getComments(String taskId);
 
   /// Deletes a comment by comment id.
   Future<void> deleteComment(String commentId);
@@ -23,40 +23,40 @@ class FirebaseCommentService extends CommentService {
   final userService = FirebaseUserService();
 
   @override
-  Future<Comment> saveComment(Comment comment) async {
-    if (comment.commentId == "") {
-      comment.commentId =
-          (await commentCollection.add(Comment.toMap(comment))).id;
+  Future<Message> saveComment(Message comment) async {
+    if (comment.messageId == "") {
+      comment.messageId =
+          (await commentCollection.add(Message.toMap(comment))).id;
       await commentCollection
-          .doc(comment.commentId)
-          .set(Comment.toMap(comment));
+          .doc(comment.messageId)
+          .set(Message.toMap(comment));
     } else {
       await commentCollection
-          .doc(comment.commentId)
-          .set(Comment.toMap(comment));
+          .doc(comment.messageId)
+          .set(Message.toMap(comment));
     }
     return comment;
   }
 
   @override
-  Future<Comment?> getComment(String commentId) async {
-    Comment? comment;
+  Future<Message?> getComment(String commentId) async {
+    Message? comment;
     Map<String, dynamic>? commentMap =
         (await commentCollection.doc(commentId).get()).data();
     if (null != commentMap) {
-      comment = Comment.fromMap(commentMap);
+      comment = Message.fromMap(commentMap);
     }
     return comment;
   }
 
   @override
-  Stream<List<Comment>> getComments(String taskId) {
+  Stream<List<Message?>> getComments(String taskId) {
     return commentCollection
-        .where("taskId", isEqualTo: taskId)
+        .where("otherId", isEqualTo: taskId)
         .snapshots()
         .map((event) => event.docs)
         .map((event) {
-      List<Comment> comments = Comment.fromMaps(event);
+      List<Message?> comments = Message.fromMaps(event);
 
       comments.sort((b, a) {
         if (a == null) {
@@ -65,8 +65,8 @@ class FirebaseCommentService extends CommentService {
         if (b == null) {
           return 1;
         }
-        return (Comment.toMap(a)["date"]).compareTo(
-          Comment.toMap(b)["date"],
+        return (Message.toMap(a)["date"]).compareTo(
+          Message.toMap(b)["date"],
         );
       });
 

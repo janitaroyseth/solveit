@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:jiffy/jiffy.dart';
-import 'package:project/models/comment.dart' as model;
+import 'package:project/models/message.dart' as model;
 import 'package:project/providers/auth_provider.dart';
 import 'package:project/providers/comment_image_provider.dart';
 import 'package:project/providers/comment_provider.dart';
@@ -13,7 +13,7 @@ import '../models/user.dart';
 /// Converts a Comment object to a list item used in a comment list.
 class CommentListItem extends StatelessWidget {
   /// The [Comment] to be present as a list item.
-  final model.Comment comment;
+  final model.Message comment;
 
   /// Creates an instance of [CommentListItem].
   const CommentListItem({
@@ -35,7 +35,7 @@ class CommentListItem extends StatelessWidget {
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.end,
                     children: <Widget>[
                       _authorImage(author),
                       const SizedBox(width: 8.0),
@@ -89,19 +89,19 @@ class CommentListItem extends StatelessWidget {
         ),
         TextButton(
           onPressed: () {
-            if (comment is model.ImageComment) {
+            if (comment is model.ImageMessage) {
               ref
                   .read(commentImageProvider)
                   .deleteCommentImage(
-                      comment.taskId, (comment as model.ImageComment).imageUrl)
+                      comment.otherId, (comment as model.ImageMessage).imageUrl)
                   .then((value) => ref
                       .read(commentProvider)
-                      .deleteComment(comment.commentId))
+                      .deleteComment(comment.messageId))
                   .then((value) => Navigator.of(context).pop());
             } else {
               ref
                   .read(commentProvider)
-                  .deleteComment(comment.commentId)
+                  .deleteComment(comment.messageId)
                   .then((value) => Navigator.of(context).pop());
             }
           },
@@ -121,8 +121,8 @@ class CommentListItem extends StatelessWidget {
     return Column(
       children: [
         const SizedBox(height: 4.0),
-        if (comment is model.TextComment) _TextComment(comment: comment),
-        if (comment is model.ImageComment) _ImageComment(comment: comment),
+        if (comment is model.TextMessage) _TextComment(comment: comment),
+        if (comment is model.ImageMessage) _ImageComment(comment: comment),
         const SizedBox(height: 4.0),
       ],
     );
@@ -160,12 +160,12 @@ class _TextComment extends StatelessWidget {
   const _TextComment({required this.comment});
 
   /// The [Comment] model to display in a [_TextComment] [Widget].
-  final model.Comment comment;
+  final model.Message comment;
 
   @override
   Widget build(BuildContext context) {
     return Text(
-      (comment as model.TextComment).text,
+      (comment as model.TextMessage).text,
       overflow: TextOverflow.clip,
       textAlign: TextAlign.start,
       style: const TextStyle(
@@ -182,14 +182,14 @@ class _ImageComment extends StatelessWidget {
   const _ImageComment({required this.comment});
 
   /// The [Comment] model to display in a [_ImageComment] [Widget].
-  final model.Comment comment;
+  final model.Message comment;
 
   @override
   Widget build(BuildContext context) {
     return ClipRRect(
       borderRadius: BorderRadius.circular(15.0),
       child: Image.network(
-        (comment as model.ImageComment).imageUrl,
+        (comment as model.ImageMessage).imageUrl,
         width: MediaQuery.of(context).size.width / 2,
         fit: BoxFit.contain,
       ),

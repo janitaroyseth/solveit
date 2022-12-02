@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:project/models/comment.dart';
+import 'package:project/models/message.dart';
 import 'package:project/models/tag.dart';
-import 'package:project/models/user.dart';
 
 /// Represents a task in a project.
 class Task {
@@ -20,7 +19,7 @@ class Task {
   // The (optional) deadline of the task.
   DateTime? deadline;
   // List of comments of this task.
-  List<Comment> comments;
+  List<Message> comments;
 
   /// List of the users assigned ot this task.
   List<String> assigned;
@@ -33,7 +32,7 @@ class Task {
     List<Tag>? tags,
     this.done = false,
     this.deadline,
-    List<Comment>? comments,
+    List<Message>? comments,
     List<String>? assigned,
   })  : comments = comments ?? [],
         assigned = assigned ?? [],
@@ -52,7 +51,7 @@ class Task {
     final DateTime? deadline = data['deadline'] != null
         ? (data['deadline'] as Timestamp).toDate()
         : null;
-    final List<Comment> comments = [];
+    final List<Message> comments = [];
     final List<String> assigned = data["assigned"].cast<String>();
     final tags = Tag.fromMaps(data["tags"]);
 
@@ -102,7 +101,7 @@ class Task {
       "description": description,
       "done": done,
       "deadline": deadline,
-      "comments": comments.map((e) => e.commentId).toList(),
+      "comments": comments.map((e) => e.messageId).toList(),
       "assigned": assigned,
       "tags": tags.map((e) => e.toMap()).toList(),
     };
