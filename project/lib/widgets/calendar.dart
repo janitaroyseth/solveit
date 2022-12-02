@@ -176,16 +176,20 @@ class _CalendarState extends State<Calendar> {
                         return TaskListItem(
                           task: value[index - 1],
                           handler: () {
+                            ref
+                                .read(editTaskProvider.notifier)
+                                .setTask(value[index - 1]);
                             ref.read(currentTaskProvider.notifier).setTask(ref
                                 .watch(taskProvider)
                                 .getTask(value[index - 1].projectId,
                                     value[index - 1].taskId));
                             Navigator.of(context).pushNamed(
-                              TaskDetailsScreen.routeName,
-                              arguments: widget.project.collaborators.contains(
-                                ref.watch(authProvider).currentUser!.uid,
-                              ),
-                            );
+                                TaskDetailsScreen.routeName,
+                                arguments: widget.project.collaborators
+                                    .contains(ref
+                                        .watch(authProvider)
+                                        .currentUser!
+                                        .uid));
                           },
                         );
                       },

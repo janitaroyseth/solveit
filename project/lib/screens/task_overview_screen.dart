@@ -277,6 +277,9 @@ class _TaskOverviewBodyState extends ConsumerState<_TaskOverviewBody> {
               itemBuilder: ((context, index) => TaskListItem(
                     task: tasks[index]!,
                     handler: () {
+                      ref
+                          .read(editTaskProvider.notifier)
+                          .setTask(tasks[index]!);
                       ref.read(currentTaskProvider.notifier).setTask(ref
                           .watch(taskProvider)
                           .getTask(

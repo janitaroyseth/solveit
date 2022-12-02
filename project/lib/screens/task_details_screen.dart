@@ -369,6 +369,7 @@ class _CommentTabViewState extends ConsumerState<_CommentTabView> {
                     ],
                   );
                 }
+                if (snapshot.hasError) print(snapshot.error);
                 return const LoadingSpinner();
               }),
         ),
