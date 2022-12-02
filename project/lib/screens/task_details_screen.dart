@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:jiffy/jiffy.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/models/message.dart';
 import 'package:project/models/project.dart';
@@ -19,6 +18,7 @@ import 'package:project/providers/user_provider.dart';
 import 'package:project/screens/configure_task_screen.dart';
 import 'package:project/screens/profile_screen.dart';
 import 'package:project/styles/theme.dart';
+import 'package:project/utilities/date_formatting.dart';
 import 'package:project/widgets/appbar_button.dart';
 import 'package:project/widgets/comment_list.dart';
 import 'package:project/widgets/loading_spinner.dart';
@@ -38,6 +38,8 @@ class TaskDetailsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    bool isCollaborator = ModalRoute.of(context)!.settings.arguments as bool;
+
     return StreamBuilder<Task?>(
       stream: ref.watch(currentTaskProvider),
       builder: (context, snapshot) {
@@ -47,12 +49,17 @@ class TaskDetailsScreen extends ConsumerWidget {
             length: 2,
             child: Scaffold(
               appBar: AppBar(
-                centerTitle: true,
-                elevation: 0,
                 backgroundColor: _appBarBackground(ref),
-                title: ToggleTaskStatusButton(task: task),
+                title: isCollaborator
+                    ? ToggleTaskStatusButton(task: task)
+                    : _taskStatusLabel(task),
                 leading: _backButton(context),
-                actions: [_TaskPopUpMenu(task: task)],
+                actions: [
+                  Visibility(
+                    visible: isCollaborator,
+                    child: _TaskPopUpMenu(task: task),
+                  )
+                ],
                 bottom: _appBarBottomTab(),
               ),
               body: TabBarView(
@@ -98,6 +105,27 @@ class TaskDetailsScreen extends ConsumerWidget {
         ? const Color.fromRGBO(21, 21, 21, 1)
         : Colors.transparent;
   }
+
+  /// Returns a label displaying the status of the task.
+  Widget _taskStatusLabel(Task task) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        Visibility(
+          visible: task.done,
+          child: const Icon(PhosphorIcons.check),
+        ),
+        const SizedBox(width: 8.0),
+        Text(task.done ? "solved" : "open"),
+        AppBarButton(
+          handler: () {},
+          tooltip: "",
+          icon: PhosphorIcons.cactus,
+          color: Colors.transparent,
+        ),
+      ],
+    );
+  }
 }
 
 /// Body content for overview tab.
@@ -110,30 +138,32 @@ class _OverviewTabView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(8.0, 16.0, 8.0, 0.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            _taskTitle(),
-            const SizedBox(height: 16.0),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  _tags(context),
-                  _vericalPaddingLarge(),
-                  _deadline(context),
-                  _vericalPaddingLarge(),
-                  _assigned(context),
-                  _vericalPaddingLarge(),
-                  _description(context),
-                ],
-              ),
-            )
-          ],
+    return Consumer(
+      builder: (context, ref, child) => SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(8.0, 16.0, 8.0, 0.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              _taskTitle(),
+              const SizedBox(height: 16.0),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    _tags(context),
+                    _vericalPaddingLarge(),
+                    _deadline(context, ref),
+                    _vericalPaddingLarge(),
+                    _assigned(context),
+                    _vericalPaddingLarge(),
+                    _description(context),
+                  ],
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );
@@ -171,7 +201,7 @@ class _OverviewTabView extends StatelessWidget {
   }
 
   /// Returns the section for task deadline.
-  Column _deadline(BuildContext context) {
+  Column _deadline(BuildContext context, WidgetRef ref) {
     return Column(
       children: [
         Text(
@@ -180,7 +210,7 @@ class _OverviewTabView extends StatelessWidget {
         ),
         _verticalPaddingSmall(),
         Text(task.deadline != null
-            ? Jiffy(task.deadline!).format("dd/MM/yyyy")
+            ? DateFormatting.shortDate(ref, task.deadline!)
             : "-"),
       ],
     );
@@ -242,6 +272,7 @@ class _OverviewTabView extends StatelessWidget {
   ///Returns the section for task description.
   Column _description(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           "description",
@@ -265,9 +296,7 @@ class _CommentTabView extends ConsumerStatefulWidget {
   /// FocusNode to use for the comment text field.
 
   /// Creates an instance of [_CommentTabView],
-  const _CommentTabView({
-    required this.task,
-  });
+  const _CommentTabView({required this.task});
 
   @override
   ConsumerState<_CommentTabView> createState() => _CommentTabViewState();
@@ -340,6 +369,7 @@ class _CommentTabViewState extends ConsumerState<_CommentTabView> {
                     ],
                   );
                 }
+                if (snapshot.hasError) print(snapshot.error);
                 return const LoadingSpinner();
               }),
         ),

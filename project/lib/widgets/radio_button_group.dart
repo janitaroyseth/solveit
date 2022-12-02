@@ -8,10 +8,13 @@ class RadioButtonGroup extends StatefulWidget {
   /// The list of [FilterOption] this radio group represents.
   final Filter filter;
 
+  final FilterOption? initalValue;
+
   /// Creates an instance of [RadioButtonGroup] from the given [List<FilterOption>].
   const RadioButtonGroup({
     super.key,
     required this.filter,
+    this.initalValue,
   });
 
   @override
@@ -23,7 +26,7 @@ class _RadioButtonGroupState extends State<RadioButtonGroup> {
 
   @override
   void initState() {
-    chosenSort = widget.filter.filterOptions[0];
+    chosenSort = widget.initalValue ?? widget.filter.filterOptions[0];
     super.initState();
   }
 

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:project/models/filter.dart';
 import 'package:project/models/filter_option.dart';
+import 'package:project/styles/theme.dart';
 import 'package:project/widgets/tag_widget.dart';
 
 /// Represents a list item with a checkbox for filtering through lists.
@@ -26,16 +28,19 @@ class CheckboxListItem extends StatefulWidget {
 class _CheckboxListItemState extends State<CheckboxListItem> {
   /// Builds a checkmark from the given [FilterOption] filter option.
   Widget buildCheckMark(FilterOption filterOption, Filter filter) {
-    return Checkbox(
-      activeColor: Theme.of(context).primaryColor,
-      shape: const CircleBorder(),
-      value: filterOption.filterBy,
-      onChanged: (value) {
-        setState(() {
-          filterOption.filterBy = value!;
-          filter.filterHandler!(filter);
-        });
-      },
+    return Consumer(
+      builder: (context, ref, child) => Checkbox(
+        activeColor: Theme.of(context).primaryColor,
+        fillColor: MaterialStateProperty.all(Themes.primaryColor.shade50),
+        shape: const CircleBorder(),
+        value: filterOption.filterBy,
+        onChanged: (value) {
+          setState(() {
+            filterOption.filterBy = value!;
+            filter.filterHandler!(filter);
+          });
+        },
+      ),
     );
   }
 

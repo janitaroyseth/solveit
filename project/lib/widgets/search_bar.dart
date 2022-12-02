@@ -83,8 +83,9 @@ class _SearchBarState extends State<SearchBar> {
                       },
                     );
                   },
-                  icon: const Icon(
+                  icon: Icon(
                     PhosphorIcons.fadersHorizontal,
+                    color: Themes.textColor(ref),
                   ),
                 )
               : Container(),

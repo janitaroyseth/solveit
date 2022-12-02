@@ -53,7 +53,7 @@ class EditProjectScreen extends ConsumerWidget {
         if (!project.collaborators.contains(user!.userId)) {
           project.collaborators.add(user.userId);
         }
-        project.lastUpdated = DateTime.now().toIso8601String();
+        project.lastUpdated = DateTime.now();
 
         ref.read(projectProvider).saveProject(project);
 

@@ -1,5 +1,8 @@
 class Settings {
   bool darkThemeEnabled;
 
-  Settings({this.darkThemeEnabled = false});
+  String dateFormat;
+
+  Settings({this.darkThemeEnabled = false, String? dateFormat})
+      : dateFormat = dateFormat ?? "dd/MM/yyyy";
 }

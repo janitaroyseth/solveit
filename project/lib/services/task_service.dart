@@ -1,4 +1,3 @@
-import 'package:path/path.dart';
 import 'package:project/models/project.dart';
 import 'package:project/models/tag.dart';
 import 'package:project/models/task.dart';
@@ -50,7 +49,7 @@ class FirebaseTaskService extends TaskService {
     }
     Project? project =
         await FirebaseProjectService().getProject(task.projectId).first;
-    project!.lastUpdated = DateTime.now().toIso8601String();
+    project!.lastUpdated = DateTime.now();
     await FirebaseProjectService().saveProject(project);
 
     return task;

@@ -29,7 +29,7 @@ void main() {
       String imageUrl = projectAvatars[7];
       String description = "a cool description";
       bool isPublic = false;
-      String lastUpdated = DateTime.now().toIso8601String();
+      DateTime lastUpdated = DateTime.now();
       final project = Project(
         projectId: projectId,
         title: title,
@@ -88,7 +88,7 @@ void main() {
       String imageUrl = "https://aimageurl.com/image";
       String description = "a cool description";
       bool isPublic = false;
-      String lastUpdated = DateTime.now().toIso8601String();
+      DateTime lastUpdated = DateTime.now();
 
       final project = Project.fromMap({
         "projectId": projectId,
@@ -129,7 +129,7 @@ void main() {
       String owner = "a user id";
       String imageUrl = "https://aimageurl.com/image";
       bool isPublic = false;
-      String lastUpdated = DateTime.now().toIso8601String();
+      DateTime lastUpdated = DateTime.now();
 
       final project = Project.fromMap({
         "projectId": projectId,
@@ -169,7 +169,7 @@ void main() {
     String imageUrl = "https://aimageurl.com/image";
     String description = "a cool description";
     bool isPublic = false;
-    String lastUpdated = DateTime.now().toIso8601String();
+    DateTime lastUpdated = DateTime.now();
 
     final project = Project(
       projectId: projectId,

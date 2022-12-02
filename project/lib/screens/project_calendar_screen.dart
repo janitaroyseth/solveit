@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/models/project.dart';
-import 'package:project/models/task.dart' as model;
+import 'package:project/models/task.dart';
+import 'package:project/providers/auth_provider.dart';
 import 'package:project/providers/project_provider.dart';
 import 'package:project/screens/configure_task_screen.dart';
 import 'package:project/screens/task_overview_screen.dart';
@@ -29,6 +30,9 @@ class ProjectCalendarScreen extends ConsumerStatefulWidget {
 
 class _ProjectCalendarScreenState extends ConsumerState<ProjectCalendarScreen> {
   DateTime selectedDay = DateTime.now();
+
+  bool isCollaborator(WidgetRef ref, Project project) =>
+      project.collaborators.contains(ref.watch(authProvider).currentUser!.uid);
 
   @override
   Widget build(BuildContext context) {
@@ -57,7 +61,14 @@ class _ProjectCalendarScreenState extends ConsumerState<ProjectCalendarScreen> {
           _calendar(project),
         ],
       ),
-      floatingActionButton: _addNewTaskButton(project, context, selectedDay),
+      floatingActionButton: Visibility(
+        visible: isCollaborator(ref, project),
+        child: _addNewTaskButton(
+          project,
+          context,
+          selectedDay,
+        ),
+      ),
     );
   }
 
@@ -132,7 +143,7 @@ class _ProjectCalendarScreenState extends ConsumerState<ProjectCalendarScreen> {
             ref.watch(projectProvider).getProject(project.projectId));
         Navigator.of(context)
             .pushNamed(ConfigureTaskScreen.routeName,
-                arguments: model.Task(deadline: newDate))
+                arguments: Task(deadline: newDate))
             .whenComplete(() => setState(() {}));
       },
       child: const Icon(
