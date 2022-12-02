@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 
 /// Represents a message.
 abstract class Message {
@@ -60,9 +61,16 @@ abstract class Message {
     List<Message> comments = [];
 
     for (var value in data) {
-      Message? comment = fromMap(value.data());
-      if (comment != null) {
-        comments.add(comment);
+      if (data is List<Map<String, dynamic>>) {
+        Message? comment = fromMap(value);
+        if (comment != null) {
+          comments.add(comment);
+        }
+      } else {
+        Message? comment = fromMap(value.data());
+        if (comment != null) {
+          comments.add(comment);
+        }
       }
     }
     return comments;
@@ -84,6 +92,16 @@ abstract class Message {
     }
 
     return map;
+  }
+
+  @override
+  int get hashCode => messageId.hashCode + otherId.hashCode + author.hashCode;
+
+  @override
+  bool operator ==(Object other) {
+    return messageId == (other as Message).messageId &&
+        author == other.author &&
+        otherId == other.otherId;
   }
 }
 
