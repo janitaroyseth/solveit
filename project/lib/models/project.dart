@@ -13,7 +13,7 @@ class Project {
   List<Tag> tags;
 
   /// User id of the owner of this project.
-  String? owner;
+  String owner;
 
   /// List of users collaborating on this project.
   List<String> collaborators;
@@ -30,29 +30,51 @@ class Project {
   /// When the project was last updated.
   String? lastUpdated;
 
+  /// Creates an instance of [Project],
+  Project({
+    this.projectId = "",
+    this.title = "",
+    List<Tag>? tags,
+    this.owner = "",
+    List<String>? collaborators,
+    String? imageUrl,
+    this.description = "",
+    this.lastUpdated,
+    this.isPublic = false,
+  })  : imageUrl = imageUrl ?? projectAvatars[0],
+        collaborators = collaborators ?? [],
+        tags = tags ?? [];
+
   /// Converts a [Map] object to a [Project] object.
   static Project? fromMap(Map<String, dynamic>? data) {
     if (null == data) {
       return null;
     }
-    final String id = data["projectId"];
-    final String title = data['title'];
-    final String description = data['description'];
-    final List<String> collaborators = data["collaborators"].cast<String>();
-    final bool isPublic = data["isPublic"];
-    final String owner = data["owner"];
+    final String? id = data["projectId"];
+    final String? title = data['title'];
+    final String? description = data['description'] ?? "";
+    final List<String>? collaborators = data["collaborators"] != null
+        ? data["collaborators"].cast<String>()
+        : <String>[];
+    final bool? isPublic = data["isPublic"] ?? false;
+    final String? owner = data["owner"];
     final String? lastUpdated = data['lastUpdated'];
-    final String imageUrl = data['imageUrl'];
-    final List<Tag> tags = Tag.fromMaps(data["tags"]);
+    final String? imageUrl = data['imageUrl'];
+    final List<Tag> tags =
+        data["tags"] != null ? Tag.fromMaps(data["tags"]) : <Tag>[];
+
+    if (id == null || title == null || owner == null) {
+      return null;
+    }
 
     return Project(
       projectId: id,
       title: title,
       imageUrl: imageUrl,
-      description: description,
+      description: description!,
       owner: owner,
       collaborators: collaborators,
-      isPublic: isPublic,
+      isPublic: isPublic!,
       lastUpdated: lastUpdated,
       tags: tags,
     );
@@ -84,21 +106,6 @@ class Project {
       "lastUpdated": lastUpdated
     };
   }
-
-  /// Creates an instance of [Project],
-  Project({
-    this.projectId = "",
-    this.title = "project title",
-    List<Tag>? tags,
-    this.owner,
-    List<String>? collaborators,
-    String? imageUrl,
-    this.description = "",
-    this.lastUpdated,
-    this.isPublic = false,
-  })  : imageUrl = imageUrl ?? projectAvatars[0],
-        collaborators = collaborators ?? [],
-        tags = tags ?? [];
 
   @override
   int get hashCode => projectId.hashCode;
