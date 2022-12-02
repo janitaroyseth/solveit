@@ -1,3 +1,5 @@
+import 'package:xor_cipher/xor_cipher.dart';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
@@ -14,6 +16,8 @@ abstract class Message {
 
   // The date on which the message was made.
   DateTime date;
+
+  static String encryptionKey = "Group3";
 
   /// Creates an instce of [Message].
   Message({
@@ -49,7 +53,7 @@ abstract class Message {
           otherId: otherId,
           author: author,
           date: date,
-          text: text);
+          text: XOR.decrypt(text, "Group3", urlDecode: true));
     } else {
       return null;
     }
@@ -86,7 +90,7 @@ abstract class Message {
     };
 
     if (message is TextMessage) {
-      map["text"] = message.text;
+      map["text"] = XOR.encrypt(message.text, "Group3", urlEncode: true);
     } else if (message is ImageMessage) {
       map["imageUrl"] = message.imageUrl;
     }
