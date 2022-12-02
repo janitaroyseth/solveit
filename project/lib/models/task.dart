@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:project/models/message.dart';
 import 'package:project/models/tag.dart';
 
 /// Represents a task in a project.
@@ -18,8 +17,6 @@ class Task {
   bool done;
   // The (optional) deadline of the task.
   DateTime? deadline;
-  // List of comments of this task.
-  List<Message> comments;
 
   /// List of the users assigned ot this task.
   List<String> assigned;
@@ -32,10 +29,8 @@ class Task {
     List<Tag>? tags,
     this.done = false,
     this.deadline,
-    List<Message>? comments,
     List<String>? assigned,
-  })  : comments = comments ?? [],
-        assigned = assigned ?? [],
+  })  : assigned = assigned ?? [],
         tags = tags ?? [];
 
   /// Converts a [Map] object to a [Task] object.
@@ -43,24 +38,27 @@ class Task {
     if (data == null) {
       return null;
     }
-    final String taskId = data["taskId"];
-    final String projectId = data["projectId"];
-    final String title = data['title'];
-    final String description = data['description'];
-    final bool done = data['done'];
+    final String? taskId = data["taskId"];
+    final String? projectId = data["projectId"];
+    final String? title = data['title'];
+    final String? description = data['description'] ?? "";
+    final bool? done = data['done'] ?? false;
     final DateTime? deadline = data['deadline'] != null
         ? (data['deadline'] as Timestamp).toDate()
         : null;
-    final List<Message> comments = [];
-    final List<String> assigned = data["assigned"].cast<String>();
-    final tags = Tag.fromMaps(data["tags"]);
+
+    final List<String>? assigned =
+        data["assigned"] != null ? data["assigned"].cast<String>() : [];
+    final tags = data["tags"] != null ? Tag.fromMaps(data["tags"]) : <Tag>[];
+
+    if (taskId == null || projectId == null || title == null) return null;
 
     return Task(
       taskId: taskId,
       projectId: projectId,
       title: title,
-      description: description,
-      done: done,
+      description: description!,
+      done: done!,
       deadline: deadline,
       assigned: assigned,
       tags: tags,
@@ -88,7 +86,6 @@ class Task {
       deadline,
       tags,
       assigned,
-      comments
     ];
   }
 
@@ -101,9 +98,16 @@ class Task {
       "description": description,
       "done": done,
       "deadline": deadline,
-      "comments": comments.map((e) => e.messageId).toList(),
       "assigned": assigned,
       "tags": tags.map((e) => e.toMap()).toList(),
     };
+  }
+
+  @override
+  int get hashCode => taskId.hashCode + projectId.hashCode;
+
+  @override
+  bool operator ==(Object other) {
+    return taskId == (other as Task).taskId && projectId == other.projectId;
   }
 }
