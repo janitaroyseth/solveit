@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:project/models/group.dart';
 import 'package:project/models/project.dart';
 import 'package:project/providers/auth_provider.dart';
 import 'package:project/models/user.dart';
+import 'package:project/providers/chat_provder.dart';
 import 'package:project/providers/project_provider.dart';
 import 'package:project/providers/user_provider.dart';
+import 'package:project/screens/chat_screen.dart';
 import 'package:project/screens/edit_profile_screen.dart';
 import 'package:project/screens/project_preview_screen.dart';
 import 'package:project/styles/curve_clipper.dart';
@@ -31,15 +34,23 @@ class ProfileScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    /// The user id of the user to display.
     String? userId = ModalRoute.of(context)!.settings.arguments as String?;
-    _ProfileScreenView? userType;
+
+    /// The view mode to display the screen in.
+    _ProfileScreenView? userType = Navigator.of(context).canPop()
+        ? _ProfileScreenView.other
+        : _ProfileScreenView.current;
+
+    /// The current user's user id.
+    String currentUser = ref.watch(authProvider).currentUser!.uid;
 
     /// Returns a [Stream] of a [User].
     Stream<User?> getUserStream() {
       if (userId == null ||
           userId == ref.watch(authProvider).currentUser!.uid) {
         userType = _ProfileScreenView.current;
-        userId = ref.watch(authProvider).currentUser!.uid;
+        userId = currentUser;
         return ref.watch(userProvider).getUser(userId!);
       }
       userType = _ProfileScreenView.other;
@@ -51,7 +62,18 @@ class ProfileScreen extends ConsumerWidget {
         foregroundColor: Colors.white,
         backgroundColor: Themes.primaryColor,
         title: appBarTitle(ref),
-        actions: [profileMenuButton(context, ref)],
+        actions: [
+          userType == _ProfileScreenView.current
+              ? profileMenuButton(context, ref)
+              : Visibility(
+                  visible: userId != currentUser,
+                  child: _userPopUpMenu(context, ref, userId!),
+                ),
+        ],
+        leading: Visibility(
+          visible: userType == _ProfileScreenView.other,
+          child: _backButton(context),
+        ),
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -137,84 +159,76 @@ class ProfileScreen extends ConsumerWidget {
   AppBarButton profileMenuButton(BuildContext context, WidgetRef ref) {
     return AppBarButton(
       handler: () => showModalBottomSheet(
-        shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(20.0),
-            topRight: Radius.circular(20.0),
-          ),
-        ),
         context: context,
-        builder: (context) => Container(
-          decoration: const BoxDecoration(
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(20.0),
-              topRight: Radius.circular(20.0),
-            ),
-          ),
-          height: 300,
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-              children: <Widget>[
-                Container(
-                  height: 3,
-                  width: 100,
-                  decoration: const BoxDecoration(
-                    color: Colors.black,
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(50.0),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 4.0),
-                ModalListItem(
-                  icon: PhosphorIcons.userCircleGearLight,
-                  label: "edit profile",
-                  handler: () {
-                    Navigator.of(context).pop();
-                    Navigator.of(context)
-                        .pushNamed(EditProfileScreen.routeName);
-                  },
-                ),
-                ModalListItem(
-                  icon: PhosphorIcons.gearSixLight,
-                  label: "settings",
-                  handler: () {
-                    Navigator.of(context).pop();
-                    Navigator.of(context).pushNamed(
-                      UserSettingsScreen.routeName,
-                    );
-                  },
-                ),
-                ModalListItem(
-                  icon: PhosphorIcons.signOutLight,
-                  label: "log out",
-                  handler: () {
-                    Navigator.of(context).pop();
-                    _logout(ref);
-                  },
-                ),
-                ModalListItem(
-                  handler: () => showDialog(
-                    context: context,
-                    builder: (context) => const AboutDialog(
-                      applicationLegalese:
-                          "Copyright © 2022 NTNU, IDATA2503 Group 3 - Espen, Sakarias and Janita",
-                      applicationVersion: "version 0.0.1",
-                      applicationName: "solveit",
-                    ),
-                  ),
-                  icon: PhosphorIcons.infoLight,
-                  label: "app info",
-                ),
-              ],
-            ),
-          ),
-        ),
+        builder: (context) => _profileMenuBottomSheet(context, ref),
       ),
       tooltip: "User menu",
       icon: PhosphorIcons.list,
       color: Colors.white,
+    );
+  }
+
+  /// Returns a Widget displaying the menu options for the user.
+  SizedBox _profileMenuBottomSheet(BuildContext context, WidgetRef ref) {
+    return SizedBox(
+      height: 300,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          children: <Widget>[
+            Container(
+              height: 3,
+              width: 100,
+              decoration: const BoxDecoration(
+                color: Colors.black,
+                borderRadius: BorderRadius.all(
+                  Radius.circular(50.0),
+                ),
+              ),
+            ),
+            const SizedBox(height: 4.0),
+            ModalListItem(
+              icon: PhosphorIcons.userCircleGearLight,
+              label: "edit profile",
+              handler: () {
+                Navigator.of(context).pop();
+                Navigator.of(context).pushNamed(EditProfileScreen.routeName);
+              },
+            ),
+            ModalListItem(
+              icon: PhosphorIcons.gearSixLight,
+              label: "settings",
+              handler: () {
+                Navigator.of(context).pop();
+                Navigator.of(context).pushNamed(
+                  UserSettingsScreen.routeName,
+                );
+              },
+            ),
+            ModalListItem(
+              icon: PhosphorIcons.signOutLight,
+              label: "log out",
+              handler: () {
+                Navigator.of(context).pop();
+                _logout(ref);
+              },
+            ),
+            ModalListItem(
+              handler: () => showDialog(
+                context: context,
+                builder: (context) => const AboutDialog(
+                  applicationLegalese:
+                      "Copyright © 2022 NTNU, IDATA2503 Group 3 - Espen, Sakarias and Janita",
+                  applicationVersion: "version 0.0.1",
+                  applicationName: "solveit",
+                ),
+              ),
+              icon: PhosphorIcons.infoLight,
+              label: "app info",
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -247,6 +261,69 @@ class ProfileScreen extends ConsumerWidget {
   void _logout(WidgetRef ref) {
     final auth = ref.read(authProvider);
     auth.signOut();
+  }
+
+  Widget _userPopUpMenu(BuildContext context, WidgetRef ref, String userId) {
+    return PopupMenuButton(
+      onSelected: (value) {
+        switch (value) {
+          case 1:
+            _navigateToChatScreen(ref, context, userId);
+            break;
+          default:
+        }
+      },
+      icon: const Icon(
+        PhosphorIcons.dotsThreeVertical,
+        size: 34,
+      ),
+      itemBuilder: (context) => [
+        const PopupMenuItem(
+          height: 40,
+          value: 1,
+          child: Text("send message"),
+        ),
+      ],
+    );
+  }
+
+  /// Button going back to previous screen.
+  AppBarButton _backButton(BuildContext context) {
+    return AppBarButton(
+      icon: PhosphorIcons.caretLeftLight,
+      handler: () => Navigator.of(context).pop(),
+      tooltip: "Go back",
+      color: Colors.white,
+    );
+  }
+
+  /// Creates a new chat group if one does not already exists. Navigates to the
+  /// chat screen.
+  void _navigateToChatScreen(
+      WidgetRef ref, BuildContext context, String userId) {
+    String currentUser = ref.watch(authProvider).currentUser!.uid;
+    ref.watch(chatProvider).getGroups().first.then((groups) {
+      for (Group group in groups) {
+        if (group.members.contains(userId) &&
+            group.members.contains(currentUser)) {
+          Navigator.of(context).pushNamed(
+            ChatScreen.routeName,
+            arguments: group.groupId,
+          );
+          return;
+        }
+      }
+      ref
+          .read(chatProvider)
+          .saveGroup(Group(members: [userId, currentUser]))
+          .then(
+            (value) => Navigator.of(context).pushNamed(
+              ChatScreen.routeName,
+              arguments: value.groupId,
+            ),
+          );
+      return;
+    });
   }
 }
 
@@ -350,47 +427,57 @@ class _ProfileProjectListState extends ConsumerState<_ProfileProjectList> {
       padding: const EdgeInsets.only(left: 16.0),
       child: Row(
         children: <Widget>[
-          isSelected == owner
-              ? ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      isSelected = owner;
-                    });
-                  },
-                  style: Themes.softPrimaryElevatedButtonStyle,
-                  child: Text(owner),
-                )
-              : TextButton(
-                  style: Themes.textButtonStyle(ref),
-                  onPressed: () {
-                    setState(() {
-                      isSelected = owner;
-                    });
-                  },
-                  child: Text(owner),
-                ),
+          _projectsAsOwnerButton(),
           const SizedBox(width: 4.0),
-          isSelected == collaborator
-              ? ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      isSelected = collaborator;
-                    });
-                  },
-                  style: Themes.softPrimaryElevatedButtonStyle,
-                  child: Text(collaborator),
-                )
-              : TextButton(
-                  style: Themes.textButtonStyle(ref),
-                  onPressed: () {
-                    setState(() {
-                      isSelected = collaborator;
-                    });
-                  },
-                  child: Text(collaborator),
-                ),
+          _projectsAsCollaboratorButton(),
         ],
       ),
     );
+  }
+
+  /// Returns a button for selecting the projects the user is a owner for.
+  Widget _projectsAsOwnerButton() {
+    return isSelected == owner
+        ? ElevatedButton(
+            onPressed: () {
+              setState(() {
+                isSelected = owner;
+              });
+            },
+            style: Themes.softPrimaryElevatedButtonStyle,
+            child: Text(owner),
+          )
+        : TextButton(
+            style: Themes.textButtonStyle(ref),
+            onPressed: () {
+              setState(() {
+                isSelected = owner;
+              });
+            },
+            child: Text(owner),
+          );
+  }
+
+  /// Returns a button for selecting the projects the user is a collaborator on.
+  Widget _projectsAsCollaboratorButton() {
+    return isSelected == collaborator
+        ? ElevatedButton(
+            onPressed: () {
+              setState(() {
+                isSelected = collaborator;
+              });
+            },
+            style: Themes.softPrimaryElevatedButtonStyle,
+            child: Text(collaborator),
+          )
+        : TextButton(
+            style: Themes.textButtonStyle(ref),
+            onPressed: () {
+              setState(() {
+                isSelected = collaborator;
+              });
+            },
+            child: Text(collaborator),
+          );
   }
 }
