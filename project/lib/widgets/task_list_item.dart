@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:jiffy/jiffy.dart';
-import 'package:project/providers/task_provider.dart';
-import 'package:project/screens/task_details_screen.dart';
-import '../models/task.dart';
+import 'package:project/models/task.dart';
+import 'package:project/styles/theme.dart';
+import 'package:project/utilities/date_formatting.dart';
 
 import 'tags_list.dart';
 
@@ -12,8 +11,10 @@ class TaskListItem extends ConsumerWidget {
   /// The [task] to be converted.
   final Task task;
 
+  final void Function() handler;
+
   /// Creates an instance of [TaskListItem].
-  const TaskListItem({super.key, required this.task});
+  const TaskListItem({super.key, required this.task, required this.handler});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -21,12 +22,7 @@ class TaskListItem extends ConsumerWidget {
       children: <Widget>[
         const Divider(),
         InkWell(
-          onTap: () {
-            ref.read(editTaskProvider.notifier).setTask(task);
-            ref.read(currentTaskProvider.notifier).setTask(
-                ref.watch(taskProvider).getTask(task.projectId, task.taskId));
-            Navigator.of(context).pushNamed(TaskDetailsScreen.routeName);
-          },
+          onTap: handler,
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Column(
@@ -38,15 +34,57 @@ class TaskListItem extends ConsumerWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
                       Expanded(
-                        child: Text(
-                          task.title.toLowerCase(),
-                          textAlign: TextAlign.start,
-                          style: Theme.of(context).textTheme.titleMedium,
+                        child: Row(
+                          children: [
+                            Flexible(
+                              fit: FlexFit.loose,
+                              child: Text(
+                                "${task.title.toLowerCase()} mklgmkldfmgkdlfmgkldfgmdfklmgkfldmgklfdmgkldmfgklmdfkglmfklgmdkfl",
+                                textAlign: TextAlign.start,
+                                maxLines: 1,
+                                softWrap: true,
+                                overflow: TextOverflow.ellipsis,
+                                style: Theme.of(context).textTheme.titleMedium,
+                              ),
+                            ),
+                            Expanded(
+                              child: Visibility(
+                                visible: task.done,
+                                child: Text(
+                                  "- solved",
+                                  textAlign: TextAlign.start,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleMedium!
+                                      .copyWith(
+                                        color: Themes.textColor(ref)
+                                            .withOpacity(0.6),
+                                      ),
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              child: Visibility(
+                                visible: !task.done,
+                                child: Text(
+                                  "- open",
+                                  textAlign: TextAlign.start,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleMedium!
+                                      .copyWith(
+                                        color: Themes.primaryColor.shade50,
+                                      ),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 8.0)
+                          ],
                         ),
                       ),
                       Text(
                         task.deadline != null
-                            ? Jiffy(task.deadline).format("dd/MM/yyyy")
+                            ? DateFormatting.shortDate(ref, task.deadline!)
                             : "-",
                         style: Theme.of(context).textTheme.labelSmall,
                       )

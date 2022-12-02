@@ -33,6 +33,7 @@ dependencies:
   flutter_facebook_auth: ^5.0.6
   flutter_colorpicker: ^1.0.3
   rxdart: ^0.27.7
+  xor_cipher: ^1.0.0+1
 
 dev_dependencies:
   flutter_test:
