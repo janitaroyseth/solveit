@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 final List<String> projectAvatars = [
   "assets/images/project_1.png",
   "assets/images/project_2.png",

@@ -29,16 +29,15 @@ class FirebaseCommentImageService implements CommentImageService {
 
   @override
   Future<void> deleteCommentImage(String taskId, String commentUrl) {
-    return commentImagesReference.child(taskId).listAll().then(
-          (value) => value.items.forEach(
-            (element) {
+    return commentImagesReference.child(taskId).listAll().then((value) => {
+          for (var element in value.items)
+            {
               element.getDownloadURL().then((value) {
                 if (value == commentUrl) {
                   element.delete();
                 }
-              });
-            },
-          ),
-        );
+              })
+            }
+        });
   }
 }

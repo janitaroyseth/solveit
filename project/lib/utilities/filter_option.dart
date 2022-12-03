@@ -1,5 +1,3 @@
-import 'package:project/models/tag.dart';
-
 /// Represents a filtering option for a filter.
 class FilterOption {
   /// [String] the displayed name of the filter option.
