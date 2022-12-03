@@ -1,5 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+import 'package:github_sign_in/github_sign_in.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 abstract class AuthService {
@@ -19,6 +22,9 @@ abstract class AuthService {
 
   /// Signing in with Google.
   Future<UserCredential?> signInWithGoogle();
+
+  /// Signing in with Github.
+  Future<UserCredential?> signInWithGithub(BuildContext context);
 
   /// Sign out.
   Future<void> signOut();
@@ -118,5 +124,25 @@ class Auth implements AuthService {
     await _facebookLogin.logOut();
     await _googleSignIn?.signOut();
     await _fireBaseAuth.signOut();
+  }
+
+  @override
+  Future<UserCredential?> signInWithGithub(BuildContext context) async {
+    print("${dotenv.env["GITHUB_CLIENT_ID"]}");
+    print("${dotenv.env["GITHUB_CLIENT_SECRET"]}");
+    print("${dotenv.env["GITHUB_REDIRECT_URL"]}");
+    final GitHubSignIn gitHubSignIn = GitHubSignIn(
+        clientId: "${dotenv.env["GITHUB_CLIENT_ID"]}",
+        clientSecret: "${dotenv.env["GITHUB_CLIENT_SECRET"]}",
+        redirectUrl: "${dotenv.env["GITHUB_REDIRECT_URL"]}");
+    // Trigger the sign-in flow
+    final result = await gitHubSignIn.signIn(context);
+
+    final githubAuthCredential = GithubAuthProvider.credential(result.token!);
+    // Create a credential from the access token
+
+    // Once signed in, return the UserCredential
+    return await FirebaseAuth.instance
+        .signInWithCredential(githubAuthCredential);
   }
 }

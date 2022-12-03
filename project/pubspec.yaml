@@ -34,6 +34,7 @@ dependencies:
   flutter_colorpicker: ^1.0.3
   rxdart: ^0.27.7
   xor_cipher: ^1.0.0+1
+  github_sign_in: ^0.0.5-dev.4
 
 dev_dependencies:
   flutter_test:
