@@ -87,7 +87,7 @@ class MyApp extends StatelessWidget {
               const CollaboratorsScreen(),
           TagsScreen.routeName: (context) => const TagsScreen(),
           EditTagScreen.routeName: (context) => const EditTagScreen(),
-          ChatScreen.routeName: (context) => ChatScreen(),
+          ChatScreen.routeName: (context) => const ChatScreen(),
         },
       ),
     );

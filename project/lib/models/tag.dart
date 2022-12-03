@@ -60,7 +60,7 @@ class Tag {
     if (text == (other as Tag).text && color == (other).color) {
       return true;
     }
-    if (tagId == (other as Tag).tagId) {
+    if (tagId == other.tagId) {
       return true;
     }
     return false;

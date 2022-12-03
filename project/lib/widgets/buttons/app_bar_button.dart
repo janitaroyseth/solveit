@@ -27,7 +27,7 @@ class AppBarButton extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    bool darkMode = ref.watch(darkModeProvider.notifier).state;
+    bool darkMode = ref.watch(darkModeProvider);
 
     return IconButton(
       onPressed: handler,
