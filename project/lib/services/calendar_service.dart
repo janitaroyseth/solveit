@@ -32,39 +32,45 @@ class CalendarService {
 
   void addTasksToCalendar(
       {required List<Task> tasks, required String email}) async {
-    String calendarId = await _getCalendar(email) ?? "";
-    if (calendarId.isEmpty) return;
-
-    for (Task task in tasks) {
-      _addTaskEvent(calendarId, task);
-    }
+    await _getCalendar(email).then(
+      (value) async {
+        for (Task task in tasks) {
+          await _addTaskEvent(value, task);
+        }
+      },
+    );
   }
 
   Future<void> addTaskToCalendar(
       {required Task task, required String email}) async {
-    String calendarId = await _getCalendar(email) ?? "";
-    if (calendarId.isEmpty) return;
-    return _addTaskEvent(calendarId, task);
+    _getCalendar(email).then((value) {
+      if (value.isNotEmpty) {
+        _addTaskEvent(value, task);
+      }
+    });
   }
 
   void removeTaskFromCalendar(Calendar calendar, Task task) {}
 
-  void _addTaskEvent(String calendarId, Task task) async {
+  Future<void> _addTaskEvent(String calendarId, Task task) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     // only add if it has a deadline.
     if (task.deadline == null || task.taskId == "") return;
 
     Event? eventToAdd;
-    _fetchEvents(calendarId).then((value) async {
+    await _fetchEvents(calendarId).then((value) async {
       for (Event event in value) {
+        print("existing event id: ${event.eventId}");
         if (event.eventId == prefs.getString(task.taskId)) {
           eventToAdd = event;
-          await _deviceCalendarPlugin.deleteEvent(calendarId, event.eventId);
+          // await _deviceCalendarPlugin
+          //     .deleteEvent(calendarId, event.eventId)
+          //     .then((value) => print(
+          //         "old event with id ${event.eventId} deleted: ${value.data}"));
           break;
         }
       }
     });
-
     // create event
     eventToAdd ??= Event(calendarId);
     TZDateTime startTime =
@@ -78,6 +84,7 @@ class CalendarService {
     // add to calendar
     var result = await _deviceCalendarPlugin.createOrUpdateEvent(eventToAdd);
     if (result!.isSuccess && (result.data?.isNotEmpty ?? false)) {
+      print("successfully added event with id: ${result.data}");
       prefs.setString(task.taskId, result.data!);
     } else {
       if (result.hasErrors) {
@@ -88,17 +95,27 @@ class CalendarService {
     }
   }
 
-  Future<String?> _getCalendar(String email) async {
-    _deviceCalendarPlugin.retrieveCalendars().then((value) {
+  Future<String> _getCalendar(String email) async {
+    String calendarId = "";
+    await _deviceCalendarPlugin.retrieveCalendars().then((value) async {
       for (Calendar calendar in value.data!) {
+        print("calendar: ${calendar.id} : ${calendar.name}");
         if (calendar.name == "SolveIt Calendar") {
-          return calendar.id;
+          print("${calendar.name} : ${calendar.id}");
+          calendarId = calendar.id ?? "";
+          break;
         }
       }
+      if (calendarId == "") {
+        calendarId = (await _deviceCalendarPlugin.createCalendar(
+                    "SolveIt Calendar",
+                    calendarColor: Themes.primaryColor,
+                    localAccountName: email))
+                .data ??
+            "";
+      }
     });
-    return (await _deviceCalendarPlugin.createCalendar("SolveIt Calendar",
-            calendarColor: Themes.primaryColor, localAccountName: email))
-        .data;
+    return calendarId;
   }
 
   Future<Location> _fetchLocation() async {
@@ -120,6 +137,8 @@ class CalendarService {
                 startDate: DateTime.now(),
                 endDate: DateTime.now().add(const Duration(days: 730))))
         .then((value) {
+      print(
+          "fetch event result: hasError: ${value.hasErrors}, data: ${value.data}");
       if (value.hasErrors)
         print("FETCH EVENT ERROR: ${value.errors.first.errorMessage}");
       if (value.data != null) {

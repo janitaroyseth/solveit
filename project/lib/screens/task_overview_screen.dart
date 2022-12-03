@@ -273,20 +273,19 @@ class _TaskOverviewBodyState extends ConsumerState<_TaskOverviewBody> {
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           final tasks = snapshot.data!;
-          ref.read(calendarProvider).addTasksToCalendar(
-              tasks: tasks as List<Task>,
-              email: ref.read(authProvider).currentUser!.email!);
           return Expanded(
             child: ListView.builder(
               padding: EdgeInsets.zero,
               itemBuilder: ((context, index) => TaskListItem(
-                    task: tasks[index],
+                    task: tasks[index]!,
                     handler: () {
-                      ref.read(editTaskProvider.notifier).setTask(tasks[index]);
+                      ref
+                          .read(editTaskProvider.notifier)
+                          .setTask(tasks[index]!);
                       ref.read(currentTaskProvider.notifier).setTask(ref
                           .watch(taskProvider)
                           .getTask(
-                              tasks[index].projectId, tasks[index].taskId));
+                              tasks[index]!.projectId, tasks[index]!.taskId));
                       Navigator.of(context).pushNamed(
                           TaskDetailsScreen.routeName,
                           arguments: _project.collaborators.contains(
