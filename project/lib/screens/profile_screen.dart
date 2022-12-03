@@ -67,7 +67,7 @@ class ProfileScreen extends ConsumerWidget {
               ? profileMenuButton(context, ref)
               : Visibility(
                   visible: userId != currentUser,
-                  child: _userPopUpMenu(context, ref, userId!),
+                  child: _userPopUpMenu(context, ref, userId ?? currentUser),
                 ),
         ],
         leading: Visibility(
