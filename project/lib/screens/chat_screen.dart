@@ -168,12 +168,9 @@ class ChatScreen extends ConsumerWidget {
       handler: () {
         ref.watch(chatProvider).getChats(groupId).first.then((value) {
           if (value.isEmpty) {
-            ref
-                .read(chatProvider)
-                .deleteGroup(groupId)
-                .whenComplete(() => Navigator.of(context).pop());
+            ref.read(chatProvider).deleteGroup(groupId);
           }
-        });
+        }).whenComplete(() => Navigator.of(context).pop());
       },
       tooltip: "Go back",
       icon: PhosphorIcons.caretLeftLight,
