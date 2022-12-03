@@ -157,6 +157,27 @@ class __SignInFormState extends ConsumerState<_SignInForm> {
     });
   }
 
+  /// Signing the user in with Github.
+  signInWithGithub(BuildContext context) {
+    final auth = ref.read(authProvider);
+    auth.signInWithGithub(context).then((value) {
+      if (value != null &&
+          value.user != null &&
+          value.additionalUserInfo!.isNewUser) {
+        String userId = value.user!.uid;
+        ref.read(userProvider).addUser(
+              userId: userId,
+              username: value.user!.displayName!,
+              email: value.user!.email!,
+            );
+        Navigator.of(context).pushNamed(
+          CreateProfileScreen.routeName,
+          arguments: userId,
+        );
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Form(
@@ -196,7 +217,7 @@ class __SignInFormState extends ConsumerState<_SignInForm> {
             children: <Widget>[
               facebookButton(),
               googleButton(),
-              appleButton(context),
+              githubButton(context),
             ],
           ),
           const SizedBox(height: 20),
@@ -246,14 +267,12 @@ class __SignInFormState extends ConsumerState<_SignInForm> {
   }
 
   /// Button for signing in with apple.
-  ElevatedButton appleButton(BuildContext context) {
+  ElevatedButton githubButton(BuildContext context) {
     return ElevatedButton(
-      onPressed: () {
-        //TODO: Set up apple login
-      },
+      onPressed: () => signInWithGithub(context),
       style: Themes.circularButtonStyle,
       child: const Icon(
-        PhosphorIcons.appleLogo,
+        PhosphorIcons.githubLogo,
         size: 36,
       ),
     );
