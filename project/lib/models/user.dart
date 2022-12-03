@@ -7,11 +7,16 @@ class User {
 
   User({
     this.userId = "",
-    required this.username,
-    required this.email,
+    required String username,
+    required String email,
     this.imageUrl,
     this.bio = "",
-  });
+  })  : username = RegExp(r'^[a-zA-Z 1-12]{3,30}$').hasMatch(username)
+            ? username
+            : "invalid username",
+        email = RegExp(r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$").hasMatch(email)
+            ? email
+            : "invalid email";
 
   /// Converts a [Map] object to a [User]  object.
   static User? fromMap(Map<String, dynamic>? data) {

@@ -330,7 +330,7 @@ class __SignInFormState extends ConsumerState<_SignInForm> {
         )) {
           return null;
         }
-        return "7 characters and a number";
+        return "must at least 7 characters and include a number";
       },
       onChanged: (value) {
         password = value;
@@ -353,10 +353,10 @@ class __SignInFormState extends ConsumerState<_SignInForm> {
           TextFormField(
             key: const ValueKey("name"),
             validator: (value) {
-              if (value!.length >= 3) {
+              if (RegExp(r'^[a-zA-Z 1-12]{3,30}$').hasMatch(value!)) {
                 return null;
               }
-              return "name needs to be atleast 3 characters";
+              return "name needs to be between 3 and 30 characters";
             },
             decoration: Themes.inputDecoration(
               ref,
