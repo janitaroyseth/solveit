@@ -9,14 +9,17 @@ import 'package:project/providers/tag_provider.dart';
 import 'package:project/providers/task_provider.dart';
 import 'package:project/screens/edit_tag_screen.dart';
 import 'package:project/styles/theme.dart';
-import 'package:project/widgets/appbar_button.dart';
+import 'package:project/widgets/app_bar_button.dart';
 import 'package:project/widgets/search_bar.dart';
 import 'package:project/widgets/tag_widget.dart';
 
 /// Screen/Scaffold for creating, updating and deleting tags from a project
 /// and adding them to a task.
 class TagsScreen extends ConsumerStatefulWidget {
+  /// Named route for this screen.
   static const String routeName = "/tags";
+
+  /// Creates an instance of [TagsScreen].
   const TagsScreen({super.key});
 
   @override
@@ -24,11 +27,20 @@ class TagsScreen extends ConsumerStatefulWidget {
 }
 
 class _TagsScreenState extends ConsumerState<TagsScreen> {
-  TextEditingController searchController = TextEditingController();
-  late Project project;
-  late Task task;
-  late List<Tag> tags;
-  List<Tag> items = [];
+  /// The text editing controller for the search field
+  final TextEditingController _searchController = TextEditingController();
+
+  /// The project whose tags these belongs to.
+  late Project _project;
+
+  /// The task to add tag to.
+  late Task _task;
+
+  /// List of tags in the project.
+  late List<Tag> _tags;
+
+  /// The tags displayed when searching.
+  final List<Tag> _items = [];
 
   @override
   void initState() {
@@ -37,32 +49,33 @@ class _TagsScreenState extends ConsumerState<TagsScreen> {
 
   @override
   void didChangeDependencies() {
-    project = ref.read(editProjectProvider)!;
-    task = ref.read(editTaskProvider)!;
+    _project = ref.read(editProjectProvider)!;
+    _task = ref.read(editTaskProvider)!;
 
-    tags = project.tags;
-    items.clear();
-    items.addAll(tags.where((element) => !task.tags.contains(element)));
+    _tags = _project.tags;
+    _items.clear();
+    _items.addAll(_tags.where((element) => !_task.tags.contains(element)));
     super.didChangeDependencies();
     setState(() {});
   }
 
+  /// Searching tags.
   void searchFunction(String query) {
     List<Tag> searchResults = [];
 
-    for (Tag tag in tags) {
+    for (Tag tag in _tags) {
       if (tag.text.toLowerCase().contains(query.toLowerCase())) {
         searchResults.add(tag);
       }
     }
 
     if (query.isNotEmpty) {
-      items.clear();
-      items.addAll(searchResults);
+      _items.clear();
+      _items.addAll(searchResults);
       setState(() {});
     } else {
-      items.clear();
-      items.addAll(tags.where((element) => !task.tags.contains(element)));
+      _items.clear();
+      _items.addAll(_tags.where((element) => !_task.tags.contains(element)));
       setState(() {});
     }
   }
@@ -90,7 +103,7 @@ class _TagsScreenState extends ConsumerState<TagsScreen> {
   /// If no tags are connected on current task, the list is not visible.
   Visibility _selectedTagsList(BuildContext context) {
     return Visibility(
-      visible: task.tags.isNotEmpty,
+      visible: _task.tags.isNotEmpty,
       child: Expanded(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -106,10 +119,10 @@ class _TagsScreenState extends ConsumerState<TagsScreen> {
               child: ListView.builder(
                 padding: EdgeInsets.zero,
                 shrinkWrap: true,
-                itemCount: task.tags.length,
+                itemCount: _task.tags.length,
                 itemBuilder: (context, index) => _tagListITem(
                   context,
-                  task.tags[index],
+                  _task.tags[index],
                   null,
                 ),
               ),
@@ -126,18 +139,15 @@ class _TagsScreenState extends ConsumerState<TagsScreen> {
       child: ListView.builder(
         padding: EdgeInsets.zero,
         shrinkWrap: true,
-        itemCount: items.length,
+        itemCount: _items.length,
         itemBuilder: (context, index) => _tagListITem(
           context,
-          items[index],
+          _items[index],
           () {
-            if (!task.tags.contains(items[index])) {
-              task.tags.add(items[index]);
+            if (!_task.tags.contains(_items[index])) {
+              _task.tags.add(_items[index]);
             }
             Navigator.of(context).pop();
-            // ref.read(taskProvider).saveTask(task.projectId, task).then(
-            //       (value) => Navigator.of(context).pop(),
-            //     );
           },
         ),
       ),
@@ -149,7 +159,7 @@ class _TagsScreenState extends ConsumerState<TagsScreen> {
     return SearchBar(
       placeholderText: "Search for tags",
       searchFunction: searchFunction,
-      textEditingController: searchController,
+      textEditingController: _searchController,
     );
   }
 
@@ -158,14 +168,14 @@ class _TagsScreenState extends ConsumerState<TagsScreen> {
     return AppBarButton(
       handler: () {
         Navigator.of(context).pushNamed(EditTagScreen.routeName,
-            arguments: [null, project]).then(
+            arguments: [null, _project]).then(
           (value) => setState(
             () {
-              items.clear();
-              items.addAll(ref
+              _items.clear();
+              _items.addAll(ref
                   .read(editProjectProvider)!
                   .tags
-                  .where((element) => !task.tags.contains(element)));
+                  .where((element) => !_task.tags.contains(element)));
             },
           ),
         );
@@ -219,11 +229,11 @@ class _TagsScreenState extends ConsumerState<TagsScreen> {
             Navigator.of(context)
                 .pushNamed(EditTagScreen.routeName, arguments: [
               tag,
-              project
+              _project
             ]).then((value) => setState(() {
-                      items.clear();
-                      items.addAll(project.tags
-                          .where((element) => !task.tags.contains(element)));
+                      _items.clear();
+                      _items.addAll(_project.tags
+                          .where((element) => !_task.tags.contains(element)));
                     }));
             break;
           case 2:
@@ -280,12 +290,12 @@ class _TagsScreenState extends ConsumerState<TagsScreen> {
         ),
         TextButton(
           onPressed: () {
-            task.tags.remove(tag);
+            _task.tags.remove(tag);
             ref
                 .read(tagProvider)
                 .deleteTag(
                   tag,
-                  project.projectId,
+                  _project.projectId,
                 )
                 .then((value) {
               Navigator.of(context).pop();

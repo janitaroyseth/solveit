@@ -7,7 +7,7 @@ import 'package:project/providers/project_provider.dart';
 import 'package:project/providers/tag_provider.dart';
 import 'package:project/styles/theme.dart';
 import 'package:project/utilities/color_utility.dart';
-import 'package:project/widgets/appbar_button.dart';
+import 'package:project/widgets/app_bar_button.dart';
 import 'package:project/widgets/color_picker_dialog.dart';
 import 'package:project/widgets/tag_widget.dart';
 
@@ -29,44 +29,60 @@ class EditTagScreen extends ConsumerStatefulWidget {
 }
 
 class _EditTagScreenState extends ConsumerState<EditTagScreen> {
-  TextEditingController textController = TextEditingController();
-  late Color? pickedColor;
-  bool showColorError = false;
-  final formKey = GlobalKey<FormState>();
-  late Tag? existingTag;
-  late Tag tag;
-  late Project project;
-  _EditTagMode mode = _EditTagMode.create;
+  /// The text controller for adding text to a tag.
+  final TextEditingController _textController = TextEditingController();
+
+  /// The color of the tag.
+  late Color? _pickedColor;
+
+  /// Whether to display there's an error with color picking.
+  bool _showColorError = false;
+
+  /// Unique key for the form.
+  final _formKey = GlobalKey<FormState>();
+
+  /// The existing tag to edit, if null a new tag is created.
+  late Tag? _existingTag;
+
+  /// The tag to edit, either new or set to the existing tag.
+  late Tag _tag;
+
+  /// The project to add the tag too.
+  late Project _project;
+
+  /// The mode of the screen, whether to edit or create a new tag.
+  _EditTagMode _mode = _EditTagMode.create;
 
   @override
   void didChangeDependencies() {
-    existingTag =
+    _existingTag =
         (ModalRoute.of(context)?.settings.arguments as List)[0] as Tag?;
-    project = ref.read(editProjectProvider)!;
-    mode = existingTag == null ? _EditTagMode.create : _EditTagMode.edit;
-    tag = existingTag ?? Tag();
-    textController.text = tag.text;
-    pickedColor = colorFromString(tag.color);
+    _project = ref.read(editProjectProvider)!;
+    _mode = _existingTag == null ? _EditTagMode.create : _EditTagMode.edit;
+    _tag = _existingTag ?? Tag();
+    _textController.text = _tag.text;
+    _pickedColor = ColorUtility.colorFromString(_tag.color);
     setState(() {});
     super.didChangeDependencies();
   }
 
+  /// Check that field's are valid and saves the current tag.
   void saveTag() async {
-    bool isValid = formKey.currentState!.validate();
+    bool isValid = _formKey.currentState!.validate();
 
-    if (isValid && pickedColor != null && pickedColor != Colors.transparent) {
-      tag.text = textController.text;
-      tag.color = stringFromColor(pickedColor!);
+    if (isValid && _pickedColor != null && _pickedColor != Colors.transparent) {
+      _tag.text = _textController.text;
+      _tag.color = ColorUtility.stringFromColor(_pickedColor!);
       ref
           .read(tagProvider)
           .saveTag(
-              tag: tag, projectId: ref.read(editProjectProvider)!.projectId)
+              tag: _tag, projectId: ref.read(editProjectProvider)!.projectId)
           .then((value) {
-        project.tags.add(value!);
+        _project.tags.add(value!);
         Navigator.of(context).pop();
       });
     } else {
-      if (pickedColor == null) showColorError = true;
+      if (_pickedColor == null) _showColorError = true;
       setState(() {});
     }
   }
@@ -75,7 +91,7 @@ class _EditTagScreenState extends ConsumerState<EditTagScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: _appBarTitle(mode),
+          title: _appBarTitle(_mode),
           leading: _backButton(context),
           actions: [
             _saveButton(),
@@ -84,13 +100,13 @@ class _EditTagScreenState extends ConsumerState<EditTagScreen> {
         child: Padding(
           padding: const EdgeInsets.all(8.0),
           child: Form(
-            key: formKey,
+            key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                _tagTextInputField(tag),
+                _tagTextInputField(_tag),
                 _verticalPadding(),
-                _tagColorField(tag),
+                _tagColorField(_tag),
                 _verticalPadding(),
                 _previewTag(),
               ],
@@ -124,7 +140,7 @@ class _EditTagScreenState extends ConsumerState<EditTagScreen> {
   /// Shows a preview of the tag in creation.
   Widget _previewTag() {
     return Visibility(
-      visible: pickedColor != null,
+      visible: _pickedColor != null,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -132,11 +148,11 @@ class _EditTagScreenState extends ConsumerState<EditTagScreen> {
             "preview",
             style: Theme.of(context).textTheme.labelMedium,
           ),
-          if (pickedColor != null)
+          if (_pickedColor != null)
             TagWidget(
               size: TagSize.large,
-              color: pickedColor!,
-              tagText: textController.text,
+              color: _pickedColor!,
+              tagText: _textController.text,
             ),
         ],
       ),
@@ -156,25 +172,25 @@ class _EditTagScreenState extends ConsumerState<EditTagScreen> {
         TextButton(
           style: Themes.formButtonStyle(ref),
           onPressed: () {
-            showColorError = false;
+            _showColorError = false;
             showDialog(
               context: context,
               builder: (context) => ColorPickerDialog(
                 colorPickerFunction: (Color color) {
-                  pickedColor = color;
+                  _pickedColor = color;
                   setState(() {});
                 },
-                initialColor: pickedColor!,
+                initialColor: _pickedColor!,
               ),
             );
           },
           child: Row(
             children: [
               Visibility(
-                visible: pickedColor != null,
+                visible: _pickedColor != null,
                 child: CircleAvatar(
                   radius: 15,
-                  backgroundColor: pickedColor,
+                  backgroundColor: _pickedColor,
                 ),
               ),
               const SizedBox(width: 8.0),
@@ -183,7 +199,7 @@ class _EditTagScreenState extends ConsumerState<EditTagScreen> {
           ),
         ),
         Visibility(
-          visible: showColorError,
+          visible: _showColorError,
           child: Text(
             "color must be chosen",
             style: TextStyle(color: Theme.of(context).errorColor),
@@ -202,7 +218,7 @@ class _EditTagScreenState extends ConsumerState<EditTagScreen> {
         }
         return null;
       },
-      controller: textController,
+      controller: _textController,
       decoration: Themes.inputDecoration(
         ref,
         "text",

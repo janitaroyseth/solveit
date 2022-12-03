@@ -1,6 +1,6 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../models/settings.dart';
+import '../utilities/settings.dart';
 
 class PreferencesService {
   static final PreferencesService _preferencesService =

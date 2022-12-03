@@ -14,7 +14,6 @@ class FilterOption {
   FilterOption({required this.description, required this.filterBy, this.tag});
 
   @override
-  // TODO: implement hashCode
   int get hashCode => description.hashCode;
 
   @override

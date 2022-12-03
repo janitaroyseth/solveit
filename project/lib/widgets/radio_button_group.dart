@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
-import 'package:project/models/filter_option.dart';
+import 'package:project/utilities/filter_option.dart';
 
-import '../models/filter.dart';
+import '../utilities/filter.dart';
 
 /// Represents a group of radio buttons.
 class RadioButtonGroup extends StatefulWidget {
   /// The list of [FilterOption] this radio group represents.
   final Filter filter;
 
+  /// The intial value of the radio button group.
   final FilterOption? initalValue;
 
   /// Creates an instance of [RadioButtonGroup] from the given [List<FilterOption>].

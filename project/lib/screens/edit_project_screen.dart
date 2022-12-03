@@ -9,7 +9,7 @@ import 'package:project/providers/project_provider.dart';
 import 'package:project/providers/user_provider.dart';
 import 'package:project/screens/collaborators_screen.dart';
 import 'package:project/styles/theme.dart';
-import 'package:project/widgets/appbar_button.dart';
+import 'package:project/widgets/app_bar_button.dart';
 import 'package:project/widgets/loading_spinner.dart';
 import 'package:project/widgets/user_list_item.dart';
 
@@ -28,15 +28,29 @@ class EditProjectScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    /// The project to edit, if null a new project is created.
     final Project? existingProject = ref.read(editProjectProvider);
+
+    /// The mode of this screen, whether to cater to creating a new project
+    /// or editing an existing one.
     final mode = existingProject == null
         ? _EditProjectMode.create
         : _EditProjectMode.edit;
+
+    /// The project being edited, either the existing project if present or a
+    /// new project.
     final Project project = existingProject ?? Project();
 
+    /// Text editing controller for title field
     final titleController = TextEditingController();
+
+    /// Text editing controller for description field.
     final descriptionController = TextEditingController();
+
+    /// Sets the text to the existing title if editing existring project.
     titleController.text = _EditProjectMode.edit == mode ? project.title : "";
+
+    /// Sets the text to the existing description if editing existring project.
     descriptionController.text =
         _EditProjectMode.edit == mode ? project.description : "";
 
@@ -302,6 +316,7 @@ class _PublicProjectOptions extends StatefulWidget {
   /// Creates an instance of public project options.
   const _PublicProjectOptions(this.project);
 
+  /// The project to choose public or private for.
   final Project? project;
 
   @override
@@ -310,13 +325,14 @@ class _PublicProjectOptions extends StatefulWidget {
 
 class _RadioButtonsOptionState extends State<_PublicProjectOptions> {
   /// Current value for whether the project is to be public.
-  bool? isPublic;
+  bool? _isPublic;
+
   @override
   void initState() {
     if (widget.project != null) {
-      isPublic = widget.project?.isPublic;
+      _isPublic = widget.project?.isPublic;
     } else {
-      isPublic = true;
+      _isPublic = true;
     }
     super.initState();
   }
@@ -330,34 +346,42 @@ class _RadioButtonsOptionState extends State<_PublicProjectOptions> {
           "public or private project",
           style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
         ),
-        Row(
-          children: <Widget>[
-            Radio(
-              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              value: true,
-              groupValue: isPublic,
-              onChanged: (value) => setState(() {
-                isPublic = value as bool;
-                widget.project!.isPublic = value;
-              }),
-            ),
-            const Text("public")
-          ],
+        _publicProjectRadio(),
+        _privateProjectRadio(),
+      ],
+    );
+  }
+
+  Row _privateProjectRadio() {
+    return Row(
+      children: [
+        Radio(
+          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          value: false,
+          groupValue: _isPublic,
+          onChanged: (value) => setState(() {
+            _isPublic = value as bool;
+            widget.project!.isPublic = value;
+          }),
         ),
-        Row(
-          children: [
-            Radio(
-              materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-              value: false,
-              groupValue: isPublic,
-              onChanged: (value) => setState(() {
-                isPublic = value as bool;
-                widget.project!.isPublic = value;
-              }),
-            ),
-            const Text("private")
-          ],
+        const Text("private")
+      ],
+    );
+  }
+
+  Row _publicProjectRadio() {
+    return Row(
+      children: <Widget>[
+        Radio(
+          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          value: true,
+          groupValue: _isPublic,
+          onChanged: (value) => setState(() {
+            _isPublic = value as bool;
+            widget.project!.isPublic = value;
+          }),
         ),
+        const Text("public")
       ],
     );
   }
@@ -368,6 +392,7 @@ class _ProjectAvatarPicker extends StatefulWidget {
   /// Creates an instance of [ProjectAvatarPicker].
   const _ProjectAvatarPicker(this.project);
 
+  /// The project to pick an avatar for.
   final Project? project;
 
   @override
@@ -376,11 +401,11 @@ class _ProjectAvatarPicker extends StatefulWidget {
 
 class __ProjectAvatarPickerState extends State<_ProjectAvatarPicker> {
   /// Index of the currently chosen image, defaults to 0.
-  late int chosenIndex;
+  late int _chosenIndex;
 
   @override
   void initState() {
-    chosenIndex = widget.project != null
+    _chosenIndex = widget.project != null
         ? projectAvatars.indexOf(projectAvatars
             .firstWhere((element) => element == widget.project?.imageUrl))
         : 0;
@@ -409,16 +434,17 @@ class __ProjectAvatarPickerState extends State<_ProjectAvatarPicker> {
     );
   }
 
+  /// Returns a list item displaying a project avatar.
   GestureDetector _projectAvatarItem(int index) {
     return GestureDetector(
       onTap: () => setState(() {
-        chosenIndex = index;
-        widget.project!.imageUrl = projectAvatars[chosenIndex];
+        _chosenIndex = index;
+        widget.project!.imageUrl = projectAvatars[_chosenIndex];
       }),
       child: Stack(
         children: [
           Image.asset(projectAvatars[index]),
-          index == chosenIndex
+          index == _chosenIndex
               ? const Padding(
                   padding: EdgeInsets.all(8.0),
                   child: Icon(

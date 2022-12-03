@@ -14,6 +14,7 @@ class SearchBar extends StatefulWidget {
   /// [searchFunction] - the function used for filtering the list.
   final Function searchFunction;
 
+  /// Whether to display filter options.
   final bool filter;
 
   /// [filterModal] - the modal window showing filtering options.
@@ -38,58 +39,69 @@ class _SearchBarState extends State<SearchBar> {
     return Consumer(
       builder: (context, ref, child) => Row(
         children: <Widget>[
-          Expanded(
-            child: Container(
-              height: 50,
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 0.0, vertical: 4.0),
-              child: TextField(
-                controller: widget.textEditingController,
-                onChanged: (value) {
-                  widget.searchFunction(value);
-                },
-                style: TextStyle(
-                  fontSize: 12,
-                  color: Themes.textColor(ref),
-                ),
-                decoration: InputDecoration(
-                  prefixIcon: Icon(
-                    PhosphorIcons.magnifyingGlass,
-                    color: Themes.textColor(ref),
-                  ),
-                  border: InputBorder.none,
-                  enabledBorder: InputBorder.none,
-                  hintStyle: TextStyle(
-                    color: Themes.textColor(ref),
-                  ),
-                  hintText: widget.placeholderText.toLowerCase(),
-                ),
+          _searchInputField(ref),
+          _filterButton(context, ref),
+        ],
+      ),
+    );
+  }
+
+  /// Returns a widget containing a text field for entering a search query.
+  Expanded _searchInputField(WidgetRef ref) {
+    return Expanded(
+      child: Container(
+        height: 50,
+        padding: const EdgeInsets.symmetric(horizontal: 0.0, vertical: 4.0),
+        child: TextField(
+          controller: widget.textEditingController,
+          onChanged: (value) {
+            widget.searchFunction(value);
+          },
+          style: TextStyle(
+            fontSize: 12,
+            color: Themes.textColor(ref),
+          ),
+          decoration: InputDecoration(
+            prefixIcon: Icon(
+              PhosphorIcons.magnifyingGlass,
+              color: Themes.textColor(ref),
+            ),
+            border: InputBorder.none,
+            enabledBorder: InputBorder.none,
+            hintStyle: TextStyle(
+              color: Themes.textColor(ref),
+            ),
+            hintText: widget.placeholderText.toLowerCase(),
+          ),
+        ),
+      ),
+    );
+  }
+
+  /// If [filter] for this instance is set as true, a visible icon button
+  /// for filter options will be displayed.
+  Visibility _filterButton(BuildContext context, WidgetRef ref) {
+    return Visibility(
+      visible: widget.filter,
+      child: IconButton(
+        onPressed: () {
+          showModalBottomSheet(
+            shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(20.0),
+                topRight: Radius.circular(20.0),
               ),
             ),
-          ),
-          widget.filter
-              ? IconButton(
-                  onPressed: () {
-                    showModalBottomSheet(
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(20.0),
-                          topRight: Radius.circular(20.0),
-                        ),
-                      ),
-                      context: context,
-                      builder: (context) {
-                        return widget.filterModal!;
-                      },
-                    );
-                  },
-                  icon: Icon(
-                    PhosphorIcons.fadersHorizontal,
-                    color: Themes.textColor(ref),
-                  ),
-                )
-              : Container(),
-        ],
+            context: context,
+            builder: (context) {
+              return widget.filterModal!;
+            },
+          );
+        },
+        icon: Icon(
+          PhosphorIcons.fadersHorizontal,
+          color: Themes.textColor(ref),
+        ),
       ),
     );
   }

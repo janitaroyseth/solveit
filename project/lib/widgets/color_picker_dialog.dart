@@ -6,9 +6,13 @@ import 'package:project/styles/theme.dart';
 
 /// Dialog for picking a color.
 class ColorPickerDialog extends StatefulWidget {
+  /// void callback used when a color is picked.
   final void Function(Color pickedColor) colorPickerFunction;
+
+  /// The inital color to be displayed.
   final Color initialColor;
 
+  /// Creates an instance of [ColorPickerDialog].
   const ColorPickerDialog({
     super.key,
     required this.colorPickerFunction,
@@ -20,7 +24,10 @@ class ColorPickerDialog extends StatefulWidget {
 }
 
 class _ColorPickerDialogState extends State<ColorPickerDialog> {
+  /// Whether to display swatches or color wheel.
   bool showSwatches = true;
+
+  /// The color picked.
   late Color pickedColor;
 
   @override

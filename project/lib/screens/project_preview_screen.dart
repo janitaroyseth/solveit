@@ -8,7 +8,7 @@ import 'package:project/providers/user_provider.dart';
 import 'package:project/screens/profile_screen.dart';
 import 'package:project/styles/curve_clipper.dart';
 import 'package:project/utilities/date_formatting.dart';
-import 'package:project/widgets/appbar_button.dart';
+import 'package:project/widgets/app_bar_button.dart';
 import 'package:project/widgets/loading_spinner.dart';
 import 'package:project/widgets/project_pop_up_menu.dart';
 import 'package:project/widgets/user_list_item.dart';

@@ -10,10 +10,13 @@ import 'package:project/screens/chat_screen.dart';
 import 'package:project/screens/collaborators_screen.dart';
 import 'package:project/styles/theme.dart';
 import 'package:project/utilities/date_formatting.dart';
-import 'package:project/widgets/appbar_button.dart';
+import 'package:project/widgets/app_bar_button.dart';
 import 'package:project/widgets/loading_spinner.dart';
 
+/// Screen/Scaffold for displaying notifications and messages for the current
+/// user.
 class NotificationsScreen extends ConsumerWidget {
+  /// Creates an instance of [NotificationsScreen].
   const NotificationsScreen({super.key});
 
   @override

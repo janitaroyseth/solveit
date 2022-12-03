@@ -4,20 +4,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/data/sorting_methods.dart';
-import 'package:project/models/filter.dart';
-import 'package:project/models/filter_option.dart';
+import 'package:project/utilities/filter.dart';
+import 'package:project/utilities/filter_option.dart';
 import 'package:project/models/tag.dart';
 import 'package:project/providers/auth_provider.dart';
 import 'package:project/providers/project_provider.dart';
 import 'package:project/providers/task_provider.dart';
-import 'package:project/screens/configure_task_screen.dart';
+import 'package:project/screens/edit_task_screen.dart';
 import 'package:project/screens/project_calendar_screen.dart';
 import 'package:project/screens/task_details_screen.dart';
 import 'package:project/styles/curve_clipper.dart';
 import 'package:project/styles/theme.dart';
 import 'package:project/widgets/loading_spinner.dart';
 import 'package:project/widgets/project_pop_up_menu.dart';
-import 'package:project/widgets/appbar_button.dart';
+import 'package:project/widgets/app_bar_button.dart';
 import 'package:project/widgets/filter_modal.dart';
 import 'package:project/widgets/search_bar.dart';
 import 'package:project/widgets/task_list_item.dart';
@@ -38,31 +38,31 @@ class TaskOverviewScreen extends ConsumerStatefulWidget {
 }
 
 class TaskOverviewScreenState extends ConsumerState {
+  /// The project to show tasks for.
+  Project? _project;
   @override
   Widget build(BuildContext context) {
-    Project project;
-
     return StreamBuilder<Project?>(
       stream: ref.watch(currentProjectProvider),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
-          project = snapshot.data!;
+          _project = snapshot.data!;
 
           return Scaffold(
             extendBodyBehindAppBar: true,
             appBar: AppBar(
               foregroundColor: Colors.white,
               toolbarHeight: 95,
-              title: _appBarTitle(project, context),
+              title: _appBarTitle(context),
               titleSpacing: -4,
               leading: _backButton(context),
               actions: <Widget>[
-                _calendarButton(context, project),
-                _projectPopUpButton(project),
+                _calendarButton(context),
+                _projectPopUpButton(),
               ],
             ),
-            body: _TaskOverviewBody(project),
-            floatingActionButton: _addNewTaskButton(project, context),
+            body: _TaskOverviewBody(_project!),
+            floatingActionButton: _addNewTaskButton(context),
           );
         }
         return const LoadingSpinner();
@@ -71,25 +71,25 @@ class TaskOverviewScreenState extends ConsumerState {
   }
 
   /// Returns the button for displaying a pop up menu for projects.
-  ProjectPopUpMenu _projectPopUpButton(Project project) {
+  ProjectPopUpMenu _projectPopUpButton() {
     return ProjectPopUpMenu(
-      project: project,
+      project: _project!,
       currentRouteName: TaskOverviewScreen.routeName,
     );
   }
 
   /// Returns the title [Row Widget] for this project, containing
   /// an [Image] and a [Text].
-  Row _appBarTitle(Project project, BuildContext context) {
+  Row _appBarTitle(BuildContext context) {
     return Row(
       children: [
         Image.asset(
-          project.imageUrl,
+          _project!.imageUrl,
           height: 90,
         ),
         Expanded(
           child: Text(
-            project.title.toLowerCase(),
+            _project!.title.toLowerCase(),
             overflow: TextOverflow.fade,
             style: Theme.of(context)
                 .appBarTheme
@@ -115,10 +115,11 @@ class TaskOverviewScreenState extends ConsumerState {
   }
 
   /// Button for navigating to the [CalendarScreen].
-  AppBarButton _calendarButton(BuildContext context, Project project) {
+  AppBarButton _calendarButton(BuildContext context) {
     return AppBarButton(
-      handler: () => Navigator.of(context)
-          .popAndPushNamed(ProjectCalendarScreen.routeName, arguments: project),
+      handler: () => Navigator.of(context).popAndPushNamed(
+          ProjectCalendarScreen.routeName,
+          arguments: _project),
       tooltip: "Open calendar for this project",
       icon: PhosphorIcons.calendarCheckLight,
       color: Colors.white,
@@ -126,13 +127,12 @@ class TaskOverviewScreenState extends ConsumerState {
   }
 
   /// Button for adding a new task.TaskDetails
-  FloatingActionButton _addNewTaskButton(
-      Project project, BuildContext context) {
+  FloatingActionButton _addNewTaskButton(BuildContext context) {
     return FloatingActionButton(
       onPressed: () async {
         ref.read(editTaskProvider.notifier).setTask(null);
         Navigator.of(context)
-            .pushNamed(ConfigureTaskScreen.routeName)
+            .pushNamed(EditTaskScreen.routeName)
             .whenComplete(() => setState(() {}));
       },
       child: const Icon(
@@ -154,20 +154,20 @@ class _TaskOverviewBody extends ConsumerStatefulWidget {
 
 class _TaskOverviewBodyState extends ConsumerState<_TaskOverviewBody> {
   final TextEditingController _searchController = TextEditingController();
-  late Project project;
-  String sortType = SortingMethods.dateDesc;
+  late Project _project;
+  String _sortType = SortingMethods.dateDesc;
 
   late Stream<List<Task?>> currentStream;
 
   @override
   void initState() {
-    project = widget.project;
+    _project = widget.project;
     super.initState();
   }
 
   @override
   void didChangeDependencies() {
-    currentStream = ref.watch(taskProvider).getTasks(project.projectId);
+    currentStream = ref.watch(taskProvider).getTasks(_project.projectId);
     _sort();
     super.didChangeDependencies();
   }
@@ -175,13 +175,13 @@ class _TaskOverviewBodyState extends ConsumerState<_TaskOverviewBody> {
   /// When sorting method is changed by user, sort the list by new method.
   /// [FilterOption] filterOption - The sorting method to use when sorting the task list.
   void _onSortChange(FilterOption filterOption) {
-    sortType = filterOption.description;
+    _sortType = filterOption.description;
     _sort();
   }
 
   /// Sorts the task list by the chosen method.
   void _sort() {
-    switch (sortType) {
+    switch (_sortType) {
       case SortingMethods.titleAsc:
         _sortByVariable("title", false);
         break;
@@ -201,7 +201,7 @@ class _TaskOverviewBodyState extends ConsumerState<_TaskOverviewBody> {
   /// [bool] descending - Whether or not the list should be sorted descending.
   void _sortByVariable(String attribute, bool descending) {
     currentStream = ref.watch(taskProvider).getTasks(
-          project.projectId,
+          _project.projectId,
           field: attribute,
           descending: descending,
         );
@@ -217,10 +217,10 @@ class _TaskOverviewBodyState extends ConsumerState<_TaskOverviewBody> {
 
     if (filterOptions.isNotEmpty) {
       currentStream = ref.watch(taskProvider).filterTasksByTag(
-          project.projectId, filterOptions.map((e) => e.tag!).toList());
+          _project.projectId, filterOptions.map((e) => e.tag!).toList());
       setState(() {});
     } else {
-      currentStream = ref.watch(taskProvider).getTasks(project.projectId);
+      currentStream = ref.watch(taskProvider).getTasks(_project.projectId);
       setState(() {});
     }
   }
@@ -241,11 +241,11 @@ class _TaskOverviewBodyState extends ConsumerState<_TaskOverviewBody> {
   _searchFunction(String query) {
     if (_searchController.text.isEmpty) {
       currentStream = ref.watch(taskProvider).getTasks(
-            project.projectId,
+            _project.projectId,
           );
     } else {
       currentStream = ref.watch(taskProvider).searchTask(
-            project.projectId,
+            _project.projectId,
             _searchController.text,
           );
     }
@@ -286,7 +286,7 @@ class _TaskOverviewBodyState extends ConsumerState<_TaskOverviewBody> {
                               tasks[index]!.projectId, tasks[index]!.taskId));
                       Navigator.of(context).pushNamed(
                           TaskDetailsScreen.routeName,
-                          arguments: project.collaborators.contains(
+                          arguments: _project.collaborators.contains(
                               ref.watch(authProvider).currentUser!.uid));
                     },
                   )),
@@ -294,12 +294,7 @@ class _TaskOverviewBodyState extends ConsumerState<_TaskOverviewBody> {
             ),
           );
         }
-        if (snapshot.hasError) {
-          showDialog(
-            context: context,
-            builder: (context) => const DataErrorDialog(),
-          );
-        }
+        if (snapshot.hasError) print(snapshot.error);
         return const LoadingSpinner();
       },
     );
@@ -336,13 +331,13 @@ class _TaskOverviewBodyState extends ConsumerState<_TaskOverviewBody> {
               ),
             ],
             filterHandler: _onSortChange,
-            filterType: FilterType.sort,
+            filterType: FilterType.radio,
           ),
           Filter(
             title: "tags",
-            filterOptions: _buildTagFilterOptions(project),
+            filterOptions: _buildTagFilterOptions(_project),
             filterHandler: _filterByTags,
-            filterType: FilterType.tag,
+            filterType: FilterType.check,
           ),
         ],
       ),
@@ -360,54 +355,3 @@ class _TaskOverviewBodyState extends ConsumerState<_TaskOverviewBody> {
     );
   }
 }
-
-class DataErrorDialog extends ConsumerWidget {
-  const DataErrorDialog({super.key});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    return AlertDialog(
-      title: const Text("An error occured"),
-      content: const Text(
-          "An error occured while loading data, if problem persists please contact customer service"),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: Text(
-            "close",
-            style: TextStyle(
-              color: Themes.textColor(ref),
-            ),
-          ),
-        )
-      ],
-    );
-  }
-}
-
-// /// The list over tasks in the project.
-// class TaskList extends StatefulWidget {
-//   final List<Task?> tasks;
-
-//   final 
-//   // final Project project;
-//   const TaskList({super.key, required this.tasks});
-
-//   @override
-//   State<TaskList> createState() => _TaskListState();
-// }
-
-// class _TaskListState extends State<TaskList> {
-//   @override
-//   Widget build(BuildContext context) {
-//     return Expanded(
-//       child: ListView.builder(
-//         padding: EdgeInsets.zero,
-//         itemBuilder: ((context, index) => TaskListItem(
-//               task: widget.tasks[index]!,
-//             )),
-//         itemCount: widget.tasks.length,
-//       ),
-//     );
-//   }
-// }

@@ -15,11 +15,11 @@ import 'package:project/providers/project_provider.dart';
 import 'package:project/providers/settings_provider.dart';
 import 'package:project/providers/task_provider.dart';
 import 'package:project/providers/user_provider.dart';
-import 'package:project/screens/configure_task_screen.dart';
+import 'package:project/screens/edit_task_screen.dart';
 import 'package:project/screens/profile_screen.dart';
 import 'package:project/styles/theme.dart';
 import 'package:project/utilities/date_formatting.dart';
-import 'package:project/widgets/appbar_button.dart';
+import 'package:project/widgets/app_bar_button.dart';
 import 'package:project/widgets/comment_list.dart';
 import 'package:project/widgets/loading_spinner.dart';
 import 'package:project/widgets/message_input_field.dart';
@@ -483,7 +483,7 @@ class _TaskPopUpMenu extends ConsumerWidget {
   void editTask(WidgetRef ref, BuildContext context) {
     ref.read(editTaskProvider.notifier).setTask(task);
     Navigator.of(context).pushNamed(
-      ConfigureTaskScreen.routeName,
+      EditTaskScreen.routeName,
       arguments: task,
     );
   }
