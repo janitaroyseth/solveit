@@ -19,14 +19,14 @@ import 'package:project/screens/edit_task_screen.dart';
 import 'package:project/screens/profile_screen.dart';
 import 'package:project/styles/theme.dart';
 import 'package:project/utilities/date_formatting.dart';
-import 'package:project/widgets/app_bar_button.dart';
-import 'package:project/widgets/comment_list.dart';
-import 'package:project/widgets/loading_spinner.dart';
-import 'package:project/widgets/message_input_field.dart';
-import 'package:project/widgets/tag_widget.dart';
-import 'package:project/widgets/tags_list.dart';
-import 'package:project/widgets/toggle_task_status_button.dart';
-import 'package:project/widgets/user_list_item.dart';
+import 'package:project/widgets/buttons/app_bar_button.dart';
+import 'package:project/widgets/list/comment_list.dart';
+import 'package:project/widgets/general/loading_spinner.dart';
+import 'package:project/widgets/inputs/message_input_field.dart';
+import 'package:project/widgets/items/tag_list_item.dart';
+import 'package:project/widgets/list/tags_list.dart';
+import 'package:project/widgets/buttons/toggle_task_status_button.dart';
+import 'package:project/widgets/items/user_list_item.dart';
 
 /// Screen/Scaffold for the details of a task in a project
 class TaskDetailsScreen extends ConsumerWidget {

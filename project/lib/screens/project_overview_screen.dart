@@ -7,8 +7,8 @@ import 'package:project/providers/auth_provider.dart';
 import 'package:project/screens/edit_project_screen.dart';
 import 'package:project/screens/task_overview_screen.dart';
 import 'package:project/styles/theme.dart';
-import 'package:project/widgets/app_bar_button.dart';
-import 'package:project/widgets/project_card.dart';
+import 'package:project/widgets/buttons/app_bar_button.dart';
+import 'package:project/widgets/items/project_card.dart';
 
 /// Screen/Scaffold for the overview of projects the user have access to.
 class ProjectOverviewScreen extends ConsumerStatefulWidget {

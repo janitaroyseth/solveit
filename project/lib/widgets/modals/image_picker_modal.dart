@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/styles/theme.dart';
-import 'package:project/widgets/modal_list_item.dart';
+import 'package:project/widgets/items/modal_list_item.dart';
 
 /// Modal sheet displaying options for adding images.
 class ImagePickerModal extends StatefulWidget {

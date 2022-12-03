@@ -12,10 +12,10 @@ import 'package:project/screens/collaborators_screen.dart';
 import 'package:project/screens/tags_screen.dart';
 import 'package:project/styles/theme.dart';
 import 'package:project/utilities/date_formatting.dart';
-import 'package:project/widgets/app_bar_button.dart';
-import 'package:project/widgets/loading_spinner.dart';
-import 'package:project/widgets/tag_widget.dart';
-import 'package:project/widgets/user_list_item.dart';
+import 'package:project/widgets/buttons/app_bar_button.dart';
+import 'package:project/widgets/general/loading_spinner.dart';
+import 'package:project/widgets/items/tag_list_item.dart';
+import 'package:project/widgets/items/user_list_item.dart';
 
 enum _EditTaskMode {
   create,
@@ -186,7 +186,7 @@ class _EditTaskForm extends ConsumerState<_TaskScreenBody> {
             })
           },
           borderRadius: BorderRadius.circular(50),
-          child: TagWidget.fromTag(tag),
+          child: TagListItem.fromTag(tag),
         ),
       );
     }

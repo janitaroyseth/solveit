@@ -8,8 +8,8 @@ import 'package:project/providers/user_provider.dart';
 import 'package:project/screens/create_profile_screen.dart';
 import 'package:project/styles/curve_clipper.dart';
 import 'package:project/styles/theme.dart';
-import 'package:project/widgets/app_bar_button.dart';
-import 'package:project/widgets/loading_spinner.dart';
+import 'package:project/widgets/buttons/app_bar_button.dart';
+import 'package:project/widgets/general/loading_spinner.dart';
 
 /// Screen/Scaffold for updating a users profile page.
 class EditProfileScreen extends ConsumerWidget {

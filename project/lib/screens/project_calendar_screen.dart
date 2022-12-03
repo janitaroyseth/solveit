@@ -11,9 +11,9 @@ import 'package:project/screens/edit_task_screen.dart';
 import 'package:project/screens/task_overview_screen.dart';
 import 'package:project/styles/curve_clipper.dart';
 import 'package:project/styles/theme.dart';
-import 'package:project/widgets/app_bar_button.dart';
-import 'package:project/widgets/calendar.dart';
-import 'package:project/widgets/project_pop_up_menu.dart';
+import 'package:project/widgets/buttons/app_bar_button.dart';
+import 'package:project/widgets/general/calendar.dart';
+import 'package:project/widgets/buttons/project_pop_up_menu.dart';
 
 /// Represents a calnder view of a projects tasks.
 class ProjectCalendarScreen extends ConsumerStatefulWidget {

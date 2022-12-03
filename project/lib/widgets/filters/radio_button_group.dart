@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:project/utilities/filter.dart';
 import 'package:project/utilities/filter_option.dart';
-
-import '../utilities/filter.dart';
 
 /// Represents a group of radio buttons.
 class RadioButtonGroup extends StatefulWidget {

@@ -7,10 +7,10 @@ import 'package:project/providers/settings_provider.dart';
 import 'package:project/providers/user_provider.dart';
 import 'package:project/screens/profile_screen.dart';
 import 'package:project/screens/project_preview_screen.dart';
-import 'package:project/widgets/loading_spinner.dart';
-import 'package:project/widgets/project_card.dart';
-import 'package:project/widgets/search_bar.dart';
-import 'package:project/widgets/user_list_item.dart';
+import 'package:project/widgets/general/loading_spinner.dart';
+import 'package:project/widgets/items/project_card.dart';
+import 'package:project/widgets/inputs/search_bar.dart';
+import 'package:project/widgets/items/user_list_item.dart';
 
 /// Screen/Scaffold for searching users and projects.
 class ExploreScreen extends ConsumerStatefulWidget {
