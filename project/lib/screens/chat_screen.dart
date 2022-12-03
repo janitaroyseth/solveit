@@ -30,6 +30,8 @@ class ChatScreen extends ConsumerWidget {
 
     /// Url of the user participating in this chat.
     String currentUser = ref.watch(authProvider).currentUser!.uid;
+
+    /// The group id for the chats that are being displayed.
     String groupId = ModalRoute.of(context)!.settings.arguments as String;
 
     return FutureBuilder<Group?>(
