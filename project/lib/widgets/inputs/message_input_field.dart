@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/styles/theme.dart';
-import 'package:project/widgets/gif_picker.dart';
+import 'package:project/widgets/modals/gif_picker_modal.dart';
 
 /// Type of message to send.
 enum MessageType {
@@ -254,7 +254,7 @@ class _GifButton extends StatelessWidget {
       onPressed: () => showModalBottomSheet(
           isScrollControlled: true,
           context: context,
-          builder: (context) => GifPicker(handler: widget.handler)),
+          builder: (context) => GifPickerModal(handler: widget.handler)),
       icon: Icon(
         PhosphorIcons.gifFill,
         color: Themes.primaryColor.shade100,

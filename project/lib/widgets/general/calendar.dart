@@ -9,8 +9,8 @@ import 'package:project/providers/task_provider.dart';
 import 'package:project/screens/task_details_screen.dart';
 import 'package:project/styles/theme.dart';
 import 'package:project/utilities/date_formatting.dart';
-import 'package:project/widgets/loading_spinner.dart';
-import 'package:project/widgets/task_list_item.dart';
+import 'package:project/widgets/general/loading_spinner.dart';
+import 'package:project/widgets/items/task_list_item.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 /// Calendar spanning from 2021 to 2 years in the future.

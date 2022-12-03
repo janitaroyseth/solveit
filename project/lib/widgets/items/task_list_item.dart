@@ -5,8 +5,8 @@ import 'package:project/models/user.dart';
 import 'package:project/providers/user_provider.dart';
 import 'package:project/styles/theme.dart';
 import 'package:project/utilities/date_formatting.dart';
-import 'package:project/widgets/loading_spinner.dart';
-import 'package:project/widgets/tags_list.dart';
+import 'package:project/widgets/general/loading_spinner.dart';
+import 'package:project/widgets/list/tags_list.dart';
 
 /// Converts a Task object to a list item used in a task list.
 class TaskListItem extends ConsumerWidget {

@@ -14,10 +14,10 @@ import 'package:project/screens/project_preview_screen.dart';
 import 'package:project/styles/curve_clipper.dart';
 import 'package:project/styles/theme.dart';
 import 'package:project/screens/user_settings_screen.dart';
-import 'package:project/widgets/app_bar_button.dart';
-import 'package:project/widgets/loading_spinner.dart';
-import 'package:project/widgets/modal_list_item.dart';
-import 'package:project/widgets/project_card.dart';
+import 'package:project/widgets/buttons/app_bar_button.dart';
+import 'package:project/widgets/general/loading_spinner.dart';
+import 'package:project/widgets/items/modal_list_item.dart';
+import 'package:project/widgets/items/project_card.dart';
 
 enum _ProfileScreenView {
   current,

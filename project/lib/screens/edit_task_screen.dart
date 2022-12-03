@@ -12,10 +12,10 @@ import 'package:project/screens/collaborators_screen.dart';
 import 'package:project/screens/tags_screen.dart';
 import 'package:project/styles/theme.dart';
 import 'package:project/utilities/date_formatting.dart';
-import 'package:project/widgets/app_bar_button.dart';
-import 'package:project/widgets/loading_spinner.dart';
-import 'package:project/widgets/tag_widget.dart';
-import 'package:project/widgets/user_list_item.dart';
+import 'package:project/widgets/buttons/app_bar_button.dart';
+import 'package:project/widgets/general/loading_spinner.dart';
+import 'package:project/widgets/items/tag_list_item.dart';
+import 'package:project/widgets/items/user_list_item.dart';
 
 enum _EditTaskMode {
   create,
@@ -186,7 +186,7 @@ class _EditTaskForm extends ConsumerState<_TaskScreenBody> {
             })
           },
           borderRadius: BorderRadius.circular(50),
-          child: TagWidget.fromTag(tag),
+          child: TagListItem.fromTag(tag),
         ),
       );
     }
@@ -274,10 +274,27 @@ class _EditTaskForm extends ConsumerState<_TaskScreenBody> {
 
   void _getDate() async {
     DateTime? pickedDate = await showDatePicker(
-        context: context,
-        initialDate: _task.deadline != null ? _task.deadline! : DateTime.now(),
-        firstDate: DateTime.now(),
-        lastDate: DateTime.now().add(const Duration(days: 730)));
+      context: context,
+      helpText: "",
+      initialDate: _task.deadline != null ? _task.deadline! : DateTime.now(),
+      firstDate: DateTime.now(),
+      lastDate: DateTime.now().add(const Duration(days: 730)),
+      builder: (context, child) => Theme(
+        data: Theme.of(context).copyWith(
+          colorScheme: ColorScheme.light(
+            onPrimary: Colors.white, // header background color
+            primary: Themes.primaryColor, // header text color
+            onSurface: Themes.textColor(ref), // body text color
+          ),
+          textButtonTheme: TextButtonThemeData(
+            style: TextButton.styleFrom(
+              foregroundColor: Themes.textColor(ref),
+            ),
+          ),
+        ),
+        child: child!,
+      ),
+    );
     if (null == pickedDate) return;
 
     setState(() {

@@ -4,10 +4,10 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/models/user.dart';
 import 'package:project/providers/project_provider.dart';
 import 'package:project/providers/user_provider.dart';
-import 'package:project/widgets/app_bar_button.dart';
-import 'package:project/widgets/loading_spinner.dart';
-import 'package:project/widgets/search_bar.dart';
-import 'package:project/widgets/user_list_item.dart';
+import 'package:project/widgets/buttons/app_bar_button.dart';
+import 'package:project/widgets/general/loading_spinner.dart';
+import 'package:project/widgets/inputs/search_bar.dart';
+import 'package:project/widgets/items/user_list_item.dart';
 
 enum CollaboratorsSearchType {
   collaborators,

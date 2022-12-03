@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:project/utilities/filter.dart';
 import 'package:project/utilities/filter_option.dart';
 import 'package:project/styles/theme.dart';
-import 'package:project/widgets/tag_widget.dart';
+import 'package:project/widgets/items/tag_list_item.dart';
 
 /// Represents a list item with a checkbox for filtering through lists.
 class CheckboxListItem extends StatefulWidget {
@@ -54,7 +54,7 @@ class _CheckboxListItemState extends State<CheckboxListItem> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            Flexible(child: TagWidget.fromTag(widget.filterOption.value!)),
+            Flexible(child: TagListItem.fromTag(widget.filterOption.value!)),
             _buildCheckMark(filterOption, filter),
           ],
         ),

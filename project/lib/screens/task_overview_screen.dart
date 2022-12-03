@@ -15,12 +15,12 @@ import 'package:project/screens/project_calendar_screen.dart';
 import 'package:project/screens/task_details_screen.dart';
 import 'package:project/styles/curve_clipper.dart';
 import 'package:project/styles/theme.dart';
-import 'package:project/widgets/loading_spinner.dart';
-import 'package:project/widgets/project_pop_up_menu.dart';
-import 'package:project/widgets/app_bar_button.dart';
-import 'package:project/widgets/filter_modal.dart';
-import 'package:project/widgets/search_bar.dart';
-import 'package:project/widgets/task_list_item.dart';
+import 'package:project/widgets/general/loading_spinner.dart';
+import 'package:project/widgets/buttons/project_pop_up_menu.dart';
+import 'package:project/widgets/buttons/app_bar_button.dart';
+import 'package:project/widgets/modals/filter_modal.dart';
+import 'package:project/widgets/inputs/search_bar.dart';
+import 'package:project/widgets/items/task_list_item.dart';
 import 'package:project/models/project.dart';
 import 'package:project/models/task.dart';
 

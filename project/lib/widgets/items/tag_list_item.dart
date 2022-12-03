@@ -6,7 +6,7 @@ import 'package:project/utilities/color_utility.dart';
 enum TagSize { small, large }
 
 /// Represents a tag which descibes a task.
-class TagWidget extends StatelessWidget {
+class TagListItem extends StatelessWidget {
   /// The [size] of the tag, of type enum [Size].
   final TagSize size;
 
@@ -16,16 +16,16 @@ class TagWidget extends StatelessWidget {
   /// [tagText] is the text in the tag, of type [String].
   final String tagText;
 
-  /// Creates an instance of [TagWidget].
-  const TagWidget({
+  /// Creates an instance of [TagListItem].
+  const TagListItem({
     super.key,
     required this.size,
     required this.color,
     required this.tagText,
   });
 
-  /// Creates an instance of [TagWidget] from the given [Tag], defaults to size large.
-  TagWidget.fromTag(Tag tag, {super.key, this.size = TagSize.large})
+  /// Creates an instance of [TagListItem] from the given [Tag], defaults to size large.
+  TagListItem.fromTag(Tag tag, {super.key, this.size = TagSize.large})
       : tagText = tag.text,
         color = ColorUtility.colorFromString(tag.color);
 

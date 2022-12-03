@@ -7,9 +7,9 @@ import 'package:project/providers/project_provider.dart';
 import 'package:project/providers/tag_provider.dart';
 import 'package:project/styles/theme.dart';
 import 'package:project/utilities/color_utility.dart';
-import 'package:project/widgets/app_bar_button.dart';
-import 'package:project/widgets/color_picker_dialog.dart';
-import 'package:project/widgets/tag_widget.dart';
+import 'package:project/widgets/buttons/app_bar_button.dart';
+import 'package:project/widgets/modals/color_picker_dialog.dart';
+import 'package:project/widgets/items/tag_list_item.dart';
 
 enum _EditTagMode {
   edit,
@@ -149,7 +149,7 @@ class _EditTagScreenState extends ConsumerState<EditTagScreen> {
             style: Theme.of(context).textTheme.labelMedium,
           ),
           if (_pickedColor != null)
-            TagWidget(
+            TagListItem(
               size: TagSize.large,
               color: _pickedColor!,
               tagText: _textController.text,

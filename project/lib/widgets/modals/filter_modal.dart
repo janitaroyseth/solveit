@@ -4,8 +4,8 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/utilities/filter.dart';
 import 'package:project/utilities/filter_option.dart';
 import 'package:project/styles/theme.dart';
-import 'package:project/widgets/checkbox_list_item.dart';
-import 'package:project/widgets/radio_button_group.dart';
+import 'package:project/widgets/filters/checkbox_list_item.dart';
+import 'package:project/widgets/filters/radio_button_group.dart';
 
 /// Represents a modal for displaying filtering options.
 class FilterModal extends StatefulWidget {

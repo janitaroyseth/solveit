@@ -5,9 +5,9 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:project/styles/theme.dart';
-import 'package:project/widgets/loading_spinner.dart';
-import 'package:project/widgets/message_input_field.dart';
-import 'package:project/widgets/search_bar.dart';
+import 'package:project/widgets/general/loading_spinner.dart';
+import 'package:project/widgets/inputs/message_input_field.dart';
+import 'package:project/widgets/inputs/search_bar.dart';
 import 'package:http/http.dart' as http;
 
 /// The type to display in the gif picker.
@@ -18,23 +18,23 @@ enum GifType {
 
 /// Content for an bottom modal sheet for displaying and
 /// picking gifs to send.
-class GifPicker extends StatefulWidget {
+class GifPickerModal extends StatefulWidget {
   /// Which tupe of content, [GifType], the gif picker should display.
   final GifType gifType;
 
   /// [Function] handler for the chosen gif.
   final Function handler;
 
-  /// Creates an instance of [GifPicker], if no [GifType] is set, it
+  /// Creates an instance of [GifPickerModal], if no [GifType] is set, it
   /// will by default show gifs.
-  const GifPicker(
+  const GifPickerModal(
       {super.key, this.gifType = GifType.gif, required this.handler});
 
   @override
-  State<GifPicker> createState() => _GifPickerState();
+  State<GifPickerModal> createState() => _GifPickerModalState();
 }
 
-class _GifPickerState extends State<GifPicker> {
+class _GifPickerModalState extends State<GifPickerModal> {
   final TextEditingController _searchController = TextEditingController();
 
   late Future<http.Response> currentGifSearch;
@@ -264,7 +264,7 @@ class _GifPickerState extends State<GifPicker> {
   }
 }
 
-/// Shows a gif used for [GifPicker].
+/// Shows a gif used for [GifPickerModal].
 class _Gif extends StatelessWidget {
   /// Creates an instance of [_Gif], with the given [Function] handler and [String] gifUrl.
   const _Gif({

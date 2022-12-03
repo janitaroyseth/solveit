@@ -9,8 +9,8 @@ import 'package:project/providers/user_images_provider.dart';
 import 'package:project/providers/user_provider.dart';
 import 'package:project/styles/curve_clipper.dart';
 import 'package:project/styles/theme.dart';
-import 'package:project/widgets/image_picker_modal.dart';
-import 'package:project/widgets/loading_spinner.dart';
+import 'package:project/widgets/modals/image_picker_modal.dart';
+import 'package:project/widgets/general/loading_spinner.dart';
 
 /// Scaffold/Screen for creating profile after signing up.
 class CreateProfileScreen extends ConsumerWidget {

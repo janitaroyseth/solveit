@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:project/models/tag.dart' as model;
-import 'package:project/widgets/tag_widget.dart';
+import 'package:project/widgets/items/tag_list_item.dart';
 
-/// Represents a list containing [TagWidget].
+/// Represents a list containing [TagListItem].
 class TagsList extends StatelessWidget {
   /// The [tags] in the [TagList].
   final List<model.Tag> tags;
@@ -30,7 +30,7 @@ class TagsList extends StatelessWidget {
             alignment: WrapAlignment.start,
             children: tags
                 .map(
-                  (e) => TagWidget.fromTag(e, size: size),
+                  (e) => TagListItem.fromTag(e, size: size),
                 )
                 .toList(),
           ),

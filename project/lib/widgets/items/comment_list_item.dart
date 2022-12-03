@@ -9,7 +9,7 @@ import 'package:project/providers/user_provider.dart';
 import 'package:project/styles/theme.dart';
 import 'package:project/utilities/date_formatting.dart';
 
-import '../models/user.dart';
+import '../../models/user.dart';
 
 /// Converts a Comment object to a list item used in a comment list.
 class CommentListItem extends StatelessWidget {

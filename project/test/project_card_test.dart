@@ -4,7 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/data/project_avatar_options.dart';
 import 'package:project/models/project.dart';
-import 'package:project/widgets/project_card.dart';
+import 'package:project/widgets/items/project_card.dart';
 
 void main() {
   testWidgets("public project card", (WidgetTester tester) async {

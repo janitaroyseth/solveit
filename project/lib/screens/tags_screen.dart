@@ -9,9 +9,9 @@ import 'package:project/providers/tag_provider.dart';
 import 'package:project/providers/task_provider.dart';
 import 'package:project/screens/edit_tag_screen.dart';
 import 'package:project/styles/theme.dart';
-import 'package:project/widgets/app_bar_button.dart';
-import 'package:project/widgets/search_bar.dart';
-import 'package:project/widgets/tag_widget.dart';
+import 'package:project/widgets/buttons/app_bar_button.dart';
+import 'package:project/widgets/inputs/search_bar.dart';
+import 'package:project/widgets/items/tag_list_item.dart';
 
 /// Screen/Scaffold for creating, updating and deleting tags from a project
 /// and adding them to a task.
@@ -206,7 +206,7 @@ class _TagsScreenState extends ConsumerState<TagsScreen> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                TagWidget.fromTag(tag),
+                TagListItem.fromTag(tag),
                 _tagPopUpButton(context, tag),
               ],
             ),
