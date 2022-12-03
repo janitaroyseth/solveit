@@ -2,13 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/models/project.dart';
+import 'package:project/providers/calendar_provider.dart';
 import 'package:project/providers/project_provider.dart';
 import 'package:project/providers/auth_provider.dart';
+import 'package:project/providers/task_provider.dart';
 import 'package:project/screens/edit_project_screen.dart';
 import 'package:project/screens/task_overview_screen.dart';
 import 'package:project/styles/theme.dart';
 import 'package:project/widgets/buttons/app_bar_button.dart';
 import 'package:project/widgets/items/project_card.dart';
+
+import '../models/task.dart';
 
 /// Screen/Scaffold for the overview of projects the user have access to.
 class ProjectOverviewScreen extends ConsumerStatefulWidget {
@@ -26,6 +30,10 @@ class ProjectOverviewScreen extends ConsumerStatefulWidget {
 class ProjectOverviewScreenState extends ConsumerState<ProjectOverviewScreen> {
   /// Opens the given project's [TaskOverviewScreen].
   void _openProject(Project project) async {
+    ref.read(calendarProvider).addTasksToCalendar(
+        tasks: await ref.read(taskProvider).getTasks(project.projectId).first
+            as List<Task>,
+        email: ref.read(authProvider).currentUser!.email!);
     ref
         .read(currentProjectProvider.notifier)
         .setProject(ref.watch(projectProvider).getProject(project.projectId));
