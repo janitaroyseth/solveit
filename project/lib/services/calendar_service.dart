@@ -50,7 +50,14 @@ class CalendarService {
     });
   }
 
-  void removeTaskFromCalendar(Calendar calendar, Task task) {}
+  void removeTaskFromCalendar(String email, Task task) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    _getCalendar(email).then(
+      (value) {
+        _deviceCalendarPlugin.deleteEvent(value, prefs.getString(task.taskId));
+      },
+    );
+  }
 
   Future<void> _addTaskEvent(String calendarId, Task task) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
