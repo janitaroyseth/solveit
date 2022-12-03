@@ -1,8 +1,6 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:xor_cipher/xor_cipher.dart';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
 
 /// Represents a message.
 abstract class Message {
@@ -91,7 +89,7 @@ abstract class Message {
     };
 
     if (message is TextMessage) {
-      map["text"] = XOR.encrypt(message.text, "Group3", urlEncode: true);
+      map["text"] = XOR.encrypt(message.text, encryptionKey, urlEncode: true);
     } else if (message is ImageMessage) {
       map["imageUrl"] = message.imageUrl;
     }
@@ -160,6 +158,7 @@ class TextMessage extends Message {
     required super.author,
     required this.text,
   });
+  static String encryptionKey = "${dotenv.env["MESSAGE_ENCRYPTION_KEY"]}";
 
   /// Creates an instance of [TextMessage] from the given [Map].
   static TextMessage? fromMap(Map<String, dynamic>? data) {
@@ -178,7 +177,7 @@ class TextMessage extends Message {
       otherId: otherId,
       author: author,
       date: date,
-      text: text,
+      text: XOR.decrypt(text, encryptionKey),
     );
   }
 }

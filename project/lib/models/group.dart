@@ -1,4 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:xor_cipher/xor_cipher.dart';
 
 /// Represents a group of user's in a chat conversation.
 class Group {
@@ -14,6 +16,8 @@ class Group {
   /// When the group was last updated.
   DateTime lastUpdated;
 
+  static String encryptionKey = "${dotenv.env["MESSAGE_ENCRYPTION_KEY"]}";
+
   /// Creates an instance of [Group].
   Group({
     this.groupId = "",
@@ -27,7 +31,7 @@ class Group {
     return {
       "groupId": groupId,
       "members": members,
-      "recentMessage": recentMessage,
+      "recentMessage": XOR.encrypt(recentMessage, encryptionKey),
       "lastUpdated": lastUpdated,
     };
   }
@@ -44,7 +48,9 @@ class Group {
     if (data["members"] == null) return null;
     final members = data["members"].cast<String>();
 
-    final recentMessage = data["recentMessage"] ?? "";
+    final recentMessage = data["recentMessage"] != null
+        ? XOR.decrypt(data["recentMessage"], encryptionKey)
+        : "";
 
     final lastUpdated = data["lastUpdated"] != null
         ? (data["lastUpdated"] as Timestamp).toDate()
