@@ -13,9 +13,10 @@ class Tag {
   // or to color parameter if its format is valid.
   Tag({
     this.tagId = "",
-    this.text = "",
+    String text = "tag",
     String color = "",
-  }) : color = _isColor(color)
+  })  : text = text.isNotEmpty ? text : "invalid text",
+        color = _isColor(color)
             ? color
             : ColorUtility.stringFromColor(
                 ColorUtility.getRandomColor(),
