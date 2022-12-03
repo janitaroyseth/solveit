@@ -7,11 +7,11 @@ import 'package:project/models/project.dart';
 import 'package:project/models/task.dart';
 import 'package:project/providers/auth_provider.dart';
 import 'package:project/providers/project_provider.dart';
-import 'package:project/screens/configure_task_screen.dart';
+import 'package:project/screens/edit_task_screen.dart';
 import 'package:project/screens/task_overview_screen.dart';
 import 'package:project/styles/curve_clipper.dart';
 import 'package:project/styles/theme.dart';
-import 'package:project/widgets/appbar_button.dart';
+import 'package:project/widgets/app_bar_button.dart';
 import 'package:project/widgets/calendar.dart';
 import 'package:project/widgets/project_pop_up_menu.dart';
 
@@ -142,7 +142,7 @@ class _ProjectCalendarScreenState extends ConsumerState<ProjectCalendarScreen> {
         ref.read(currentProjectProvider.notifier).setProject(
             ref.watch(projectProvider).getProject(project.projectId));
         Navigator.of(context)
-            .pushNamed(ConfigureTaskScreen.routeName,
+            .pushNamed(EditTaskScreen.routeName,
                 arguments: Task(deadline: newDate))
             .whenComplete(() => setState(() {}));
       },

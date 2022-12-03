@@ -1,22 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:project/models/project.dart';
+import 'package:project/models/tag.dart';
+import 'package:project/models/task.dart';
+import 'package:project/models/user.dart';
 import 'package:project/providers/project_provider.dart';
 import 'package:project/providers/task_provider.dart';
 import 'package:project/providers/user_provider.dart';
 import 'package:project/screens/collaborators_screen.dart';
 import 'package:project/screens/tags_screen.dart';
+import 'package:project/styles/theme.dart';
 import 'package:project/utilities/date_formatting.dart';
+import 'package:project/widgets/app_bar_button.dart';
 import 'package:project/widgets/loading_spinner.dart';
 import 'package:project/widgets/tag_widget.dart';
-
-import '../models/project.dart';
-import '../models/tag.dart';
-import '../models/task.dart';
-import '../models/user.dart';
-import '../styles/theme.dart';
-import '../widgets/appbar_button.dart';
-import '../widgets/user_list_item.dart';
+import 'package:project/widgets/user_list_item.dart';
 
 enum _EditTaskMode {
   create,
@@ -24,20 +23,30 @@ enum _EditTaskMode {
 }
 
 /// Screen/Scaffold for creating and editing tasks.
-class ConfigureTaskScreen extends ConsumerWidget {
+class EditTaskScreen extends ConsumerWidget {
+  /// Named route for this screen.
   static const routeName = "/configure-task";
-  const ConfigureTaskScreen({super.key});
+
+  /// Creates an instance of [EditTaskScreen].
+  const EditTaskScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    /// Existing task to edit, if null a new task is created.
     Task? existingTask = ref.read(editTaskProvider);
 
+    /// What mode to cater the screen for.
     final _EditTaskMode mode =
         existingTask == null ? _EditTaskMode.create : _EditTaskMode.edit;
 
+    /// The task to edit, set to existing task unless null, then a new task
+    /// is created.
     Task task = existingTask ?? Task();
+
+    /// The project to save the task to.
     task.projectId = ref.read(editProjectProvider)!.projectId;
 
+    /// Saves the task.
     void saveTask() async {
       ref.read(taskProvider).saveTask(task).then(
             (value) => Navigator.of(context).pop(),
@@ -75,24 +84,23 @@ class ConfigureTaskScreen extends ConsumerWidget {
       ),
     );
   }
-  //return const Center(child: CircularProgressIndicator());
 }
-//     );
-//   }
-// }
 
 class _TaskScreenBody extends ConsumerStatefulWidget {
   final Task task;
   final Project project;
   const _TaskScreenBody(this.task, this.project);
   @override
-  ConsumerState<ConsumerStatefulWidget> createState() => _TaskScreenBodyState();
+  ConsumerState<ConsumerStatefulWidget> createState() => _EditTaskForm();
 }
 
-class _TaskScreenBodyState extends ConsumerState<_TaskScreenBody> {
-  late Task task;
+class _EditTaskForm extends ConsumerState<_TaskScreenBody> {
+  /// Unique key for the form.
   final _formKey = GlobalKey<FormState>();
-  bool isTagPickerShown = false;
+
+  /// The task to edit.
+  late Task _task;
+
   late List<Tag> allTags;
   List<User> selectedUsers = [];
 
@@ -102,9 +110,9 @@ class _TaskScreenBodyState extends ConsumerState<_TaskScreenBody> {
   @override
   void initState() {
     allTags = widget.project.tags;
-    task = widget.task;
-    titleController.text = task.title;
-    descriptionController.text = task.description;
+    _task = widget.task;
+    titleController.text = _task.title;
+    descriptionController.text = _task.description;
     super.initState();
   }
 
@@ -141,7 +149,7 @@ class _TaskScreenBodyState extends ConsumerState<_TaskScreenBody> {
         TextFormField(
             controller: titleController,
             onChanged: (String value) {
-              task.title = value;
+              _task.title = value;
             },
             style: Theme.of(context).textTheme.bodySmall,
             decoration: Themes.inputDecoration(
@@ -162,7 +170,6 @@ class _TaskScreenBodyState extends ConsumerState<_TaskScreenBody> {
           height: 5,
         ),
         _createTagsList(ref),
-        _createAddTagList(),
       ],
     );
   }
@@ -170,12 +177,12 @@ class _TaskScreenBodyState extends ConsumerState<_TaskScreenBody> {
   Widget _createTagsList(WidgetRef ref) {
     List<Widget> tagWidgets = [];
 
-    for (Tag tag in task.tags) {
+    for (Tag tag in _task.tags) {
       tagWidgets.add(
         InkWell(
           onTap: () => {
             setState(() {
-              task.tags.remove(tag);
+              _task.tags.remove(tag);
             })
           },
           borderRadius: BorderRadius.circular(50),
@@ -188,12 +195,12 @@ class _TaskScreenBodyState extends ConsumerState<_TaskScreenBody> {
       InkWell(
         onTap: () {
           ref.read(currentProjectProvider.notifier).setProject(
-              ref.watch(projectProvider).getProject(task.projectId));
+              ref.watch(projectProvider).getProject(_task.projectId));
           ref.watch(currentProjectProvider).first.then((value) {
             ref.read(editProjectProvider.notifier).setProject(value);
-            ref.read(editTaskProvider.notifier).setTask(task);
+            ref.read(editTaskProvider.notifier).setTask(_task);
             Navigator.of(context)
-                .pushNamed(TagsScreen.routeName, arguments: [value, task])
+                .pushNamed(TagsScreen.routeName, arguments: [value, _task])
                 .then(
                   (value) => setState(() {}),
                 )
@@ -243,46 +250,6 @@ class _TaskScreenBodyState extends ConsumerState<_TaskScreenBody> {
     );
   }
 
-  Widget _createAddTagList() {
-    if (!isTagPickerShown) {
-      return Container();
-    } else {
-      List<Widget> tagWidgets = [];
-      for (Tag tag in allTags) {
-        if (!task.tags.contains(tag)) {
-          tagWidgets.add(Material(
-            elevation: 5,
-            borderRadius: BorderRadius.circular(50),
-            color: Colors.transparent,
-            child: InkWell(
-              onTap: () {
-                setState(() {
-                  task.tags.add(tag);
-                });
-              },
-              borderRadius: BorderRadius.circular(50),
-              child: TagWidget.fromTag(tag),
-            ),
-          ));
-        }
-      }
-      return Row(
-        children: [
-          Flexible(
-            child: Wrap(
-              spacing: 2.0,
-              runSpacing: 4.0,
-              direction: Axis.horizontal,
-              crossAxisAlignment: WrapCrossAlignment.center,
-              alignment: WrapAlignment.start,
-              children: tagWidgets,
-            ),
-          ),
-        ],
-      );
-    }
-  }
-
   Widget _createDeadlineSection(WidgetRef ref) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -296,8 +263,8 @@ class _TaskScreenBodyState extends ConsumerState<_TaskScreenBody> {
         ),
         TextButton(
           style: Themes.formButtonStyle(ref),
-          child: Text(task.deadline != null
-              ? DateFormatting.shortDate(ref, task.deadline!)
+          child: Text(_task.deadline != null
+              ? DateFormatting.shortDate(ref, _task.deadline!)
               : "click to pick a date..."),
           onPressed: () => _getDate(),
         ),
@@ -308,13 +275,13 @@ class _TaskScreenBodyState extends ConsumerState<_TaskScreenBody> {
   void _getDate() async {
     DateTime? pickedDate = await showDatePicker(
         context: context,
-        initialDate: task.deadline != null ? task.deadline! : DateTime.now(),
+        initialDate: _task.deadline != null ? _task.deadline! : DateTime.now(),
         firstDate: DateTime.now(),
         lastDate: DateTime.now().add(const Duration(days: 730)));
     if (null == pickedDate) return;
 
     setState(() {
-      task.deadline = pickedDate;
+      _task.deadline = pickedDate;
     });
   }
 
@@ -327,7 +294,7 @@ class _TaskScreenBodyState extends ConsumerState<_TaskScreenBody> {
           textAlign: TextAlign.left,
           style: Theme.of(context).textTheme.labelMedium,
         ),
-        _AssigneesList(task),
+        _AssigneesList(_task),
       ],
     );
   }
@@ -339,7 +306,7 @@ class _TaskScreenBodyState extends ConsumerState<_TaskScreenBody> {
         TextFormField(
           controller: descriptionController,
           onChanged: (value) {
-            task.description = value;
+            _task.description = value;
           },
           maxLines: 8,
           style: Theme.of(context).textTheme.bodySmall,

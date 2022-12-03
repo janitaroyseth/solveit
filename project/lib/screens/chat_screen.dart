@@ -10,7 +10,7 @@ import 'package:project/providers/auth_provider.dart';
 import 'package:project/providers/chat_image_provider.dart';
 import 'package:project/providers/chat_provder.dart';
 import 'package:project/providers/user_provider.dart';
-import 'package:project/widgets/appbar_button.dart';
+import 'package:project/widgets/app_bar_button.dart';
 import 'package:project/widgets/chat_list.dart';
 import 'package:project/widgets/loading_spinner.dart';
 import 'package:project/widgets/message_input_field.dart';
@@ -30,6 +30,8 @@ class ChatScreen extends ConsumerWidget {
 
     /// Url of the user participating in this chat.
     String currentUser = ref.watch(authProvider).currentUser!.uid;
+
+    /// The group id for the chats that are being displayed.
     String groupId = ModalRoute.of(context)!.settings.arguments as String;
 
     return FutureBuilder<Group?>(

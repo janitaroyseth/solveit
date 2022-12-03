@@ -5,6 +5,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:project/styles/theme.dart';
+import 'package:project/widgets/loading_spinner.dart';
 import 'package:project/widgets/message_input_field.dart';
 import 'package:project/widgets/search_bar.dart';
 import 'package:http/http.dart' as http;
@@ -40,16 +41,20 @@ class _GifPickerState extends State<GifPicker> {
 
   late GifType gifType;
 
-  String url = "https://tenor.googleapis.com/v2";
+  /// base url for the tenor api.
+  final String _baseUrl = "https://tenor.googleapis.com/v2";
 
-  String trendingPath = "/featured";
+  /// The path used to find featured or trending gifs.
+  final String _trendingPath = "/featured";
 
-  String searchPath = "/search";
+  /// The path used for search requests to tenor.
+  final String _searchPath = "/search";
 
-  String apiKeyParam = "key=${dotenv.env["TENOR_API_KEY"]}";
+  /// api key for for the tenor api.
+  final String _apiKeyParam = "key=${dotenv.env["TENOR_API_KEY"]}";
 
   /// Builds and returns a [String] url to send request.
-  String buildUrlRequestString(
+  String _buildUrlRequestString(
     String url,
     String apiPath,
     Map<String, dynamic>? params,
@@ -62,27 +67,28 @@ class _GifPickerState extends State<GifPicker> {
       }
     }
 
-    return "$url$apiPath?$apiKeyParam$parameters";
+    return "$url$apiPath?$_apiKeyParam$parameters";
   }
 
   /// Sends a request to retrieve the trending gifs from Tenor.
-  Future<http.Response> getTrendingGifs() async {
-    String requestUrl = buildUrlRequestString(url, trendingPath, {"limit": 30});
+  Future<http.Response> _getTrendingGifs() async {
+    String requestUrl =
+        _buildUrlRequestString(_baseUrl, _trendingPath, {"limit": 30});
     return await http.get(Uri.parse(requestUrl));
   }
 
   /// Sends a request to search through Tenor gifs with the given [String] `query`. Returns
   /// the gifs matching the `query`.
-  Future<http.Response> searchGifs(String query) async {
-    String requestUrl =
-        buildUrlRequestString(url, searchPath, {"q": query, "limit": 30});
+  Future<http.Response> _searchGifs(String query) async {
+    String requestUrl = _buildUrlRequestString(
+        _baseUrl, _searchPath, {"q": query, "limit": 30});
 
     return await http.get(Uri.parse(requestUrl));
   }
 
   /// Sends a request to retireve the trending stickers from Tenor.
-  Future<http.Response> getTrendingStickers() async {
-    String requestUrl = buildUrlRequestString(url, trendingPath, {
+  Future<http.Response> _getTrendingStickers() async {
+    String requestUrl = _buildUrlRequestString(_baseUrl, _trendingPath, {
       "searchfilter": "sticker",
       "limit": 50,
     });
@@ -91,8 +97,8 @@ class _GifPickerState extends State<GifPicker> {
 
   /// Sends a request to search through Tenor gifs with the given [String] `query`. Returns
   /// the gifs matching the `query`.
-  Future<http.Response> searchStickers(String query) async {
-    String requestUrl = buildUrlRequestString(url, searchPath, {
+  Future<http.Response> _searchStickers(String query) async {
+    String requestUrl = _buildUrlRequestString(_baseUrl, _searchPath, {
       "searchfilter": "sticker",
       "q": query,
       "limit": 50,
@@ -102,27 +108,34 @@ class _GifPickerState extends State<GifPicker> {
   }
 
   /// Switches to the `gif`[GifType].
-  void showGifs() {
+  void _showGifs() {
     setState(() {
       gifType = GifType.gif;
       if (_searchController.text.isEmpty) {
-        currentGifSearch = getTrendingGifs();
+        currentGifSearch = _getTrendingGifs();
       } else {
-        currentGifSearch = searchGifs(_searchController.text);
+        currentGifSearch = _searchGifs(_searchController.text);
       }
     });
   }
 
   /// Switches to the `stickers`[GifType].
-  void showStickers() {
+  void _showStickers() {
     setState(() {
       gifType = GifType.sticker;
       if (_searchController.text.isEmpty) {
-        currentGifSearch = getTrendingStickers();
+        currentGifSearch = _getTrendingStickers();
       } else {
-        currentGifSearch = searchStickers(_searchController.text);
+        currentGifSearch = _searchStickers(_searchController.text);
       }
     });
+  }
+
+  @override
+  void initState() {
+    currentGifSearch = _getTrendingGifs();
+    gifType = widget.gifType;
+    super.initState();
   }
 
   @override
@@ -144,40 +157,44 @@ class _GifPickerState extends State<GifPicker> {
                 padding: const EdgeInsets.only(top: 16.0),
                 child: Column(
                   children: [
-                    buildTopHorizontalLine(ref),
-                    buildButtonTabs(),
+                    _topHorizontalLine(ref),
+                    _topButtonTabs(),
                     SearchBar(
                       placeholderText: "Search Tenor",
-                      searchFunction: (String query) {
-                        if (query.isEmpty) {
-                          setState(() {
-                            gifType == GifType.gif
-                                ? currentGifSearch = getTrendingGifs()
-                                : currentGifSearch = getTrendingStickers();
-                          });
-                        } else {
-                          setState(() {
-                            gifType == GifType.gif
-                                ? currentGifSearch = searchGifs(query)
-                                : currentGifSearch = searchStickers(query);
-                          });
-                        }
-                      },
+                      searchFunction: _searchGifsAndStickers,
                       textEditingController: _searchController,
                     ),
-                    buildGifGrid(scrollController, trendingGifs),
+                    _gifGridView(scrollController, trendingGifs),
                   ],
                 ),
               );
             }
-            return buildLoadingView();
+            return const LoadingSpinner();
           },
         ),
       ),
     );
   }
 
-  Container buildTopHorizontalLine(WidgetRef ref) {
+  /// Search function for searching gifs.
+  _searchGifsAndStickers(String query) {
+    if (query.isEmpty) {
+      setState(() {
+        gifType == GifType.gif
+            ? currentGifSearch = _getTrendingGifs()
+            : currentGifSearch = _getTrendingStickers();
+      });
+    } else {
+      setState(() {
+        gifType == GifType.gif
+            ? currentGifSearch = _searchGifs(query)
+            : currentGifSearch = _searchStickers(query);
+      });
+    }
+  }
+
+  /// Top horizontal line for decoration.
+  Container _topHorizontalLine(WidgetRef ref) {
     return Container(
       height: 3,
       width: 100,
@@ -190,7 +207,8 @@ class _GifPickerState extends State<GifPicker> {
     );
   }
 
-  Widget buildButtonTabs() {
+  /// Returns button tabs for toggling between searching for stickers or gifs.
+  Widget _topButtonTabs() {
     return Consumer(
       builder: (context, ref, child) => Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -203,7 +221,7 @@ class _GifPickerState extends State<GifPicker> {
             )
           else
             TextButton(
-              onPressed: showGifs,
+              onPressed: _showGifs,
               style: Themes.textButtonStyle(ref),
               child: const Text("GIF"),
             ),
@@ -215,7 +233,7 @@ class _GifPickerState extends State<GifPicker> {
             )
           else
             TextButton(
-              onPressed: showStickers,
+              onPressed: _showStickers,
               style: Themes.textButtonStyle(ref),
               child: const Text("Stickers"),
             ),
@@ -224,7 +242,8 @@ class _GifPickerState extends State<GifPicker> {
     );
   }
 
-  Expanded buildGifGrid(ScrollController scrollController, trendingGifs) {
+  /// Returns a grid view displaying the gifs found.
+  Expanded _gifGridView(ScrollController scrollController, trendingGifs) {
     return Expanded(
       child: Padding(
         padding: const EdgeInsets.all(4.0),
@@ -242,23 +261,6 @@ class _GifPickerState extends State<GifPicker> {
         ),
       ),
     );
-  }
-
-  Center buildLoadingView() {
-    return const Center(
-      child: SizedBox(
-        height: 100,
-        width: 100,
-        child: CircularProgressIndicator(),
-      ),
-    );
-  }
-
-  @override
-  void initState() {
-    currentGifSearch = getTrendingGifs();
-    gifType = widget.gifType;
-    super.initState();
   }
 }
 

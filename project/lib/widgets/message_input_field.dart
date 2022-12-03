@@ -60,7 +60,7 @@ class _MessageInputFieldState extends State<MessageInputField> {
   bool displayOption = true;
 
   /// Sets [isFocused] to the focusNode's focus.
-  void toggleFocus() => setState(() => isFocused = widget.focusNode.hasFocus);
+  void _toggleFocus() => setState(() => isFocused = widget.focusNode.hasFocus);
 
   @override
   void initState() {
@@ -71,7 +71,7 @@ class _MessageInputFieldState extends State<MessageInputField> {
 
   @override
   void dispose() {
-    widget.focusNode.removeListener(toggleFocus);
+    widget.focusNode.removeListener(_toggleFocus);
     widget.focusNode.dispose();
     textEditingController.dispose();
     super.dispose();
@@ -93,7 +93,7 @@ class _MessageInputFieldState extends State<MessageInputField> {
 
   @override
   Widget build(BuildContext context) {
-    widget.focusNode.addListener(toggleFocus);
+    widget.focusNode.addListener(_toggleFocus);
     return Row(
       crossAxisAlignment: CrossAxisAlignment.end,
       children: [
@@ -113,7 +113,7 @@ class _MessageInputFieldState extends State<MessageInputField> {
                   ],
                 ),
         ),
-        buildInputField(),
+        _messageInputField(),
         _SendButton(
           textEditingController: textEditingController,
           widget: widget,
@@ -144,7 +144,7 @@ class _MessageInputFieldState extends State<MessageInputField> {
   }
 
   /// Returns an text field for text input.
-  Expanded buildInputField() {
+  Expanded _messageInputField() {
     return Expanded(
       child: Padding(
         padding: const EdgeInsets.only(left: 8.0),

@@ -15,7 +15,11 @@ class Tag {
     this.tagId = "",
     this.text = "",
     String color = "",
-  }) : color = _isColor(color) ? color : stringFromColor(getRandomColor());
+  }) : color = _isColor(color)
+            ? color
+            : ColorUtility.stringFromColor(
+                ColorUtility.getRandomColor(),
+              );
 
   static bool _isColor(String color) {
     return RegExp(r'^#([0-9a-fA-F]{6}||[0-9a-fA-F]{8})$').hasMatch(color);

@@ -4,9 +4,16 @@ import 'package:project/providers/settings_provider.dart';
 
 /// Respresents a widget to be used for appbar.
 class AppBarButton extends ConsumerWidget {
+  /// Function to call when button is tapped.
   final VoidCallback handler;
+
+  /// Tool tip to display when button is long pressed.
   final String tooltip;
+
+  /// The icon to display in the button.
   final IconData icon;
+
+  /// The color of the button, defaults to black.
   final Color color;
 
   /// Creates an instance of appbar button with the given function [handler], the given [tooltip] and the given [icon].

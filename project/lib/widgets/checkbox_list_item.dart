@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:project/models/filter.dart';
-import 'package:project/models/filter_option.dart';
+import 'package:project/utilities/filter.dart';
+import 'package:project/utilities/filter_option.dart';
 import 'package:project/styles/theme.dart';
 import 'package:project/widgets/tag_widget.dart';
 
@@ -27,7 +27,7 @@ class CheckboxListItem extends StatefulWidget {
 
 class _CheckboxListItemState extends State<CheckboxListItem> {
   /// Builds a checkmark from the given [FilterOption] filter option.
-  Widget buildCheckMark(FilterOption filterOption, Filter filter) {
+  Widget _buildCheckMark(FilterOption filterOption, Filter filter) {
     return Consumer(
       builder: (context, ref, child) => Checkbox(
         activeColor: Theme.of(context).primaryColor,
@@ -46,7 +46,7 @@ class _CheckboxListItemState extends State<CheckboxListItem> {
 
   /// Builds a list tile with a checkmark for filtering with the given [FilterOption]
   /// of the given [Filter].
-  Widget buildCheckBoxListTile(FilterOption filterOption, Filter filter) {
+  Widget _buildCheckBoxListTile(FilterOption filterOption, Filter filter) {
     return Padding(
       padding: const EdgeInsets.only(left: 35.0),
       child: SizedBox(
@@ -55,7 +55,7 @@ class _CheckboxListItemState extends State<CheckboxListItem> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             Flexible(child: TagWidget.fromTag(widget.filterOption.tag!)),
-            buildCheckMark(filterOption, filter),
+            _buildCheckMark(filterOption, filter),
           ],
         ),
       ),
@@ -64,6 +64,6 @@ class _CheckboxListItemState extends State<CheckboxListItem> {
 
   @override
   Widget build(BuildContext context) {
-    return buildCheckBoxListTile(widget.filterOption, widget.filter);
+    return _buildCheckBoxListTile(widget.filterOption, widget.filter);
   }
 }

@@ -27,7 +27,7 @@ class TagWidget extends StatelessWidget {
   /// Creates an instance of [TagWidget] from the given [Tag], defaults to size large.
   TagWidget.fromTag(Tag tag, {super.key, this.size = TagSize.large})
       : tagText = tag.text,
-        color = colorFromString(tag.color);
+        color = ColorUtility.colorFromString(tag.color);
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +53,7 @@ class TagWidget extends StatelessWidget {
             ? Text(
                 tagText,
                 style: TextStyle(
-                  color: getContrastColor(color),
+                  color: ColorUtility.getContrastColor(color),
                   fontSize: 12,
                 ),
               )
@@ -83,7 +83,7 @@ class TagWidget extends StatelessWidget {
         child: Text(
           tagText,
           style: TextStyle(
-            color: getContrastColor(color),
+            color: ColorUtility.getContrastColor(color),
             fontSize: 10,
           ),
         ),

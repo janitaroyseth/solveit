@@ -57,48 +57,57 @@ class _ImagePickerModalState extends State<ImagePickerModal> {
   @override
   Widget build(BuildContext context) {
     return Consumer(
-      builder: (context, ref, child) => Container(
-        decoration: const BoxDecoration(
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(20.0),
-            topRight: Radius.circular(20.0),
-          ),
-        ),
+      builder: (context, ref, child) => SizedBox(
         height: 280,
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: <Widget>[
-              Container(
-                height: 3,
-                width: 100,
-                decoration: BoxDecoration(
-                  color: Themes.textColor(ref),
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(50.0),
-                  ),
-                ),
-              ),
+              _topHorizontalLine(ref),
               const SizedBox(height: 4.0),
-              ModalListItem(
-                icon: PhosphorIcons.cameraLight,
-                label: "take picture",
-                handler: () {
-                  getImageFromCamera();
-                  Navigator.of(widget.buildContext).pop();
-                },
-              ),
-              ModalListItem(
-                icon: PhosphorIcons.imageLight,
-                label: "upload image",
-                handler: () {
-                  getImageFromLocalStorage();
-                  Navigator.of(widget.buildContext).pop();
-                },
-              ),
+              _cameraListItem(),
+              _galleryListItem(),
               const SizedBox(height: 12.0),
             ],
           ),
+        ),
+      ),
+    );
+  }
+
+  /// Returns a [ModalListItem] displaying option to upload image from gallery.
+  ModalListItem _galleryListItem() {
+    return ModalListItem(
+      icon: PhosphorIcons.imageLight,
+      label: "upload image",
+      handler: () {
+        getImageFromLocalStorage();
+        Navigator.of(widget.buildContext).pop();
+      },
+    );
+  }
+
+  /// Returns a [ModalListItem] displaying option to take image with camera.
+  ModalListItem _cameraListItem() {
+    return ModalListItem(
+      icon: PhosphorIcons.cameraLight,
+      label: "take picture",
+      handler: () {
+        getImageFromCamera();
+        Navigator.of(widget.buildContext).pop();
+      },
+    );
+  }
+
+  /// Returns a horizontal line used for decoration.
+  Container _topHorizontalLine(WidgetRef ref) {
+    return Container(
+      height: 3,
+      width: 100,
+      decoration: BoxDecoration(
+        color: Themes.textColor(ref),
+        borderRadius: const BorderRadius.all(
+          Radius.circular(50.0),
         ),
       ),
     );

@@ -47,33 +47,10 @@ class _CalendarState extends State<Calendar> {
     _selectedDay = _focusedDay;
 
     _selectedTasks = ValueNotifier(_getTasksForDay(_selectedDay!));
-
-    // /// Creates and returns a [Map] where each deadline in the tasks is a key, and the values
-    // /// a list of tasks for the deadline.
-    // Map<DateTime, dynamic> groupTasks() {
-    //   Map<DateTime, dynamic> groupedTasks = {};
-    //   for (var task in widget.project.tasks) {
-    //     DateTime key = DateTime.parse(task.deadline as String);
-
-    //     List<Task> values = widget.project.tasks
-    //         .where(
-    //             (element) => DateTime.parse(element.deadline as String) == key)
-    //         .toList();
-    //     groupedTasks[key] = values;
-    //   }
-    //   return groupedTasks;
-    // }
-
-    // tasks = LinkedHashMap<DateTime, dynamic>(
-    //   equals: isSameDay,
-    //   hashCode: (DateTime key) =>
-    //       key.day * 1000000 + key.month * 10000 + key.year,
-    // )..addAll(groupTasks());
   }
 
   @override
   void didChangeDependencies() {
-    //widget.selectDay(_selectedDay);
     super.didChangeDependencies();
   }
 
@@ -181,7 +158,7 @@ class _CalendarState extends State<Calendar> {
                                 .setTask(value[index - 1]);
                             ref.read(currentTaskProvider.notifier).setTask(ref
                                 .watch(taskProvider)
-                                .getTask(value[index - 1].projectId,
+                                .getTask(value[index - 1]._projectId,
                                     value[index - 1].taskId));
                             Navigator.of(context).pushNamed(
                                 TaskDetailsScreen.routeName,
