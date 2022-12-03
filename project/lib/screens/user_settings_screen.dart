@@ -212,47 +212,55 @@ class _DateFormatDialogState extends State<_DateFormatDialog> {
                 const SizedBox(height: 16.0),
                 RadioButtonGroup(
                   initalValue: FilterOption(
-                      description: ref.watch(dateFormatProvider),
+                      description: ref.watch(dateFormatProvider).toLowerCase(),
+                      value: ref.watch(dateFormatProvider).toLowerCase(),
                       filterBy: false),
                   filter: Filter(
                     title: "date format",
                     filterHandler: (FilterOption filterOption) {
                       Settings settings =
                           ref.read(settingsProvider).getSettings();
-                      settings.dateFormat = filterOption.description;
+                      settings.dateFormat = filterOption.value;
                       ref.read(settingsProvider).saveSettings(settings);
                       ref
                           .read(dateFormatProvider.notifier)
-                          .change(filterOption.description);
+                          .change(filterOption.value);
                     },
                     filterType: FilterType.radio,
                     filterOptions: [
                       FilterOption(
-                        description: "dd/MM/yyyy",
+                        description: "dd/mm/yyyy",
+                        value: "dd/MM/yyyy",
                         filterBy: false,
                       ),
                       FilterOption(
-                        description: "dd-MM-yyyy",
+                        description: "dd-mm-yyyy",
+                        value: "dd-MM-yyyy",
                         filterBy: false,
                       ),
                       FilterOption(
-                        description: "dd.MM.yyyy",
+                        description: "dd.mm.yyyy",
+                        value: "dd.MM.yyyy",
                         filterBy: false,
                       ),
                       FilterOption(
-                        description: "MM/dd/yyyy",
+                        description: "mm/dd/yyyy",
+                        value: "MM/dd/yyyy",
                         filterBy: false,
                       ),
                       FilterOption(
-                        description: "MM-dd-yyyy",
+                        description: "mm-dd-yyyy",
+                        value: "MM-dd-yyyy",
                         filterBy: false,
                       ),
                       FilterOption(
-                        description: "MM.dd.yyyy",
+                        description: "mm.dd.yyyy",
+                        value: "MM.dd.yyyy",
                         filterBy: false,
                       ),
                       FilterOption(
-                        description: "yyyy-MM-dd",
+                        description: "yyyy-mm-dd",
+                        value: "yyyy-MM-dd",
                         filterBy: false,
                       ),
                     ],
