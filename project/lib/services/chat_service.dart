@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:project/models/message.dart';
 import 'package:project/models/group.dart';
@@ -24,6 +25,8 @@ abstract class ChatService {
   ///Delete's the chat with the given [chat id] in the group for the given
   ///[group id].
   Future<void> deleteChat(String groupId, String chatId);
+
+  Future<void> deleteGroup(String groupId);
 }
 
 /// Firebase implementation of [ChatService]
@@ -102,5 +105,10 @@ class FirebaseChatService implements ChatService {
         .snapshots()
         .map((event) => event.data())
         .map((event) => Group.fromMap(event!));
+  }
+
+  @override
+  Future<void> deleteGroup(String groupId) {
+    return groupCollection.doc(groupId).delete();
   }
 }

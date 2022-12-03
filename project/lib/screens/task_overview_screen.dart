@@ -217,7 +217,8 @@ class _TaskOverviewBodyState extends ConsumerState<_TaskOverviewBody> {
 
     if (filterOptions.isNotEmpty) {
       currentStream = ref.watch(taskProvider).filterTasksByTag(
-          _project.projectId, filterOptions.map((e) => e.tag!).toList());
+          _project.projectId,
+          filterOptions.map((e) => e.value as Tag).toList());
       setState(() {});
     } else {
       currentStream = ref.watch(taskProvider).getTasks(_project.projectId);
@@ -231,8 +232,8 @@ class _TaskOverviewBodyState extends ConsumerState<_TaskOverviewBody> {
     List<FilterOption> options = [];
 
     for (Tag tag in project.tags) {
-      options
-          .add(FilterOption(tag: tag, description: tag.text, filterBy: false));
+      options.add(
+          FilterOption(value: tag, description: tag.text, filterBy: false));
     }
     return options;
   }
