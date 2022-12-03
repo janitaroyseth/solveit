@@ -128,9 +128,6 @@ class Auth implements AuthService {
 
   @override
   Future<UserCredential?> signInWithGithub(BuildContext context) async {
-    print("${dotenv.env["GITHUB_CLIENT_ID"]}");
-    print("${dotenv.env["GITHUB_CLIENT_SECRET"]}");
-    print("${dotenv.env["GITHUB_REDIRECT_URL"]}");
     final GitHubSignIn gitHubSignIn = GitHubSignIn(
         clientId: "${dotenv.env["GITHUB_CLIENT_ID"]}",
         clientSecret: "${dotenv.env["GITHUB_CLIENT_SECRET"]}",
