@@ -54,7 +54,7 @@ class _CheckboxListItemState extends State<CheckboxListItem> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            Flexible(child: TagWidget.fromTag(widget.filterOption.tag!)),
+            Flexible(child: TagWidget.fromTag(widget.filterOption.value!)),
             _buildCheckMark(filterOption, filter),
           ],
         ),

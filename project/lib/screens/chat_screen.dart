@@ -42,7 +42,7 @@ class ChatScreen extends ConsumerWidget {
 
           return Scaffold(
             appBar: AppBar(
-              leading: _backButton(context),
+              leading: _backButton(context, ref, groupId),
               titleSpacing: -4,
               title: FutureBuilder<User?>(
                 future: ref
@@ -162,9 +162,19 @@ class ChatScreen extends ConsumerWidget {
   }
 
   /// Goes back to previous screen.
-  AppBarButton _backButton(BuildContext context) {
+  AppBarButton _backButton(
+      BuildContext context, WidgetRef ref, String groupId) {
     return AppBarButton(
-      handler: () => Navigator.of(context).pop(),
+      handler: () {
+        ref.watch(chatProvider).getChats(groupId).first.then((value) {
+          if (value.isEmpty) {
+            ref
+                .read(chatProvider)
+                .deleteGroup(groupId)
+                .whenComplete(() => Navigator.of(context).pop());
+          }
+        });
+      },
       tooltip: "Go back",
       icon: PhosphorIcons.caretLeftLight,
     );
