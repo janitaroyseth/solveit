@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/data/sorting_methods.dart';
+import 'package:project/providers/calendar_provider.dart';
 import 'package:project/utilities/filter.dart';
 import 'package:project/utilities/filter_option.dart';
 import 'package:project/models/tag.dart';
@@ -272,19 +273,20 @@ class _TaskOverviewBodyState extends ConsumerState<_TaskOverviewBody> {
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           final tasks = snapshot.data!;
+          ref.read(calendarProvider).addTasksToCalendar(
+              tasks: tasks as List<Task>,
+              email: ref.read(authProvider).currentUser!.email!);
           return Expanded(
             child: ListView.builder(
               padding: EdgeInsets.zero,
               itemBuilder: ((context, index) => TaskListItem(
-                    task: tasks[index]!,
+                    task: tasks[index],
                     handler: () {
-                      ref
-                          .read(editTaskProvider.notifier)
-                          .setTask(tasks[index]!);
+                      ref.read(editTaskProvider.notifier).setTask(tasks[index]);
                       ref.read(currentTaskProvider.notifier).setTask(ref
                           .watch(taskProvider)
                           .getTask(
-                              tasks[index]!.projectId, tasks[index]!.taskId));
+                              tasks[index].projectId, tasks[index].taskId));
                       Navigator.of(context).pushNamed(
                           TaskDetailsScreen.routeName,
                           arguments: _project.collaborators.contains(

@@ -44,6 +44,10 @@
 	<string>solveit</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCalendarsUsageDescription</key>
+	<string>Access most functions for calendar viewing and editing.</string>
+	<key>NSContactsUsageDescription</key>
+	<string>Access contacts for event attendee editing.</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Permission to take a photo by camera</string>
 	<key>NSPhotoLibraryUsageDescription</key>
