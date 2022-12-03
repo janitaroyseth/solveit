@@ -43,10 +43,9 @@ class FirebaseTaskService extends TaskService {
     if (task.taskId == "") {
       task.taskId =
           (await (taskCollection(task.projectId).add(task.toMap()))).id;
-      await taskCollection(task.projectId).doc(task.taskId).set(task.toMap());
-    } else {
-      await taskCollection(task.projectId).doc(task.taskId).set(task.toMap());
     }
+    await taskCollection(task.projectId).doc(task.taskId).set(task.toMap());
+
     Project? project =
         await FirebaseProjectService().getProject(task.projectId).first;
     project!.lastUpdated = DateTime.now();

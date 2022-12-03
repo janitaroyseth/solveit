@@ -37,13 +37,6 @@ class FirebaseCommentService extends CommentService {
       comment.messageId = (await commentCollection(projectId, taskId)
               .add(Message.toMap(comment)))
           .id;
-      await commentCollection(projectId, taskId)
-          .doc(comment.messageId)
-          .set(Message.toMap(comment));
-    } else {
-      await commentCollection(projectId, taskId)
-          .doc(comment.messageId)
-          .set(Message.toMap(comment));
     }
     await commentCollection(projectId, taskId)
         .doc(comment.messageId)
