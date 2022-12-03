@@ -3,7 +3,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:jiffy/jiffy.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/models/message.dart';
 import 'package:project/models/project.dart';
@@ -16,17 +15,18 @@ import 'package:project/providers/project_provider.dart';
 import 'package:project/providers/settings_provider.dart';
 import 'package:project/providers/task_provider.dart';
 import 'package:project/providers/user_provider.dart';
-import 'package:project/screens/configure_task_screen.dart';
+import 'package:project/screens/edit_task_screen.dart';
 import 'package:project/screens/profile_screen.dart';
 import 'package:project/styles/theme.dart';
-import 'package:project/widgets/appbar_button.dart';
-import 'package:project/widgets/comment_list.dart';
-import 'package:project/widgets/loading_spinner.dart';
-import 'package:project/widgets/message_input_field.dart';
-import 'package:project/widgets/tag_widget.dart';
-import 'package:project/widgets/tags_list.dart';
-import 'package:project/widgets/toggle_task_status_button.dart';
-import 'package:project/widgets/user_list_item.dart';
+import 'package:project/utilities/date_formatting.dart';
+import 'package:project/widgets/buttons/app_bar_button.dart';
+import 'package:project/widgets/list/comment_list.dart';
+import 'package:project/widgets/general/loading_spinner.dart';
+import 'package:project/widgets/inputs/message_input_field.dart';
+import 'package:project/widgets/items/tag_list_item.dart';
+import 'package:project/widgets/list/tags_list.dart';
+import 'package:project/widgets/buttons/toggle_task_status_button.dart';
+import 'package:project/widgets/items/user_list_item.dart';
 
 /// Screen/Scaffold for the details of a task in a project
 class TaskDetailsScreen extends ConsumerWidget {
@@ -38,6 +38,8 @@ class TaskDetailsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    bool isCollaborator = ModalRoute.of(context)!.settings.arguments as bool;
+
     return StreamBuilder<Task?>(
       stream: ref.watch(currentTaskProvider),
       builder: (context, snapshot) {
@@ -47,12 +49,17 @@ class TaskDetailsScreen extends ConsumerWidget {
             length: 2,
             child: Scaffold(
               appBar: AppBar(
-                centerTitle: true,
-                elevation: 0,
                 backgroundColor: _appBarBackground(ref),
-                title: ToggleTaskStatusButton(task: task),
+                title: isCollaborator
+                    ? ToggleTaskStatusButton(task: task)
+                    : _taskStatusLabel(task),
                 leading: _backButton(context),
-                actions: [_TaskPopUpMenu(task: task)],
+                actions: [
+                  Visibility(
+                    visible: isCollaborator,
+                    child: _TaskPopUpMenu(task: task),
+                  )
+                ],
                 bottom: _appBarBottomTab(),
               ),
               body: TabBarView(
@@ -98,6 +105,27 @@ class TaskDetailsScreen extends ConsumerWidget {
         ? const Color.fromRGBO(21, 21, 21, 1)
         : Colors.transparent;
   }
+
+  /// Returns a label displaying the status of the task.
+  Widget _taskStatusLabel(Task task) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        Visibility(
+          visible: task.done,
+          child: const Icon(PhosphorIcons.check),
+        ),
+        const SizedBox(width: 8.0),
+        Text(task.done ? "solved" : "open"),
+        AppBarButton(
+          handler: () {},
+          tooltip: "",
+          icon: PhosphorIcons.cactus,
+          color: Colors.transparent,
+        ),
+      ],
+    );
+  }
 }
 
 /// Body content for overview tab.
@@ -110,30 +138,32 @@ class _OverviewTabView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(8.0, 16.0, 8.0, 0.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            _taskTitle(),
-            const SizedBox(height: 16.0),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  _tags(context),
-                  _vericalPaddingLarge(),
-                  _deadline(context),
-                  _vericalPaddingLarge(),
-                  _assigned(context),
-                  _vericalPaddingLarge(),
-                  _description(context),
-                ],
-              ),
-            )
-          ],
+    return Consumer(
+      builder: (context, ref, child) => SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(8.0, 16.0, 8.0, 0.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              _taskTitle(),
+              const SizedBox(height: 16.0),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    _tags(context),
+                    _vericalPaddingLarge(),
+                    _deadline(context, ref),
+                    _vericalPaddingLarge(),
+                    _assigned(context),
+                    _vericalPaddingLarge(),
+                    _description(context),
+                  ],
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );
@@ -171,7 +201,7 @@ class _OverviewTabView extends StatelessWidget {
   }
 
   /// Returns the section for task deadline.
-  Column _deadline(BuildContext context) {
+  Column _deadline(BuildContext context, WidgetRef ref) {
     return Column(
       children: [
         Text(
@@ -180,7 +210,7 @@ class _OverviewTabView extends StatelessWidget {
         ),
         _verticalPaddingSmall(),
         Text(task.deadline != null
-            ? Jiffy(task.deadline!).format("dd/MM/yyyy")
+            ? DateFormatting.shortDate(ref, task.deadline!)
             : "-"),
       ],
     );
@@ -242,6 +272,7 @@ class _OverviewTabView extends StatelessWidget {
   ///Returns the section for task description.
   Column _description(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           "description",
@@ -265,9 +296,7 @@ class _CommentTabView extends ConsumerStatefulWidget {
   /// FocusNode to use for the comment text field.
 
   /// Creates an instance of [_CommentTabView],
-  const _CommentTabView({
-    required this.task,
-  });
+  const _CommentTabView({required this.task});
 
   @override
   ConsumerState<_CommentTabView> createState() => _CommentTabViewState();
@@ -315,8 +344,9 @@ class _CommentTabViewState extends ConsumerState<_CommentTabView> {
         ),
         child: Consumer(
           builder: (context, ref, child) => StreamBuilder<List<Message?>>(
-              stream:
-                  ref.watch(commentProvider).getComments(widget.task.taskId),
+              stream: ref
+                  .watch(commentProvider)
+                  .getComments(widget.task.projectId, widget.task.taskId),
               builder: (context, snapshot) {
                 if (snapshot.hasData) {
                   List<Message?> comments = snapshot.data!;
@@ -339,6 +369,7 @@ class _CommentTabViewState extends ConsumerState<_CommentTabView> {
                     ],
                   );
                 }
+                if (snapshot.hasError) print(snapshot.error);
                 return const LoadingSpinner();
               }),
         ),
@@ -356,6 +387,8 @@ class _CommentTabViewState extends ConsumerState<_CommentTabView> {
             ref
                 .read(commentProvider)
                 .saveComment(
+                  widget.task.projectId,
+                  widget.task.taskId,
                   TextMessage(
                     otherId: widget.task.taskId,
                     author: currentUserId,
@@ -369,6 +402,8 @@ class _CommentTabViewState extends ConsumerState<_CommentTabView> {
                 .read(commentImageProvider)
                 .addCommentImage(widget.task.taskId, content)
                 .then((value) => ref.read(commentProvider).saveComment(
+                      widget.task.projectId,
+                      widget.task.taskId,
                       ImageMessage(
                         otherId: widget.task.taskId,
                         author: currentUserId,
@@ -381,6 +416,8 @@ class _CommentTabViewState extends ConsumerState<_CommentTabView> {
             ref
                 .read(commentProvider)
                 .saveComment(
+                  widget.task.projectId,
+                  widget.task.taskId,
                   ImageMessage(
                     otherId: widget.task.taskId,
                     author: currentUserId,
@@ -444,14 +481,9 @@ class _TaskPopUpMenu extends ConsumerWidget {
 
   /// Navigates to screen for editing tasks.
   void editTask(WidgetRef ref, BuildContext context) {
-    ref
-        .read(currentTaskProvider.notifier)
-        .setTask(ref.watch(taskProvider).getTask(task.projectId, task.taskId));
-    ref
-        .read(currentProjectProvider.notifier)
-        .setProject(ref.watch(projectProvider).getProject(task.projectId));
+    ref.read(editTaskProvider.notifier).setTask(task);
     Navigator.of(context).pushNamed(
-      ConfigureTaskScreen.routeName,
+      EditTaskScreen.routeName,
       arguments: task,
     );
   }

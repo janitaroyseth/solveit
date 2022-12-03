@@ -35,11 +35,11 @@ class _ToggleTaskStatusButtonState extends State<ToggleTaskStatusButton> {
         first: true,
         second: false,
         height: 32,
-        onChanged: (bool i) {
+        onChanged: (bool newValue) {
           setState(() {
-            widget.task.done = i;
-            ref.read(taskProvider).saveTask(widget.task.projectId, widget.task);
-            value = i;
+            widget.task.done = newValue;
+            ref.read(taskProvider).saveTask(widget.task);
+            value = newValue;
           });
         },
         borderWidth: 1.5,

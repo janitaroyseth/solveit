@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:project/models/message.dart';
 import 'package:project/providers/chat_provder.dart';
-import 'package:project/widgets/chat_list_item.dart';
-import 'package:project/widgets/loading_spinner.dart';
+import 'package:project/widgets/items/chat_list_item.dart';
+import 'package:project/widgets/general/loading_spinner.dart';
 
 /// List view of chats.
 class ChatList extends ConsumerWidget {

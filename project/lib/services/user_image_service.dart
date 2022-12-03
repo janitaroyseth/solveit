@@ -38,8 +38,12 @@ class FirebaseUserImageService implements UserImageService {
 
   @override
   Future<String> updateUserImage(String userId, File image) async {
-    await deleteUserImage(userId);
-    return await addUserImage(userId, image);
+    try {
+      await deleteUserImage(userId);
+      return await addUserImage(userId, image);
+    } catch (e) {
+      return await addUserImage(userId, image);
+    }
   }
 
   @override

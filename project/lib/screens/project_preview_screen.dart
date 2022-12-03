@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:jiffy/jiffy.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/models/project.dart';
 import 'package:project/models/user.dart';
@@ -8,10 +7,11 @@ import 'package:project/providers/project_provider.dart';
 import 'package:project/providers/user_provider.dart';
 import 'package:project/screens/profile_screen.dart';
 import 'package:project/styles/curve_clipper.dart';
-import 'package:project/widgets/appbar_button.dart';
-import 'package:project/widgets/loading_spinner.dart';
-import 'package:project/widgets/project_pop_up_menu.dart';
-import 'package:project/widgets/user_list_item.dart';
+import 'package:project/utilities/date_formatting.dart';
+import 'package:project/widgets/buttons/app_bar_button.dart';
+import 'package:project/widgets/general/loading_spinner.dart';
+import 'package:project/widgets/buttons/project_pop_up_menu.dart';
+import 'package:project/widgets/items/user_list_item.dart';
 
 /// Scaffold/screen displaying a preview of the project with
 /// description and collaborators.
@@ -110,10 +110,8 @@ class ProjectPreviewScreen extends ConsumerWidget {
           height: 8.0,
         ),
         Text(
-          project.lastUpdated != null && project.lastUpdated!.isNotEmpty
-              ? Jiffy(project.lastUpdated)
-                  .format("EEEE, MMMM do yyyy")
-                  .toLowerCase()
+          project.lastUpdated != null
+              ? DateFormatting.longDate(project.lastUpdated!).toLowerCase()
               : "never updated",
         )
       ],

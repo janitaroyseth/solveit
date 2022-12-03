@@ -9,11 +9,12 @@ import 'package:project/providers/user_images_provider.dart';
 import 'package:project/providers/user_provider.dart';
 import 'package:project/styles/curve_clipper.dart';
 import 'package:project/styles/theme.dart';
-import 'package:project/widgets/appbar_button.dart';
-import 'package:project/widgets/image_picker_modal.dart';
+import 'package:project/widgets/modals/image_picker_modal.dart';
+import 'package:project/widgets/general/loading_spinner.dart';
 
 /// Scaffold/Screen for creating profile after signing up.
 class CreateProfileScreen extends ConsumerWidget {
+  /// Named route for this screen.
   static const routeName = "/create-profile";
 
   /// Creates an instance of create-profile-screen.
@@ -21,17 +22,21 @@ class CreateProfileScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    /// The text editing controller for the bio field
     TextEditingController bioController = TextEditingController();
-    String userId = ModalRoute.of(context)!.settings.arguments as String;
-    User? user;
-    // User? user = ref.watch(userProvider).getUser(userId);
 
+    /// The user id of the user to create profile for.
+    String userId = ModalRoute.of(context)!.settings.arguments as String;
+
+    /// The image to upload for the profile picture.
     File? image;
 
+    /// Sets the given picked image to the image.
     void imagePicker(File? pickedImage) {
       image = pickedImage;
     }
 
+    /// Updates the new user's info.
     Future<void> updateNewUser(
       WidgetRef ref,
       String userId,
@@ -55,110 +60,122 @@ class CreateProfileScreen extends ConsumerWidget {
       appBar: AppBar(
         backgroundColor: Themes.primaryColor,
         elevation: 0,
-        leading: AppBarButton(
-          handler: () => Navigator.of(context).pop(),
-          icon: PhosphorIcons.caretLeftLight,
-          tooltip: "Go back to sign in page",
-          color: Colors.white,
-        ),
       ),
       body: SingleChildScrollView(
         child: Column(
           children: <Widget>[
-            StreamBuilder(
-                stream: ref.watch(userProvider).getUser(userId),
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    user = snapshot.data as User?;
-                    return ClipPath(
-                      clipper: CurveClipper(),
-                      child: Container(
-                        height: 400,
-                        color: const Color.fromRGBO(92, 0, 241, 1),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: <Widget>[
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: <Widget>[
-                                appTitle(),
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: RichText(
-                                    textAlign: TextAlign.center,
-                                    softWrap: true,
-                                    text: TextSpan(
-                                      style: const TextStyle(
-                                        fontSize: 16,
-                                        fontFamily: Themes.fontFamily,
-                                      ),
-                                      children: <InlineSpan>[
-                                        const TextSpan(text: "hi "),
-                                        TextSpan(
-                                          text: "${user!.username}, ",
-                                          style: const TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        const TextSpan(
-                                          text:
-                                              "here you can set up your profile",
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 16),
-                                PickProfilePicture(
-                                  imagePicker,
-                                  label: "Add profile picture",
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
+            StreamBuilder<User?>(
+              stream: ref.watch(userProvider).getUser(userId),
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  User user = snapshot.data!;
+                  return ClipPath(
+                    clipper: CurveClipper(),
+                    child: Container(
+                      height: 400,
+                      color: const Color.fromRGBO(92, 0, 241, 1),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: <Widget>[
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: <Widget>[
+                              appTitle(),
+                              _welcomeText(user),
+                              const SizedBox(height: 16),
+                              PickProfilePicture(
+                                imagePicker,
+                                label: "Add profile picture",
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
-                    );
-                  }
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: TextField(
-                minLines: 4,
-                maxLines: 10,
-                controller: bioController,
-                decoration: const InputDecoration(
-                  label: Text("bio"),
-                  focusedBorder: UnderlineInputBorder(
-                    borderSide: BorderSide(
-                      width: 1,
-                      color: Themes.primaryColor,
                     ),
-                  ),
-                  border: UnderlineInputBorder(
-                    borderSide: BorderSide(width: 1),
-                  ),
-                ),
+                  );
+                }
+                return const LoadingSpinner();
+              },
+            ),
+            _bioInputField(bioController),
+          ],
+        ),
+      ),
+      floatingActionButton:
+          _continueButton(updateNewUser, ref, userId, context),
+    );
+  }
+
+  /// Displays text welcoming the user by their name.
+  Padding _welcomeText(User user) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: RichText(
+        textAlign: TextAlign.center,
+        softWrap: true,
+        text: TextSpan(
+          style: const TextStyle(
+            fontSize: 16,
+            fontFamily: Themes.fontFamily,
+          ),
+          children: <InlineSpan>[
+            const TextSpan(text: "hi "),
+            TextSpan(
+              text: "${user.username}, ",
+              style: const TextStyle(
+                fontWeight: FontWeight.bold,
               ),
+            ),
+            const TextSpan(
+              text: "here you can set up your profile",
             ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          SchedulerBinding.instance.addPostFrameCallback((_) {
-            updateNewUser(ref, userId).then((value) {
-              Navigator.of(context).pop();
-            });
-          });
-        },
-        child: const Icon(
-          PhosphorIcons.arrowRight,
-          color: Colors.white,
+    );
+  }
+
+  /// Text form field for adding a bio to the profile
+  Padding _bioInputField(TextEditingController bioController) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: TextField(
+        minLines: 4,
+        maxLines: 10,
+        controller: bioController,
+        decoration: const InputDecoration(
+          label: Text("bio"),
+          focusedBorder: UnderlineInputBorder(
+            borderSide: BorderSide(
+              width: 1,
+              color: Themes.primaryColor,
+            ),
+          ),
+          border: UnderlineInputBorder(
+            borderSide: BorderSide(width: 1),
+          ),
         ),
+      ),
+    );
+  }
+
+  /// Continues to home screen after user has set up profile.
+  FloatingActionButton _continueButton(
+      Future<void> Function(WidgetRef ref, String userId) updateNewUser,
+      WidgetRef ref,
+      String userId,
+      BuildContext context) {
+    return FloatingActionButton(
+      onPressed: () {
+        SchedulerBinding.instance.addPostFrameCallback((_) {
+          updateNewUser(ref, userId).then((value) {
+            Navigator.of(context).pop();
+          });
+        });
+      },
+      child: const Icon(
+        PhosphorIcons.arrowRight,
+        color: Colors.white,
       ),
     );
   }
@@ -216,12 +233,6 @@ class _PickProfilePictureState extends State<PickProfilePicture> {
         widget.imageHandler(image);
       });
     }
-  }
-
-  @override
-  void dispose() {
-    // TODO: implement dispose
-    super.dispose();
   }
 
   @override

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:project/models/message.dart';
-import 'package:project/widgets/comment_list_item.dart';
+import 'package:project/widgets/items/comment_list_item.dart';
 
 /// Presents a list of comments in a [ListView].
 class CommentList extends StatelessWidget {

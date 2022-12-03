@@ -24,6 +24,8 @@ abstract class ChatService {
   ///Delete's the chat with the given [chat id] in the group for the given
   ///[group id].
   Future<void> deleteChat(String groupId, String chatId);
+
+  Future<void> deleteGroup(String groupId);
 }
 
 /// Firebase implementation of [ChatService]
@@ -39,18 +41,13 @@ class FirebaseChatService implements ChatService {
               .collection("messages")
               .add(Message.toMap(chat))))
           .id;
-      await chatCollection
-          .doc(groupId)
-          .collection("messages")
-          .doc(chat.messageId)
-          .set(Message.toMap(chat));
-    } else {
-      await chatCollection
-          .doc(groupId)
-          .collection("messages")
-          .doc(chat.messageId)
-          .set(Message.toMap(chat));
     }
+    await chatCollection
+        .doc(groupId)
+        .collection("messages")
+        .doc(chat.messageId)
+        .set(Message.toMap(chat));
+
     return chat;
   }
 
@@ -58,10 +55,8 @@ class FirebaseChatService implements ChatService {
   Future<Group> saveGroup(Group group) async {
     if (group.groupId == "") {
       group.groupId = (await (groupCollection.add(group.toMap()))).id;
-      await groupCollection.doc(group.groupId).set(group.toMap());
-    } else {
-      await groupCollection.doc(group.groupId).set(group.toMap());
     }
+    await groupCollection.doc(group.groupId).set(group.toMap());
 
     return group;
   }
@@ -109,5 +104,10 @@ class FirebaseChatService implements ChatService {
         .snapshots()
         .map((event) => event.data())
         .map((event) => Group.fromMap(event!));
+  }
+
+  @override
+  Future<void> deleteGroup(String groupId) {
+    return groupCollection.doc(groupId).delete();
   }
 }

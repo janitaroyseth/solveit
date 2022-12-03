@@ -13,9 +13,14 @@ class Tag {
   // or to color parameter if its format is valid.
   Tag({
     this.tagId = "",
-    this.text = "",
+    String text = "tag",
     String color = "",
-  }) : color = _isColor(color) ? color : stringFromColor(getRandomColor());
+  })  : text = text.isNotEmpty ? text : "invalid text",
+        color = _isColor(color)
+            ? color
+            : ColorUtility.stringFromColor(
+                ColorUtility.getRandomColor(),
+              );
 
   static bool _isColor(String color) {
     return RegExp(r'^#([0-9a-fA-F]{6}||[0-9a-fA-F]{8})$').hasMatch(color);
@@ -54,6 +59,9 @@ class Tag {
   @override
   bool operator ==(Object other) {
     if (text == (other as Tag).text && color == (other).color) {
+      return true;
+    }
+    if (tagId == other.tagId) {
       return true;
     }
     return false;

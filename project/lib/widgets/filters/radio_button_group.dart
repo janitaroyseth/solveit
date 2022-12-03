@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:project/models/filter_option.dart';
-
-import '../models/filter.dart';
+import 'package:project/utilities/filter.dart';
+import 'package:project/utilities/filter_option.dart';
 
 /// Represents a group of radio buttons.
 class RadioButtonGroup extends StatefulWidget {
   /// The list of [FilterOption] this radio group represents.
   final Filter filter;
 
+  /// The intial value of the radio button group.
+  final FilterOption? initalValue;
+
   /// Creates an instance of [RadioButtonGroup] from the given [List<FilterOption>].
   const RadioButtonGroup({
     super.key,
     required this.filter,
+    this.initalValue,
   });
 
   @override
@@ -23,7 +26,7 @@ class _RadioButtonGroupState extends State<RadioButtonGroup> {
 
   @override
   void initState() {
-    chosenSort = widget.filter.filterOptions[0];
+    chosenSort = widget.initalValue ?? widget.filter.filterOptions[0];
     super.initState();
   }
 

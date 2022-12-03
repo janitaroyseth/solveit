@@ -1,7 +1,7 @@
-import 'package:project/models/filter_option.dart';
+import 'package:project/utilities/filter_option.dart';
 
 /// What type of filtering, sort or check.
-enum FilterType { sort, tag }
+enum FilterType { radio, check }
 
 /// Represents a filter option to filter and sort through lists.
 class Filter {
@@ -19,7 +19,6 @@ class Filter {
 
   ///[FilterType] which type of filter it is.
   final FilterType filterType;
-
 
   /// Creates an instance of [Filter] with the given title, filterHandler,
   /// filter options and filterType.

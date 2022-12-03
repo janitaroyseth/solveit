@@ -10,10 +10,10 @@ import 'package:project/providers/auth_provider.dart';
 import 'package:project/providers/chat_image_provider.dart';
 import 'package:project/providers/chat_provder.dart';
 import 'package:project/providers/user_provider.dart';
-import 'package:project/widgets/appbar_button.dart';
-import 'package:project/widgets/chat_list.dart';
-import 'package:project/widgets/loading_spinner.dart';
-import 'package:project/widgets/message_input_field.dart';
+import 'package:project/widgets/buttons/app_bar_button.dart';
+import 'package:project/widgets/list/chat_list.dart';
+import 'package:project/widgets/general/loading_spinner.dart';
+import 'package:project/widgets/inputs/message_input_field.dart';
 
 /// Screen/Scaffold displaying a chat.
 class ChatScreen extends ConsumerWidget {
@@ -30,6 +30,8 @@ class ChatScreen extends ConsumerWidget {
 
     /// Url of the user participating in this chat.
     String currentUser = ref.watch(authProvider).currentUser!.uid;
+
+    /// The group id for the chats that are being displayed.
     String groupId = ModalRoute.of(context)!.settings.arguments as String;
 
     return FutureBuilder<Group?>(
@@ -40,7 +42,7 @@ class ChatScreen extends ConsumerWidget {
 
           return Scaffold(
             appBar: AppBar(
-              leading: _backButton(context),
+              leading: _backButton(context, ref, groupId),
               titleSpacing: -4,
               title: FutureBuilder<User?>(
                 future: ref
@@ -160,9 +162,16 @@ class ChatScreen extends ConsumerWidget {
   }
 
   /// Goes back to previous screen.
-  AppBarButton _backButton(BuildContext context) {
+  AppBarButton _backButton(
+      BuildContext context, WidgetRef ref, String groupId) {
     return AppBarButton(
-      handler: () => Navigator.of(context).pop(),
+      handler: () {
+        ref.watch(chatProvider).getChats(groupId).first.then((value) {
+          if (value.isEmpty) {
+            ref.read(chatProvider).deleteGroup(groupId);
+          }
+        }).whenComplete(() => Navigator.of(context).pop());
+      },
       tooltip: "Go back",
       icon: PhosphorIcons.caretLeftLight,
     );

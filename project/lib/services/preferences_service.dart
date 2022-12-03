@@ -1,6 +1,6 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../models/settings.dart';
+import '../utilities/settings.dart';
 
 class PreferencesService {
   static final PreferencesService _preferencesService =
@@ -21,13 +21,15 @@ class PreferencesService {
 
   void saveSettings(Settings settings) async {
     await preferences.setBool("darkThemeEnabled", settings.darkThemeEnabled);
-    print("Settings saved.");
+    await preferences.setString("dateFormat", settings.dateFormat);
   }
 
   Settings getSettings() {
     bool? darkThemeEnabled = preferences.getBool("darkThemeEnabled");
+    String? dateFormat = preferences.getString("dateFormat");
     if (darkThemeEnabled != null) {
-      return Settings(darkThemeEnabled: darkThemeEnabled);
+      return Settings(
+          darkThemeEnabled: darkThemeEnabled, dateFormat: dateFormat);
     } else {
       return Settings();
     }

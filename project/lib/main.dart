@@ -10,7 +10,7 @@ import 'package:project/screens/collaborators_screen.dart';
 import 'package:project/screens/create_profile_screen.dart';
 import 'package:project/screens/edit_profile_screen.dart';
 import 'package:project/screens/edit_project_screen.dart';
-import 'package:project/screens/configure_task_screen.dart';
+import 'package:project/screens/edit_task_screen.dart';
 import 'package:project/screens/edit_tag_screen.dart';
 import 'package:project/screens/profile_screen.dart';
 import 'package:project/screens/project_overview_screen.dart';
@@ -77,8 +77,7 @@ class MyApp extends StatelessWidget {
           EditProjectScreen.routeName: (context) => const EditProjectScreen(),
           TaskOverviewScreen.routeName: (context) => const TaskOverviewScreen(),
           TaskDetailsScreen.routeName: (context) => const TaskDetailsScreen(),
-          ConfigureTaskScreen.routeName: (context) =>
-              const ConfigureTaskScreen(),
+          EditTaskScreen.routeName: (context) => const EditTaskScreen(),
           ProfileScreen.routeName: (context) => const ProfileScreen(),
           EditProfileScreen.routeName: (context) => const EditProfileScreen(),
           CreateProfileScreen.routeName: (context) =>
@@ -88,7 +87,7 @@ class MyApp extends StatelessWidget {
               const CollaboratorsScreen(),
           TagsScreen.routeName: (context) => const TagsScreen(),
           EditTagScreen.routeName: (context) => const EditTagScreen(),
-          ChatScreen.routeName: (context) => ChatScreen(),
+          ChatScreen.routeName: (context) => const ChatScreen(),
         },
       ),
     );

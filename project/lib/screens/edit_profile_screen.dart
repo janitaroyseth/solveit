@@ -8,7 +8,8 @@ import 'package:project/providers/user_provider.dart';
 import 'package:project/screens/create_profile_screen.dart';
 import 'package:project/styles/curve_clipper.dart';
 import 'package:project/styles/theme.dart';
-import 'package:project/widgets/appbar_button.dart';
+import 'package:project/widgets/buttons/app_bar_button.dart';
+import 'package:project/widgets/general/loading_spinner.dart';
 
 /// Screen/Scaffold for updating a users profile page.
 class EditProfileScreen extends ConsumerWidget {
@@ -75,25 +76,10 @@ class EditProfileScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        centerTitle: true,
-        elevation: 0,
-        leading: AppBarButton(
-          icon: PhosphorIcons.caretLeftLight,
-          handler: () {
-            Navigator.of(context).pop();
-          },
-          tooltip: "Go back",
-          color: Colors.white,
-        ),
+        leading: _backButton(context),
         foregroundColor: Colors.white,
         backgroundColor: Themes.primaryColor,
-        title: Text(
-          "edit profile",
-          style: Theme.of(context)
-              .appBarTheme
-              .titleTextStyle!
-              .copyWith(color: Colors.white),
-        ),
+        title: _appBarTitle(context),
       ),
       body: StreamBuilder(
         stream: ref.watch(userProvider).getUser(userId),
@@ -130,14 +116,36 @@ class EditProfileScreen extends ConsumerWidget {
               ),
             );
           }
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
+          return const LoadingSpinner();
         },
       ),
     );
   }
 
+  /// The title displayed in the appbar.
+  Text _appBarTitle(BuildContext context) {
+    return Text(
+      "edit profile",
+      style: Theme.of(context)
+          .appBarTheme
+          .titleTextStyle!
+          .copyWith(color: Colors.white),
+    );
+  }
+
+  /// Button for going back to previous screen.
+  AppBarButton _backButton(BuildContext context) {
+    return AppBarButton(
+      icon: PhosphorIcons.caretLeftLight,
+      handler: () {
+        Navigator.of(context).pop();
+      },
+      tooltip: "Go back",
+      color: Colors.white,
+    );
+  }
+
+  /// Section for updating the profile picture.
   ClipPath updateProfilePictureSection(
       WidgetRef ref, String userId, User user) {
     return ClipPath(
@@ -183,6 +191,7 @@ class _EditFieldSceen extends StatefulWidget {
 }
 
 class _EditFieldSceenState extends State<_EditFieldSceen> {
+  /// Text editing controller for the field to edit.
   final TextEditingController _fieldController = TextEditingController();
 
   @override
@@ -195,8 +204,6 @@ class _EditFieldSceenState extends State<_EditFieldSceen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        centerTitle: true,
         title: Text(
           widget.label,
           style: const TextStyle(
@@ -204,22 +211,9 @@ class _EditFieldSceenState extends State<_EditFieldSceen> {
             fontWeight: FontWeight.w300,
           ),
         ),
-        leading: AppBarButton(
-          icon: PhosphorIcons.xLight,
-          handler: () {
-            Navigator.of(context).pop();
-          },
-          tooltip: "Cancel",
-        ),
+        leading: _cancelButton(context),
         actions: [
-          AppBarButton(
-            handler: () {
-              widget.onSave(_fieldController.text);
-              Navigator.of(context).pop();
-            },
-            tooltip: "Save",
-            icon: PhosphorIcons.checkLight,
-          ),
+          _saveFieldButton(context),
         ],
       ),
       body: Consumer(
@@ -235,6 +229,29 @@ class _EditFieldSceenState extends State<_EditFieldSceen> {
           ),
         ),
       ),
+    );
+  }
+
+  /// Button for canceling the changes and going back to previous screen.
+  AppBarButton _cancelButton(BuildContext context) {
+    return AppBarButton(
+      icon: PhosphorIcons.xLight,
+      handler: () {
+        Navigator.of(context).pop();
+      },
+      tooltip: "Cancel",
+    );
+  }
+
+  /// Button for saving the changes and going back to previous screen.
+  AppBarButton _saveFieldButton(BuildContext context) {
+    return AppBarButton(
+      handler: () {
+        widget.onSave(_fieldController.text);
+        Navigator.of(context).pop();
+      },
+      tooltip: "Save",
+      icon: PhosphorIcons.checkLight,
     );
   }
 }

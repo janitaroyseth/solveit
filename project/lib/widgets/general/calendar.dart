@@ -2,13 +2,15 @@ import 'dart:collection';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:jiffy/jiffy.dart';
 import 'package:project/models/project.dart';
 import 'package:project/models/task.dart';
+import 'package:project/providers/auth_provider.dart';
 import 'package:project/providers/task_provider.dart';
+import 'package:project/screens/task_details_screen.dart';
 import 'package:project/styles/theme.dart';
-import 'package:project/widgets/loading_spinner.dart';
-import 'package:project/widgets/task_list_item.dart';
+import 'package:project/utilities/date_formatting.dart';
+import 'package:project/widgets/general/loading_spinner.dart';
+import 'package:project/widgets/items/task_list_item.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 /// Calendar spanning from 2021 to 2 years in the future.
@@ -45,33 +47,10 @@ class _CalendarState extends State<Calendar> {
     _selectedDay = _focusedDay;
 
     _selectedTasks = ValueNotifier(_getTasksForDay(_selectedDay!));
-
-    // /// Creates and returns a [Map] where each deadline in the tasks is a key, and the values
-    // /// a list of tasks for the deadline.
-    // Map<DateTime, dynamic> groupTasks() {
-    //   Map<DateTime, dynamic> groupedTasks = {};
-    //   for (var task in widget.project.tasks) {
-    //     DateTime key = DateTime.parse(task.deadline as String);
-
-    //     List<Task> values = widget.project.tasks
-    //         .where(
-    //             (element) => DateTime.parse(element.deadline as String) == key)
-    //         .toList();
-    //     groupedTasks[key] = values;
-    //   }
-    //   return groupedTasks;
-    // }
-
-    // tasks = LinkedHashMap<DateTime, dynamic>(
-    //   equals: isSameDay,
-    //   hashCode: (DateTime key) =>
-    //       key.day * 1000000 + key.month * 10000 + key.year,
-    // )..addAll(groupTasks());
   }
 
   @override
   void didChangeDependencies() {
-    //widget.selectDay(_selectedDay);
     super.didChangeDependencies();
   }
 
@@ -162,8 +141,7 @@ class _CalendarState extends State<Calendar> {
                           return Container(
                             padding: const EdgeInsets.only(top: 16.0),
                             child: Text(
-                              Jiffy(_selectedDay)
-                                  .format("EEEE, do of MMMM yyyy"),
+                              DateFormatting.longDate(_selectedDay!),
                               style: const TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w700,
@@ -172,7 +150,25 @@ class _CalendarState extends State<Calendar> {
                             ),
                           );
                         }
-                        return TaskListItem(task: value[index - 1]);
+                        return TaskListItem(
+                          task: value[index - 1],
+                          handler: () {
+                            ref
+                                .read(editTaskProvider.notifier)
+                                .setTask(value[index - 1]);
+                            ref.read(currentTaskProvider.notifier).setTask(ref
+                                .watch(taskProvider)
+                                .getTask(value[index - 1]._projectId,
+                                    value[index - 1].taskId));
+                            Navigator.of(context).pushNamed(
+                                TaskDetailsScreen.routeName,
+                                arguments: widget.project.collaborators
+                                    .contains(ref
+                                        .watch(authProvider)
+                                        .currentUser!
+                                        .uid));
+                          },
+                        );
                       },
                     ),
                   ),

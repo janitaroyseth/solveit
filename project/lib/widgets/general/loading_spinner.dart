@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
 
+/// Loading spinner to use while fetching data.
 class LoadingSpinner extends StatelessWidget {
+  /// Create instance of [LoadingSpinner].
   const LoadingSpinner({super.key});
 
   @override

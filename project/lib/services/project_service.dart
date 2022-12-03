@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:project/models/project.dart';
-import 'package:project/models/task.dart';
 import 'package:project/services/auth_service.dart';
 import 'package:project/services/tag_service.dart';
 import 'package:project/services/task_service.dart';
@@ -8,6 +7,8 @@ import 'package:project/services/user_service.dart';
 import 'dart:async';
 
 import 'package:rxdart/rxdart.dart';
+
+import '../models/tag.dart';
 
 /// Business logic for projects.
 abstract class ProjectService {
@@ -42,12 +43,13 @@ class FirebaseProjectService implements ProjectService {
   @override
   Future<Project> saveProject(Project project) async {
     if (project.projectId == "") {
-      project.tags = await tagService.getTags();
       project.projectId = (await projectCollection.add(project.toMap())).id;
-      await projectCollection.doc(project.projectId).set(project.toMap());
-    } else {
-      await projectCollection.doc(project.projectId).set(project.toMap());
+      for (Tag tag in (await tagService.getDefaultTags())) {
+        project.tags.add(tag);
+        tagService.saveTag(tag: tag, projectId: project.projectId);
+      }
     }
+    await projectCollection.doc(project.projectId).set(project.toMap());
     return project;
   }
 
@@ -104,13 +106,7 @@ class FirebaseProjectService implements ProjectService {
 
   @override
   Future<void> deleteProject(String projectId) async {
-    taskService.getTasks(projectId).first.then((tasks) {
-      for (Task? task in tasks) {
-        if (task != null) {
-          taskService.deleteTask(projectId, task.taskId);
-        }
-      }
-    }).whenComplete(() => projectCollection.doc(projectId).delete());
+    return projectCollection.doc(projectId).delete();
   }
 
   @override

@@ -6,10 +6,7 @@ import 'package:table_calendar/table_calendar.dart';
 
 /// Represents the theme the app is displaying.
 class Themes {
-  bool isDarkModeSelected(WidgetRef ref) {
-    return ref.watch(darkModeProvider);
-  }
-
+  /// Returns the main text color depending on the currently selected theme.
   static Color textColor(WidgetRef ref) {
     if (ref.watch(darkModeProvider)) {
       return Colors.white;
@@ -17,7 +14,8 @@ class Themes {
     return Colors.black;
   }
 
-  // TODO: fix this shit
+  static const String fontFamily = "Comfortaa";
+
   static const MaterialColor primaryColor = MaterialColor(
     0xff5C00F1,
     <int, Color>{
@@ -34,18 +32,14 @@ class Themes {
     },
   );
 
-  static const String fontFamily = "Comfortaa";
-
   static ThemeData themeData(WidgetRef ref) {
     return ThemeData(
       primarySwatch: primaryColor,
-
-      // TODO: set this up on screens
-      // primaryColor: const Color.fromRGBO(92, 0, 241, 1),
+      primaryColor: primaryColor,
       scaffoldBackgroundColor: Colors.white,
+      errorColor: Colors.red.shade900,
       fontFamily: "Comfortaa",
       indicatorColor: Colors.black,
-      // TODO: Fix this.
       bottomSheetTheme: const BottomSheetThemeData(
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
@@ -54,13 +48,12 @@ class Themes {
           ),
         ),
       ),
-      bottomNavigationBarTheme: BottomNavigationBarThemeData(
+      bottomNavigationBarTheme: const BottomNavigationBarThemeData(
         backgroundColor: Colors.white,
         unselectedLabelStyle: TextStyle(
           color: Colors.black,
         ),
       ),
-
       appBarTheme: AppBarTheme(
         backgroundColor: Colors.transparent,
         foregroundColor: Colors.black,
@@ -87,6 +80,7 @@ class Themes {
   static ThemeData darkTheme(WidgetRef ref) {
     return ThemeData(
       primarySwatch: primaryColor,
+      primaryColor: primaryColor,
       errorColor: Colors.red.shade400,
       backgroundColor: Colors.black,
       scaffoldBackgroundColor: Colors.grey.shade900,
@@ -354,9 +348,7 @@ class Themes {
     bool isDarkMode = ref.watch(darkModeProvider);
     if (isDarkMode) {
       return ButtonStyle(
-        padding: MaterialStateProperty.all(
-          EdgeInsets.all(12.0),
-        ),
+        padding: MaterialStateProperty.all(const EdgeInsets.all(12.0)),
         foregroundColor: MaterialStateProperty.all(primaryColor.shade50),
         textStyle: MaterialStateProperty.all<TextStyle>(
           TextStyle(

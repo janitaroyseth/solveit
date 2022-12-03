@@ -3,12 +3,9 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
-import 'package:project/models/project.dart';
-import 'package:project/models/user.dart' as app;
 import 'package:project/providers/auth_provider.dart';
 import 'package:project/providers/user_provider.dart';
 import 'package:project/screens/create_profile_screen.dart';
-import 'package:project/screens/home_screen.dart';
 import 'package:project/styles/theme.dart';
 
 /// Screen/Scaffold for signing in and signing up .
@@ -46,6 +43,7 @@ class SignInScreen extends StatelessWidget {
     );
   }
 
+  /// The solve it logo.
   Row _logo(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
@@ -83,6 +81,7 @@ class __SignInFormState extends ConsumerState<_SignInForm> {
   String name = "";
   String password = "";
 
+  /// Sends a request to either log on using email or sign up using email.
   void submitEmailRequest() {
     bool? isValid = formKey.currentState?.validate();
     FocusScope.of(context).unfocus();
@@ -114,12 +113,6 @@ class __SignInFormState extends ConsumerState<_SignInForm> {
     }
 
     setState(() {});
-  }
-
-  /// Signing the user in anonymously.
-  Future<void> _signInAnonymously() async {
-    final auth = ref.read(authProvider);
-    auth.signInAnonymously();
   }
 
   /// Signing the user in with Facebook.
@@ -252,6 +245,7 @@ class __SignInFormState extends ConsumerState<_SignInForm> {
     );
   }
 
+  /// Button for signing in with apple.
   ElevatedButton appleButton(BuildContext context) {
     return ElevatedButton(
       onPressed: () {
@@ -265,6 +259,7 @@ class __SignInFormState extends ConsumerState<_SignInForm> {
     );
   }
 
+  /// Button for signing in with google.
   ElevatedButton googleButton() {
     return ElevatedButton(
       onPressed: _signInWithGoogle,
@@ -276,6 +271,7 @@ class __SignInFormState extends ConsumerState<_SignInForm> {
     );
   }
 
+  /// Button for signing in with facebook.
   ElevatedButton facebookButton() {
     return ElevatedButton(
       onPressed: _signInWithFacebook,
@@ -289,6 +285,7 @@ class __SignInFormState extends ConsumerState<_SignInForm> {
 
   SizedBox verticalPadding() => const SizedBox(height: 6);
 
+  /// Textformfield for confirming password when user signs up.
   Visibility confirmPasswordField() {
     return Visibility(
       visible: signupMode,
@@ -321,6 +318,7 @@ class __SignInFormState extends ConsumerState<_SignInForm> {
     );
   }
 
+  /// Password field for when user logs on or signs up.
   TextFormField passwordField() {
     return TextFormField(
       key: const ValueKey("password"),
@@ -345,6 +343,7 @@ class __SignInFormState extends ConsumerState<_SignInForm> {
     );
   }
 
+  /// Name field for when user signs up with email.
   Visibility nameField() {
     return Visibility(
       visible: signupMode,
@@ -374,6 +373,7 @@ class __SignInFormState extends ConsumerState<_SignInForm> {
     );
   }
 
+  /// Email field for singing in or up with email.
   TextFormField emailField() {
     return TextFormField(
       key: const ValueKey("email"),

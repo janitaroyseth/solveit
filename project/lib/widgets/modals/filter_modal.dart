@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
-import 'package:project/models/filter.dart';
-import 'package:project/models/filter_option.dart';
-import 'package:project/widgets/checkbox_list_item.dart';
-import 'package:project/widgets/radio_button_group.dart';
+import 'package:project/utilities/filter.dart';
+import 'package:project/utilities/filter_option.dart';
+import 'package:project/styles/theme.dart';
+import 'package:project/widgets/filters/checkbox_list_item.dart';
+import 'package:project/widgets/filters/radio_button_group.dart';
 
 /// Represents a modal for displaying filtering options.
 class FilterModal extends StatefulWidget {
@@ -27,17 +29,17 @@ class FilterModal extends StatefulWidget {
 
 class _FilterModalState extends State<FilterModal> {
   /// Builds a [List] of filter options with the respective [FilterType].
-  List<Widget> buildFilterOptionsDropDown(
+  List<Widget> _buildFilterOptionsDropDown(
     List<FilterOption> filterOptions,
     Filter filter,
   ) {
     List<Widget> filterOptionsDropDownList = [];
 
-    if (filter.filterType == FilterType.sort) {
+    if (filter.filterType == FilterType.radio) {
       filterOptionsDropDownList.add(RadioButtonGroup(filter: filter));
     }
 
-    if (filter.filterType == FilterType.tag) {
+    if (filter.filterType == FilterType.check) {
       for (FilterOption filterOption in filterOptions) {
         filterOptionsDropDownList
             .add(CheckboxListItem(filterOption: filterOption, filter: filter));
@@ -49,25 +51,28 @@ class _FilterModalState extends State<FilterModal> {
 
   /// Builds filter options [ListTile] for displaying the options
   /// for filtering.
-  List<Widget> buildFilterOptionListItems() {
+  List<Widget> _buildFilterOptionListItems() {
     List<Widget> filterOptions = [];
 
     for (var filter in widget.filters) {
-      Widget listTile = ListTile(
-        dense: false,
-        title: Text(filter.title.toLowerCase()),
-        trailing: GestureDetector(
-          onTap: () {
-            setState(() {
-              filter.collapsed = !filter.collapsed;
-            });
-          },
-          child: AnimatedRotation(
-            turns: filter.collapsed ? 0 : 0.25,
-            duration: const Duration(milliseconds: 150),
-            child: const Icon(
-              PhosphorIcons.caretRight,
-              semanticLabel: "Show tags to filter the task list by",
+      Widget listTile = Consumer(
+        builder: (context, ref, child) => ListTile(
+          dense: false,
+          title: Text(filter.title.toLowerCase()),
+          trailing: GestureDetector(
+            onTap: () {
+              setState(() {
+                filter.collapsed = !filter.collapsed;
+              });
+            },
+            child: AnimatedRotation(
+              turns: filter.collapsed ? 0 : 0.25,
+              duration: const Duration(milliseconds: 150),
+              child: Icon(
+                PhosphorIcons.caretRight,
+                color: Themes.textColor(ref),
+                semanticLabel: "Show tags to filter the task list by",
+              ),
             ),
           ),
         ),
@@ -82,7 +87,7 @@ class _FilterModalState extends State<FilterModal> {
                   height: 0,
                 )
               : Column(
-                  children: buildFilterOptionsDropDown(
+                  children: _buildFilterOptionsDropDown(
                     filter.filterOptions,
                     filter,
                   ),
@@ -106,7 +111,7 @@ class _FilterModalState extends State<FilterModal> {
               widget.modalTitle.toLowerCase(),
               textAlign: TextAlign.center,
             ),
-            ...buildFilterOptionListItems()
+            ..._buildFilterOptionListItems()
           ],
         ),
       ),

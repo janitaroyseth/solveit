@@ -4,10 +4,10 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/models/user.dart';
 import 'package:project/providers/project_provider.dart';
 import 'package:project/providers/user_provider.dart';
-import 'package:project/widgets/appbar_button.dart';
-import 'package:project/widgets/loading_spinner.dart';
-import 'package:project/widgets/search_bar.dart';
-import 'package:project/widgets/user_list_item.dart';
+import 'package:project/widgets/buttons/app_bar_button.dart';
+import 'package:project/widgets/general/loading_spinner.dart';
+import 'package:project/widgets/inputs/search_bar.dart';
+import 'package:project/widgets/items/user_list_item.dart';
 
 enum CollaboratorsSearchType {
   collaborators,
@@ -32,20 +32,20 @@ class _CollaboratorsScreenState extends ConsumerState<CollaboratorsScreen> {
   final TextEditingController _searchController = TextEditingController();
 
   /// List of collaborators or assignees to add the selected user to.
-  late List<String?> users;
+  late List<String?> _users;
 
   /// The searchtype for the screen, whether to browse all users or just
   /// users in a project.
-  late CollaboratorsSearchType? searchType;
+  late CollaboratorsSearchType? _searchType;
 
   /// The project id of the project to add collaborators too.
-  late String? projectId;
+  late String? _projectId;
 
   /// Filters through the listt of all users and only leaves users that is
   /// not already currently in a collaborator or assignee list.
   List<User?> _filterCollaborators(List<User?>? allUsers) {
     return allUsers!
-        .where((element) => !users.contains(element!.userId))
+        .where((element) => !_users.contains(element!.userId))
         .toList();
   }
 
@@ -54,7 +54,7 @@ class _CollaboratorsScreenState extends ConsumerState<CollaboratorsScreen> {
   Stream<List<User>> _getCollaborators() {
     return ref
         .watch(projectProvider)
-        .getProject(projectId!)
+        .getProject(_projectId!)
         .first
         .then((value) {
       List<User> collaborators = [];
@@ -69,9 +69,9 @@ class _CollaboratorsScreenState extends ConsumerState<CollaboratorsScreen> {
   }
 
   /// Returns the appropriate [Stream<List<User>>] depending on the
-  /// [searchType].
+  /// [_searchType].
   Stream<List<User?>> _getStream() {
-    return searchType == CollaboratorsSearchType.collaborators
+    return _searchType == CollaboratorsSearchType.collaborators
         ? ref.watch(userProvider).searchUsers(_searchController.text)
         : _getCollaborators();
   }
@@ -83,11 +83,11 @@ class _CollaboratorsScreenState extends ConsumerState<CollaboratorsScreen> {
 
   @override
   void didChangeDependencies() {
-    users = (ModalRoute.of(context)!.settings.arguments as List)[0]
+    _users = (ModalRoute.of(context)!.settings.arguments as List)[0]
         as List<String?>;
-    searchType = (ModalRoute.of(context)!.settings.arguments as List)[1] ??
+    _searchType = (ModalRoute.of(context)!.settings.arguments as List)[1] ??
         CollaboratorsSearchType.collaborators;
-    projectId = (ModalRoute.of(context)!.settings.arguments as List)[2];
+    _projectId = (ModalRoute.of(context)!.settings.arguments as List)[2];
     super.didChangeDependencies();
   }
 
@@ -95,18 +95,19 @@ class _CollaboratorsScreenState extends ConsumerState<CollaboratorsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: _appBarTitle(searchType),
+        title: _appBarTitle(_searchType),
         leading: _backButton(context),
       ),
       body: Column(
         children: <Widget>[
-          _searchBar(searchType),
-          _usersList(searchType, _getStream, users)
+          _searchBar(_searchType),
+          _usersList(_searchType, _getStream, _users)
         ],
       ),
     );
   }
 
+  /// Returns a list of users.
   StreamBuilder<List<User?>> _usersList(
     CollaboratorsSearchType? searchType,
     Stream<List<User?>> Function() getStream,

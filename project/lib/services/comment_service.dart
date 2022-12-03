@@ -5,44 +5,52 @@ import 'package:project/services/user_service.dart';
 /// Business logic for comments.
 abstract class CommentService {
   /// Saves a new- or updates an existing comment.
-  Future<Message> saveComment(Message comment);
+  Future<Message> saveComment(String projectId, String taskId, Message comment);
 
   /// Returns future of a comment with given comment id.
-  Future<Message?> getComment(String commentId);
+  Future<Message?> getComment(
+      String projectId, String taskId, String commentId);
 
   /// Returns a future list with all comments.
-  Stream<List<Message?>> getComments(String taskId);
+  Stream<List<Message?>> getComments(String projectId, String taskId);
 
   /// Deletes a comment by comment id.
-  Future<void> deleteComment(String commentId);
+  Future<void> deleteComment(String projectId, String taskId, String commentId);
 }
 
 /// Firebase implementation of commentservice.
 class FirebaseCommentService extends CommentService {
-  final commentCollection = FirebaseFirestore.instance.collection("comments");
+  CollectionReference<Map<String, dynamic>> commentCollection(
+          String projectId, String taskId) =>
+      FirebaseFirestore.instance
+          .collection("projects")
+          .doc(projectId)
+          .collection("tasks")
+          .doc(taskId)
+          .collection("comments");
   final userService = FirebaseUserService();
 
   @override
-  Future<Message> saveComment(Message comment) async {
+  Future<Message> saveComment(
+      String projectId, String taskId, Message comment) async {
     if (comment.messageId == "") {
-      comment.messageId =
-          (await commentCollection.add(Message.toMap(comment))).id;
-      await commentCollection
-          .doc(comment.messageId)
-          .set(Message.toMap(comment));
-    } else {
-      await commentCollection
-          .doc(comment.messageId)
-          .set(Message.toMap(comment));
+      comment.messageId = (await commentCollection(projectId, taskId)
+              .add(Message.toMap(comment)))
+          .id;
     }
+    await commentCollection(projectId, taskId)
+        .doc(comment.messageId)
+        .set(Message.toMap(comment));
     return comment;
   }
 
   @override
-  Future<Message?> getComment(String commentId) async {
+  Future<Message?> getComment(
+      String projectId, String taskId, String commentId) async {
     Message? comment;
     Map<String, dynamic>? commentMap =
-        (await commentCollection.doc(commentId).get()).data();
+        (await commentCollection(projectId, taskId).doc(commentId).get())
+            .data();
     if (null != commentMap) {
       comment = Message.fromMap(commentMap);
     }
@@ -50,9 +58,8 @@ class FirebaseCommentService extends CommentService {
   }
 
   @override
-  Stream<List<Message?>> getComments(String taskId) {
-    return commentCollection
-        .where("otherId", isEqualTo: taskId)
+  Stream<List<Message?>> getComments(String projectId, String taskId) {
+    return commentCollection(projectId, taskId)
         .snapshots()
         .map((event) => event.docs)
         .map((event) {
@@ -75,7 +82,8 @@ class FirebaseCommentService extends CommentService {
   }
 
   @override
-  Future<void> deleteComment(String commentId) async {
-    commentCollection.doc(commentId).delete();
+  Future<void> deleteComment(
+      String projectId, String taskId, String commentId) async {
+    commentCollection(projectId, taskId).doc(commentId).delete();
   }
 }

@@ -21,3 +21,18 @@ final darkModeProvider = StateNotifierProvider<DarkModeNotifier, bool>(
   (ref) => DarkModeNotifier(
       ref.watch(settingsProvider).getSettings().darkThemeEnabled),
 );
+
+/// Notifier for toggling darkmode.
+class DateFormatNotifier extends StateNotifier<String> {
+  DateFormatNotifier(super.state);
+
+  void change(value) {
+    state = value;
+  }
+}
+
+/// State notifier provider for listening to changes in darkmode setting.
+final dateFormatProvider = StateNotifierProvider<DateFormatNotifier, String>(
+  (ref) =>
+      DateFormatNotifier(ref.watch(settingsProvider).getSettings().dateFormat),
+);
