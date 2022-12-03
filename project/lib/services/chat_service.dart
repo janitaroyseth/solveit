@@ -39,18 +39,13 @@ class FirebaseChatService implements ChatService {
               .collection("messages")
               .add(Message.toMap(chat))))
           .id;
-      await chatCollection
-          .doc(groupId)
-          .collection("messages")
-          .doc(chat.messageId)
-          .set(Message.toMap(chat));
-    } else {
-      await chatCollection
-          .doc(groupId)
-          .collection("messages")
-          .doc(chat.messageId)
-          .set(Message.toMap(chat));
     }
+    await chatCollection
+        .doc(groupId)
+        .collection("messages")
+        .doc(chat.messageId)
+        .set(Message.toMap(chat));
+
     return chat;
   }
 
@@ -58,10 +53,8 @@ class FirebaseChatService implements ChatService {
   Future<Group> saveGroup(Group group) async {
     if (group.groupId == "") {
       group.groupId = (await (groupCollection.add(group.toMap()))).id;
-      await groupCollection.doc(group.groupId).set(group.toMap());
-    } else {
-      await groupCollection.doc(group.groupId).set(group.toMap());
     }
+    await groupCollection.doc(group.groupId).set(group.toMap());
 
     return group;
   }

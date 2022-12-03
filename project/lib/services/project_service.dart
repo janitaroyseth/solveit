@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:project/models/project.dart';
-import 'package:project/models/task.dart';
 import 'package:project/services/auth_service.dart';
 import 'package:project/services/tag_service.dart';
 import 'package:project/services/task_service.dart';

@@ -22,7 +22,6 @@ class PreferencesService {
   void saveSettings(Settings settings) async {
     await preferences.setBool("darkThemeEnabled", settings.darkThemeEnabled);
     await preferences.setString("dateFormat", settings.dateFormat);
-    print("Settings saved.");
   }
 
   Settings getSettings() {
