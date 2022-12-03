@@ -36,10 +36,12 @@ class TaskListItem extends ConsumerWidget {
                       Expanded(
                         child: Row(
                           children: [
-                            Flexible(
-                              fit: FlexFit.loose,
+                            Container(
+                              constraints: BoxConstraints(
+                                  maxWidth:
+                                      MediaQuery.of(context).size.width / 1.6),
                               child: Text(
-                                "${task.title.toLowerCase()} mklgmkldfmgkdlfmgkldfgmdfklmgkfldmgklfdmgkldmfgklmdfkglmfklgmdkfl",
+                                "${task.title.toLowerCase()} fneklf 2wermk ffmklef fmkl",
                                 textAlign: TextAlign.start,
                                 maxLines: 1,
                                 softWrap: true,
@@ -47,35 +49,31 @@ class TaskListItem extends ConsumerWidget {
                                 style: Theme.of(context).textTheme.titleMedium,
                               ),
                             ),
-                            Expanded(
-                              child: Visibility(
-                                visible: task.done,
-                                child: Text(
-                                  "- solved",
-                                  textAlign: TextAlign.start,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleMedium!
-                                      .copyWith(
-                                        color: Themes.textColor(ref)
-                                            .withOpacity(0.6),
-                                      ),
-                                ),
+                            Visibility(
+                              visible: task.done,
+                              child: Text(
+                                " - solved",
+                                textAlign: TextAlign.start,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleMedium!
+                                    .copyWith(
+                                      color: Themes.textColor(ref)
+                                          .withOpacity(0.6),
+                                    ),
                               ),
                             ),
-                            Expanded(
-                              child: Visibility(
-                                visible: !task.done,
-                                child: Text(
-                                  "- open",
-                                  textAlign: TextAlign.start,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleMedium!
-                                      .copyWith(
-                                        color: Themes.primaryColor.shade50,
-                                      ),
-                                ),
+                            Visibility(
+                              visible: !task.done,
+                              child: Text(
+                                " - open",
+                                textAlign: TextAlign.start,
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleMedium!
+                                    .copyWith(
+                                      color: Themes.primaryColor.shade50,
+                                    ),
                               ),
                             ),
                             const SizedBox(width: 8.0)
@@ -108,9 +106,7 @@ class TaskListItem extends ConsumerWidget {
                 const SizedBox(
                   height: 10.0,
                 ),
-                TagsList(
-                  tags: task.tags,
-                ),
+                TagsList(tags: task.tags),
               ],
             ),
           ),
