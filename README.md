@@ -77,8 +77,15 @@ Our project assignment is to create a mobile application for a target group of o
 ### Installation
 
 1. Clone the repository with `git clone https://github.com/janital/solveIt`.
-2. Start a simulator either through Android Studio Device Manager or on Mac through the terminal with `open -a Simulator.app`.
-3. Run `flutter run`from the project root folder `cd project/`.
+2. A file named `variables.env` need to be creates at the project root folder. Location `solveit/project/variables.env`. The file needs to contain the following:
+
+```
+TENOR_API_KEY = {your tenor api key}
+MESSAGE_ENCRYPTION_KEY = {your encryption key}
+```
+
+3. Start a simulator either through Android Studio Device Manager or on Mac through the terminal with `open -a Simulator.app`.
+4. Run `flutter run`from the project root folder `cd project/`.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -89,7 +96,7 @@ Our project assignment is to create a mobile application for a target group of o
 - [x] Create static version of the wireframe.
 - [x] Finish MVP (Minimal Viable Product)
 - [x] Add dark theme
-- [ ] Implement shared projects
+- [x] Implement shared projects
 - [ ] Integrate with device calendar
 - [x] Integrate with mobile camera
 
