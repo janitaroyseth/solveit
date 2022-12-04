@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:project/models/project.dart';
+import 'package:project/models/task.dart';
 import 'package:project/services/auth_service.dart';
 import 'package:project/services/tag_service.dart';
 import 'package:project/services/task_service.dart';
@@ -49,8 +50,31 @@ class FirebaseProjectService implements ProjectService {
         tagService.saveTag(tag: tag, projectId: project.projectId);
       }
     }
+    await _removeMissingCollaboratorsFromTasks(project);
     await projectCollection.doc(project.projectId).set(project.toMap());
     return project;
+  }
+
+  Future<void> _removeMissingCollaboratorsFromTasks(Project project) async {
+    List<Task?> tasks = await taskService.getTasks(project.projectId).first;
+    for (Task? task in tasks) {
+      if (null != task) {
+        List<String> toBeRemoved = [];
+        for (String userId in task.assigned) {
+          if (!project.collaborators.contains(userId) &&
+              !toBeRemoved.contains(userId)) {
+            toBeRemoved.add(userId);
+          }
+        }
+        if (toBeRemoved.isNotEmpty) {
+          for (String userId in toBeRemoved) {
+            task.assigned.remove(userId);
+          }
+          await taskService.saveTask(task);
+        }
+      }
+    }
+    return;
   }
 
   @override
