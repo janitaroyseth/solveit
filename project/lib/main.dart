@@ -79,6 +79,7 @@ class MyApp extends StatelessWidget {
     return Consumer(
       builder: (context, ref, child) => MaterialApp(
         title: "solveit",
+        debugShowCheckedModeBanner: false,
         theme: Themes.themeData(ref),
         darkTheme: Themes.darkTheme(ref),
         themeMode:
