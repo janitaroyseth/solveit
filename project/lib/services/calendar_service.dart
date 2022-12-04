@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:device_calendar/device_calendar.dart';
 import 'package:project/styles/theme.dart';
@@ -16,7 +17,7 @@ class CalendarService {
       final calendarsResult = await _deviceCalendarPlugin.retrieveCalendars();
       return calendarsResult.data as List<Calendar>;
     } catch (e) {
-      print(e);
+      if (kDebugMode) print(e);
       return [];
     }
   }
@@ -74,7 +75,7 @@ class CalendarService {
     Event? eventToAdd;
     await _fetchEvents(calendarId).then((value) async {
       for (Event event in value) {
-        print("existing event id: ${event.eventId}");
+        if (kDebugMode) print("existing event id: ${event.eventId}");
         if (event.eventId == prefs.getString(task.taskId)) {
           eventToAdd = event;
           // await _deviceCalendarPlugin
@@ -98,12 +99,12 @@ class CalendarService {
     // add to calendar
     var result = await _deviceCalendarPlugin.createOrUpdateEvent(eventToAdd);
     if (result!.isSuccess && (result.data?.isNotEmpty ?? false)) {
-      print("successfully added event with id: ${result.data}");
+      if (kDebugMode) print("successfully added event with id: ${result.data}");
       prefs.setString(task.taskId, result.data!);
     } else {
       if (result.hasErrors) {
         for (var error in result.errors) {
-          print("error: " + error.errorMessage);
+          if (kDebugMode) print("error: ${error.errorMessage}");
         }
       }
     }
@@ -113,9 +114,9 @@ class CalendarService {
     String calendarId = "";
     await _deviceCalendarPlugin.retrieveCalendars().then((value) async {
       for (Calendar calendar in value.data!) {
-        print("calendar: ${calendar.id} : ${calendar.name}");
+        if (kDebugMode) print("calendar: ${calendar.id} : ${calendar.name}");
         if (calendar.name == "SolveIt Calendar") {
-          print("${calendar.name} : ${calendar.id}");
+          if (kDebugMode) print("${calendar.name} : ${calendar.id}");
           calendarId = calendar.id ?? "";
           break;
         }
@@ -137,7 +138,7 @@ class CalendarService {
     try {
       timezone = await FlutterNativeTimezone.getLocalTimezone();
     } catch (e) {
-      print('Could not get the local timezone');
+      if (kDebugMode) print('Could not get the local timezone');
     }
     return getLocation(timezone);
   }
@@ -151,10 +152,15 @@ class CalendarService {
                 startDate: DateTime.now(),
                 endDate: DateTime.now().add(const Duration(days: 730))))
         .then((value) {
-      print(
-          "fetch event result: hasError: ${value.hasErrors}, data: ${value.data}");
-      if (value.hasErrors)
-        print("FETCH EVENT ERROR: ${value.errors.first.errorMessage}");
+      if (kDebugMode) {
+        print(
+            "fetch event result: hasError: ${value.hasErrors}, data: ${value.data}");
+      }
+      if (value.hasErrors) {
+        if (kDebugMode) {
+          print("FETCH EVENT ERROR: ${value.errors.first.errorMessage}");
+        }
+      }
       if (value.data != null) {
         for (Event event in value.data!) {
           events.add(event);

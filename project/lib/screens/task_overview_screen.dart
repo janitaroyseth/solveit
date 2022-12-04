@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -295,7 +296,7 @@ class _TaskOverviewBodyState extends ConsumerState<_TaskOverviewBody> {
             ),
           );
         }
-        if (snapshot.hasError) print(snapshot.error);
+        if (snapshot.hasError) if (kDebugMode) print(snapshot.error);
         return const LoadingSpinner();
       },
     );

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -103,7 +104,11 @@ class ProfileScreen extends ConsumerWidget {
                         ],
                       );
                     }
-                    if (snapshot.hasError) print(snapshot.error);
+                    if (snapshot.hasError) {
+                      if (kDebugMode) {
+                        print(snapshot.error);
+                      }
+                    }
                     return const SizedBox();
                   },
                 ),
@@ -384,7 +389,7 @@ class _ProfileProjectListState extends ConsumerState<_ProfileProjectList> {
                     List<Project> projects = snapshot.data!;
                     return _projectsList(projects);
                   }
-                  if (snapshot.hasError) print(snapshot.error);
+                  if (snapshot.hasError) if (kDebugMode) print(snapshot.error);
                   return const LoadingSpinner();
                 },
               ),
