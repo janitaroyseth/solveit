@@ -127,7 +127,7 @@ class EditProjectScreen extends ConsumerWidget {
       decoration: Themes.inputDecoration(
         ref,
         "description",
-        "descrive your project",
+        "describe your project",
       ),
     );
   }
