@@ -4,16 +4,16 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 /// Represents a message.
 abstract class Message {
-  // The id of the message.
+  /// The id of the message.
   String messageId;
 
   /// The id of a foreign entity to connect to.
   String otherId;
 
-  // The user id of the author of this message.
+  /// The user id of the author of this message.
   String author;
 
-  // The date on which the message was made.
+  /// The date on which the message was made.
   DateTime date;
 
   static String encryptionKey = "${dotenv.env["MESSAGE_ENCRYPTION_KEY"]}";

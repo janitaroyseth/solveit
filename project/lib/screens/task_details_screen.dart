@@ -9,6 +9,7 @@ import 'package:project/models/project.dart';
 import 'package:project/models/task.dart';
 import 'package:project/models/user.dart';
 import 'package:project/providers/auth_provider.dart';
+import 'package:project/providers/calendar_provider.dart';
 import 'package:project/providers/comment_image_provider.dart';
 import 'package:project/providers/comment_provider.dart';
 import 'package:project/providers/project_provider.dart';
@@ -559,6 +560,8 @@ class _TaskPopUpMenu extends ConsumerWidget {
         ),
         TextButton(
           onPressed: () {
+            ref.read(calendarProvider).removeTaskFromCalendar(
+                ref.read(authProvider).currentUser!.email!, task);
             Navigator.of(context).pop();
             Navigator.of(context).pop();
             ref.read(currentProjectProvider.notifier).setProject(

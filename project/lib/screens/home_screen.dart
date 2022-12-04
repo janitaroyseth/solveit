@@ -1,3 +1,4 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/screens/explore_screen.dart';
@@ -34,10 +35,19 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     const NotificationsScreen(),
     const ProfileScreen(),
   ];
+  void initmessagin() async {
+    await FirebaseMessaging.instance
+        .setForegroundNotificationPresentationOptions(
+      alert: true, // Required to display a heads up notification
+      badge: true,
+      sound: true,
+    );
+  }
 
   @override
   void initState() {
     tabBarController = TabController(initialIndex: 0, length: 4, vsync: this);
+    initmessagin();
     super.initState();
   }
 

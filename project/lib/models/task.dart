@@ -21,6 +21,8 @@ class Task {
   /// List of the users assigned ot this task.
   List<String> assigned;
 
+  String? updatedBy;
+
   Task({
     this.taskId = "",
     this.projectId = "",
@@ -30,6 +32,7 @@ class Task {
     this.done = false,
     this.deadline,
     List<String>? assigned,
+    this.updatedBy,
   })  : assigned = assigned ?? [],
         tags = tags ?? [];
 
@@ -53,6 +56,7 @@ class Task {
 
     if (taskId == null || projectId == null || title == null) return null;
 
+    final updatedBy = data["updatedBy"];
     return Task(
       taskId: taskId,
       projectId: projectId,
@@ -62,6 +66,7 @@ class Task {
       deadline: deadline,
       assigned: assigned,
       tags: tags,
+      updatedBy: updatedBy,
     );
   }
 
@@ -100,6 +105,7 @@ class Task {
       "deadline": deadline,
       "assigned": assigned,
       "tags": tags.map((e) => e.toMap()).toList(),
+      "updatedBy": updatedBy,
     };
   }
 

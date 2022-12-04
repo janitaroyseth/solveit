@@ -5,6 +5,8 @@ import 'package:project/models/project.dart';
 import 'package:project/models/tag.dart';
 import 'package:project/models/task.dart';
 import 'package:project/models/user.dart';
+import 'package:project/providers/auth_provider.dart';
+import 'package:project/providers/calendar_provider.dart';
 import 'package:project/providers/project_provider.dart';
 import 'package:project/providers/task_provider.dart';
 import 'package:project/providers/user_provider.dart';
@@ -41,14 +43,25 @@ class EditTaskScreen extends ConsumerWidget {
 
     /// The task to edit, set to existing task unless null, then a new task
     /// is created.
-    Task task = existingTask ?? Task();
+    Task task = existingTask ??
+        ModalRoute.of(context)!.settings.arguments as Task? ??
+        Task();
 
     /// The project to save the task to.
     task.projectId = ref.read(editProjectProvider)!.projectId;
 
     /// Saves the task.
     void saveTask() async {
-      ref.read(taskProvider).saveTask(task).then(
+      task.updatedBy = ref.watch(authProvider).currentUser!.uid;
+
+      ref
+          .read(taskProvider)
+          .saveTask(task)
+          .then(
+            (value) => ref.read(calendarProvider).addTaskToCalendar(
+                task: value, email: ref.read(authProvider).currentUser!.email!),
+          )
+          .then(
             (value) => Navigator.of(context).pop(),
           );
     }
