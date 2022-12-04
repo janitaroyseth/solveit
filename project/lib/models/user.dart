@@ -11,7 +11,7 @@ class User {
     required String email,
     this.imageUrl,
     this.bio = "",
-  })  : username = RegExp(r'^[a-zA-Z 1-12]{3,30}$').hasMatch(username)
+  })  : username = RegExp(r'^[a-zA-ZæøåÆØÅ\-. 1-12]{3,30}$').hasMatch(username)
             ? username
             : "invalid username",
         email = RegExp(r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$").hasMatch(email)

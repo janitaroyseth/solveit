@@ -372,7 +372,7 @@ class __SignInFormState extends ConsumerState<_SignInForm> {
           TextFormField(
             key: const ValueKey("name"),
             validator: (value) {
-              if (RegExp(r'^[a-zA-Z 1-12]{3,30}$').hasMatch(value!)) {
+              if (RegExp(r'^[a-zA-ZæøåÆØÅ\-. 1-12]{3,30}$').hasMatch(value!)) {
                 return null;
               }
               return "name needs to be between 3 and 30 characters";
