@@ -252,7 +252,7 @@ packages:
     source: hosted
     version: "2.0.1"
   flutter_native_timezone:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: flutter_native_timezone
       url: "https://pub.dartlang.org"
@@ -687,7 +687,7 @@ packages:
     source: hosted
     version: "0.4.12"
   timezone:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: timezone
       url: "https://pub.dartlang.org"

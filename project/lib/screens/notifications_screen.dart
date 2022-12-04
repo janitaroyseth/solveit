@@ -82,7 +82,7 @@ class NotificationsScreen extends ConsumerWidget {
             .watch(notificationProvider)
             .getNotificationsForUser(currentUser),
         builder: (context, snapshot) {
-          final maxLength = 7;
+          const maxLength = 7;
           if (snapshot.hasData) {
             List<model.Notification>? notifications = snapshot.data;
             return ListView.builder(

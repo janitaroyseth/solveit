@@ -10,7 +10,6 @@ import 'package:project/providers/calendar_provider.dart';
 import 'package:project/providers/project_provider.dart';
 import 'package:project/providers/auth_provider.dart';
 import 'package:project/providers/task_provider.dart';
-import 'package:project/providers/user_provider.dart';
 import 'package:project/screens/edit_project_screen.dart';
 import 'package:project/screens/task_overview_screen.dart';
 import 'package:project/styles/theme.dart';
@@ -35,16 +34,18 @@ class ProjectOverviewScreen extends ConsumerStatefulWidget {
 class ProjectOverviewScreenState extends ConsumerState<ProjectOverviewScreen> {
   /// Opens the given project's [TaskOverviewScreen].
   void _openProject(Project project) async {
-    ref.read(calendarProvider).addTasksToCalendar(
-        tasks: await ref.read(taskProvider).getTasks(project.projectId).first
-            as List<Task>,
-        email: ref.read(authProvider).currentUser!.email!);
-    ref
-        .read(currentProjectProvider.notifier)
-        .setProject(ref.watch(projectProvider).getProject(project.projectId));
-    ref.read(editProjectProvider.notifier).setProject(project);
-    Navigator.of(context)
-        .pushNamed(TaskOverviewScreen.routeName, arguments: project.projectId);
+    ref.read(taskProvider).getTasks(project.projectId).first.then((value) {
+      ref.read(calendarProvider).addTasksToCalendar(
+          tasks: value as List<Task>,
+          email: ref.read(authProvider).currentUser!.email!);
+    }).then((value) {
+      ref
+          .read(currentProjectProvider.notifier)
+          .setProject(ref.watch(projectProvider).getProject(project.projectId));
+      ref.read(editProjectProvider.notifier).setProject(project);
+      Navigator.of(context).pushNamed(TaskOverviewScreen.routeName,
+          arguments: project.projectId);
+    });
   }
 
   _saveDeviceToken() async {
@@ -81,7 +82,6 @@ class ProjectOverviewScreenState extends ConsumerState<ProjectOverviewScreen> {
       );
     }
     _saveDeviceToken();
-    // TODO: implement didChangeDependencies
     super.didChangeDependencies();
   }
 
