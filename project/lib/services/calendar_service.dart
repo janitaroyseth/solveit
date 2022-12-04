@@ -11,7 +11,7 @@ class CalendarService {
   Future<List<Calendar>> retrieveCalendars() async {
     //Retrieve user's calendars from mobile device
     //Request permissions first if they haven't been granted
-    if (await _checkPermissions()) return [];
+    if (!await _checkPermissions()) return [];
     try {
       final calendarsResult = await _deviceCalendarPlugin.retrieveCalendars();
       return calendarsResult.data as List<Calendar>;
@@ -34,7 +34,7 @@ class CalendarService {
 
   void addTasksToCalendar(
       {required List<Task> tasks, required String email}) async {
-    if (await _checkPermissions()) return;
+    if (!await _checkPermissions()) return;
     var permissionsGranted = await _deviceCalendarPlugin.hasPermissions();
     if (permissionsGranted.isSuccess && !permissionsGranted.data!) {}
     await _getCalendar(email).then(
@@ -48,7 +48,7 @@ class CalendarService {
 
   Future<void> addTaskToCalendar(
       {required Task task, required String email}) async {
-    if (await _checkPermissions()) return;
+    if (!await _checkPermissions()) return;
     _getCalendar(email).then((value) {
       if (value.isNotEmpty) {
         _addTaskEvent(value, task);
@@ -57,7 +57,7 @@ class CalendarService {
   }
 
   void removeTaskFromCalendar(String email, Task task) async {
-    if (await _checkPermissions()) return;
+    if (!await _checkPermissions()) return;
     SharedPreferences prefs = await SharedPreferences.getInstance();
     _getCalendar(email).then(
       (value) {
