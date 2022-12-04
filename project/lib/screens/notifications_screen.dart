@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/models/group.dart';
+import 'package:project/models/notification.dart' as model;
 import 'package:project/models/user.dart';
 import 'package:project/providers/auth_provider.dart';
 import 'package:project/providers/chat_provder.dart';
+import 'package:project/providers/notification_provider.dart';
 import 'package:project/providers/user_provider.dart';
 import 'package:project/screens/chat_screen.dart';
 import 'package:project/screens/collaborators_screen.dart';
@@ -34,7 +36,7 @@ class NotificationsScreen extends ConsumerWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              _notificationsSection(context),
+              _notificationsSection(context, ref, currentUser),
               const SizedBox(height: 32.0),
               _messagesSection(ref, context, currentUser),
             ],
@@ -56,7 +58,8 @@ class NotificationsScreen extends ConsumerWidget {
 
   /// Returns the notification section, displaying a title and a list of recent
   /// notifications.
-  Flexible _notificationsSection(BuildContext context) {
+  Flexible _notificationsSection(
+      BuildContext context, WidgetRef ref, String currentUser) {
     return Flexible(
       fit: FlexFit.loose,
       child: Column(
@@ -66,29 +69,54 @@ class NotificationsScreen extends ConsumerWidget {
             "notifications",
             style: Theme.of(context).textTheme.labelLarge,
           ),
-          _notificationsList(),
+          _notificationsList(ref, currentUser),
         ],
       ),
     );
   }
 
   /// Returns a [ListView] of recent notifications.
-  ListView _notificationsList() {
-    return ListView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: 2,
-      itemBuilder: (context, index) => _notificationsListItem(context),
-    );
+  Widget _notificationsList(WidgetRef ref, String currentUser) {
+    return StreamBuilder<List<model.Notification>>(
+        stream: ref
+            .watch(notificationProvider)
+            .getNotificationsForUser(currentUser),
+        builder: (context, snapshot) {
+          const maxLength = 7;
+          if (snapshot.hasData) {
+            List<model.Notification>? notifications = snapshot.data;
+            return ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: notifications!.length % maxLength,
+              itemBuilder: (context, index) =>
+                  _notificationsListItem(context, notifications[index]),
+            );
+          }
+          if (snapshot.hasError) print(snapshot.error);
+          return const LoadingSpinner();
+        });
   }
 
   /// Returns a list item for notifications.
-  Padding _notificationsListItem(BuildContext context) {
+  Padding _notificationsListItem(
+      BuildContext context, model.Notification notification) {
     return Padding(
       padding: const EdgeInsets.only(top: 16.0),
-      child: Text(
-        "notification message",
-        style: Theme.of(context).textTheme.bodyMedium,
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              notification.message,
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
+          ),
+          const SizedBox(width: 8.0),
+          Text(
+            DateFormatting.timeSince(notification.sentAt),
+            style: Theme.of(context).textTheme.caption,
+          )
+        ],
       ),
     );
   }

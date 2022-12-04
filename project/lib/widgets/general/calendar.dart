@@ -158,7 +158,7 @@ class _CalendarState extends State<Calendar> {
                                 .setTask(value[index - 1]);
                             ref.read(currentTaskProvider.notifier).setTask(ref
                                 .watch(taskProvider)
-                                .getTask(value[index - 1]._projectId,
+                                .getTask(value[index - 1].projectId,
                                     value[index - 1].taskId));
                             Navigator.of(context).pushNamed(
                                 TaskDetailsScreen.routeName,

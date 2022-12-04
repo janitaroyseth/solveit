@@ -1,7 +1,5 @@
 import 'package:flutter_native_timezone/flutter_native_timezone.dart';
 import 'package:device_calendar/device_calendar.dart';
-import 'package:flutter/material.dart';
-import 'package:project/providers/auth_provider.dart';
 import 'package:project/styles/theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/standalone.dart';

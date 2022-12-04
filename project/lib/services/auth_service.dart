@@ -70,9 +70,10 @@ class Auth implements AuthService {
           message: response.message,
         );
       case LoginStatus.operationInProgress:
-        // TODO: Handle this case.
+        // do nothing
         break;
     }
+    return null;
   }
 
   @override

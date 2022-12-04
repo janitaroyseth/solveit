@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/data/sorting_methods.dart';
-import 'package:project/providers/calendar_provider.dart';
 import 'package:project/utilities/filter.dart';
 import 'package:project/utilities/filter_option.dart';
 import 'package:project/models/tag.dart';
