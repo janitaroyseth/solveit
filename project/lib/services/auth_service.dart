@@ -136,11 +136,12 @@ class Auth implements AuthService {
     // Trigger the sign-in flow
     final result = await gitHubSignIn.signIn(context);
 
-    final githubAuthCredential = GithubAuthProvider.credential(result.token!);
-    // Create a credential from the access token
-
-    // Once signed in, return the UserCredential
-    return await FirebaseAuth.instance
-        .signInWithCredential(githubAuthCredential);
+    if (result.token != null) {
+      // Create a credential from the access token
+      final githubAuthCredential = GithubAuthProvider.credential(result.token!);
+      // Once signed in, return the UserCredential
+      return await FirebaseAuth.instance
+          .signInWithCredential(githubAuthCredential);
+    }
   }
 }
