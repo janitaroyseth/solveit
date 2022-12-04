@@ -167,14 +167,20 @@ class NotificationsScreen extends ConsumerWidget {
   }
 
   /// Returns a list item for message groups.
-  StreamBuilder<User?> _messageListItem(
+  Widget _messageListItem(
     WidgetRef ref,
     Group group,
     String currentUser,
   ) {
+    final otherUsers = group.members.where((element) {
+      return element != currentUser;
+    });
+    if (otherUsers.isEmpty) return const SizedBox();
+
+    final userStream = ref.watch(userProvider).getUser(otherUsers.first);
+
     return StreamBuilder<User?>(
-      stream: ref.watch(userProvider).getUser(
-          group.members.firstWhere((element) => element != currentUser)),
+      stream: userStream,
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           User user = snapshot.data!;
