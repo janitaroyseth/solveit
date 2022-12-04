@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:project/models/message.dart';
@@ -33,7 +34,7 @@ class ChatList extends ConsumerWidget {
             return _chatList(chats);
           }
 
-          if (snapshot.hasError) print(snapshot.error);
+          if (snapshot.hasError) if (kDebugMode) print(snapshot.error);
 
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const LoadingSpinner();

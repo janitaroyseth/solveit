@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -32,7 +33,9 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // make sure you call `initializeApp` before using other Firebase services.
   await Firebase.initializeApp();
 
-  print("Handling a background message: ${message.messageId}");
+  if (kDebugMode) {
+    print("Handling a background message: ${message.messageId}");
+  }
 }
 
 Future<void> main() async {
@@ -69,11 +72,16 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      print('Got a message whilst in the foreground!');
-      print('Message data: ${message.data}');
+      if (kDebugMode) {
+        print('Got a message whilst in the foreground!');
+        print('Message data: ${message.data}');
+      }
 
       if (message.notification != null) {
-        print('Message also contained a notification: ${message.notification}');
+        if (kDebugMode) {
+          print(
+              'Message also contained a notification: ${message.notification}');
+        }
       }
     });
     return Consumer(

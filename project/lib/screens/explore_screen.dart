@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:project/models/project.dart';
@@ -105,7 +106,7 @@ class _ExploreProjectsViewState extends ConsumerState<_ExploreProjectsView> {
 
             return _projectsList(projects);
           }
-          if (snapshot.hasError) print(snapshot.error);
+          if (snapshot.hasError) if (kDebugMode) print(snapshot.error);
           return const LoadingSpinner();
         },
       ),
@@ -170,7 +171,7 @@ class _ExploreUsersViewState extends ConsumerState<_ExploreUsersView> {
 
             return userList(users);
           }
-          if (snapshot.hasError) print(snapshot.error);
+          if (snapshot.hasError) if (kDebugMode) print(snapshot.error);
           return const LoadingSpinner();
         },
       ),

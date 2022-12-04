@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -51,7 +52,7 @@ class ProjectOverviewScreenState extends ConsumerState<ProjectOverviewScreen> {
   _saveDeviceToken() async {
     String uid = ref.watch(authProvider).currentUser!.uid;
     String? fcmToken = await FirebaseMessaging.instance.getToken();
-    print(fcmToken);
+    if (kDebugMode) print(fcmToken);
     if (fcmToken != null) {
       final tokenRef = FirebaseFirestore.instance
           .collection("users")
@@ -102,7 +103,7 @@ class ProjectOverviewScreenState extends ConsumerState<ProjectOverviewScreen> {
             List<Project> projects = data as List<Project>;
             return _projectGridView(projects);
           }
-          if (snapshot.hasError) print(snapshot.error);
+          if (snapshot.hasError) if (kDebugMode) print(snapshot.error);
 
           return const Center(
             child: CircularProgressIndicator(),
