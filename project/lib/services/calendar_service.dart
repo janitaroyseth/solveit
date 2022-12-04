@@ -11,15 +11,8 @@ class CalendarService {
   Future<List<Calendar>> retrieveCalendars() async {
     //Retrieve user's calendars from mobile device
     //Request permissions first if they haven't been granted
+    if (await _checkPermissions()) return [];
     try {
-      var permissionsGranted = await _deviceCalendarPlugin.hasPermissions();
-      if (permissionsGranted.isSuccess && !permissionsGranted.data!) {
-        permissionsGranted = await _deviceCalendarPlugin.requestPermissions();
-        if (!permissionsGranted.isSuccess || !permissionsGranted.data!) {
-          return [];
-        }
-      }
-
       final calendarsResult = await _deviceCalendarPlugin.retrieveCalendars();
       return calendarsResult.data as List<Calendar>;
     } catch (e) {
@@ -28,8 +21,22 @@ class CalendarService {
     }
   }
 
+  Future<bool> _checkPermissions() async {
+    var permissionsGranted = await _deviceCalendarPlugin.hasPermissions();
+    if (permissionsGranted.isSuccess && !permissionsGranted.data!) {
+      permissionsGranted = await _deviceCalendarPlugin.requestPermissions();
+      if (!permissionsGranted.isSuccess || !permissionsGranted.data!) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   void addTasksToCalendar(
       {required List<Task> tasks, required String email}) async {
+    if (await _checkPermissions()) return;
+    var permissionsGranted = await _deviceCalendarPlugin.hasPermissions();
+    if (permissionsGranted.isSuccess && !permissionsGranted.data!) {}
     await _getCalendar(email).then(
       (value) async {
         for (Task task in tasks) {
@@ -41,6 +48,7 @@ class CalendarService {
 
   Future<void> addTaskToCalendar(
       {required Task task, required String email}) async {
+    if (await _checkPermissions()) return;
     _getCalendar(email).then((value) {
       if (value.isNotEmpty) {
         _addTaskEvent(value, task);
@@ -49,6 +57,7 @@ class CalendarService {
   }
 
   void removeTaskFromCalendar(String email, Task task) async {
+    if (await _checkPermissions()) return;
     SharedPreferences prefs = await SharedPreferences.getInstance();
     _getCalendar(email).then(
       (value) {
