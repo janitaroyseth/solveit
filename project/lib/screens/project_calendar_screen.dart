@@ -7,6 +7,7 @@ import 'package:project/models/project.dart';
 import 'package:project/models/task.dart';
 import 'package:project/providers/auth_provider.dart';
 import 'package:project/providers/project_provider.dart';
+import 'package:project/providers/task_provider.dart';
 import 'package:project/screens/edit_task_screen.dart';
 import 'package:project/screens/task_overview_screen.dart';
 import 'package:project/styles/curve_clipper.dart';
@@ -139,6 +140,7 @@ class _ProjectCalendarScreenState extends ConsumerState<ProjectCalendarScreen> {
       Project project, BuildContext context, DateTime newDate) {
     return FloatingActionButton(
       onPressed: () async {
+        ref.read(editTaskProvider.notifier).setTask(null);
         ref.read(currentProjectProvider.notifier).setProject(
             ref.watch(projectProvider).getProject(project.projectId));
         Navigator.of(context)

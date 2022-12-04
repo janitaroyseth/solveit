@@ -1,3 +1,7 @@
+import 'dart:io';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -6,6 +10,7 @@ import 'package:project/providers/calendar_provider.dart';
 import 'package:project/providers/project_provider.dart';
 import 'package:project/providers/auth_provider.dart';
 import 'package:project/providers/task_provider.dart';
+import 'package:project/providers/user_provider.dart';
 import 'package:project/screens/edit_project_screen.dart';
 import 'package:project/screens/task_overview_screen.dart';
 import 'package:project/styles/theme.dart';
@@ -40,6 +45,44 @@ class ProjectOverviewScreenState extends ConsumerState<ProjectOverviewScreen> {
     ref.read(editProjectProvider.notifier).setProject(project);
     Navigator.of(context)
         .pushNamed(TaskOverviewScreen.routeName, arguments: project.projectId);
+  }
+
+  _saveDeviceToken() async {
+    String uid = ref.watch(authProvider).currentUser!.uid;
+    String? fcmToken = await FirebaseMessaging.instance.getToken();
+    print(fcmToken);
+    if (fcmToken != null) {
+      final tokenRef = FirebaseFirestore.instance
+          .collection("users")
+          .doc(uid)
+          .collection("tokens")
+          .doc(fcmToken);
+
+      await tokenRef.set({
+        "token": fcmToken,
+        "createdAt": DateTime.now(),
+        "platform": Platform.operatingSystem,
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+    if (Platform.isIOS) {
+      FirebaseMessaging.instance.requestPermission(
+        alert: true,
+        sound: true,
+        badge: true,
+      );
+    }
+    _saveDeviceToken();
+    // TODO: implement didChangeDependencies
+    super.didChangeDependencies();
   }
 
   @override

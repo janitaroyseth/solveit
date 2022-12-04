@@ -43,13 +43,17 @@ class EditTaskScreen extends ConsumerWidget {
 
     /// The task to edit, set to existing task unless null, then a new task
     /// is created.
-    Task task = existingTask ?? Task();
+    Task task = existingTask ??
+        ModalRoute.of(context)!.settings.arguments as Task? ??
+        Task();
 
     /// The project to save the task to.
     task.projectId = ref.read(editProjectProvider)!.projectId;
 
     /// Saves the task.
     void saveTask() async {
+      task.updatedBy = ref.watch(authProvider).currentUser!.uid;
+
       ref
           .read(taskProvider)
           .saveTask(task)

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:project/models/task.dart';
+import 'package:project/providers/auth_provider.dart';
 import 'package:project/providers/task_provider.dart';
 import 'package:project/styles/theme.dart';
 
@@ -38,6 +39,7 @@ class _ToggleTaskStatusButtonState extends State<ToggleTaskStatusButton> {
         onChanged: (bool newValue) {
           setState(() {
             widget.task.done = newValue;
+            widget.task.updatedBy = ref.watch(authProvider).currentUser!.uid;
             ref.read(taskProvider).saveTask(widget.task);
             value = newValue;
           });
