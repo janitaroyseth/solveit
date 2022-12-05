@@ -1,10 +1,21 @@
+/// Represents a user.
 class User {
+  /// The id of the user.
   String userId;
+
+  /// The displayed name of the user.
   String username;
+
+  /// The email of this user.
   String email;
+
+  /// The url of the image of the user.
   String? imageUrl;
+
+  /// A short description of the user.
   String bio;
 
+  /// Creates an instance of [User].
   User({
     this.userId = "",
     required String username,
@@ -38,6 +49,7 @@ class User {
     );
   }
 
+  /// Creates a list of user from the given maps.
   static List<User> fromMaps(var data) {
     List<User> users = [];
     for (var value in data) {
@@ -49,6 +61,7 @@ class User {
     return users;
   }
 
+  /// Converts the given user object to a map of string and dynamic.
   static Map<String, dynamic> toMap(User user) {
     return {
       "userId": user.userId,
