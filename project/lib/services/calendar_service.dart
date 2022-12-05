@@ -6,8 +6,12 @@ import 'package:project/styles/theme.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:timezone/standalone.dart';
 
+/// Utility class for device calendar communication.
 class CalendarService {
   final DeviceCalendarPlugin _deviceCalendarPlugin = DeviceCalendarPlugin();
+
+  /// Attempts to acquire device permissions and
+  /// returns all device calendars on success, or empty list on fail.
   Future<List<Calendar>> retrieveCalendars() async {
     //Retrieve user's calendars from mobile device
     //Request permissions first if they haven't been granted
@@ -21,6 +25,8 @@ class CalendarService {
     }
   }
 
+  /// Checks for device permissions, and asks for them if missing.
+  /// Returns [bool] permissions granted.
   Future<bool> _checkPermissions() async {
     var permissionsGranted = await _deviceCalendarPlugin.hasPermissions();
     if (permissionsGranted.isSuccess && !permissionsGranted.data!) {
@@ -32,6 +38,9 @@ class CalendarService {
     return true;
   }
 
+  /// Attemps to add all given tasks to the device calendar.
+  /// If no solveit calendar exists, first creates and attaches it
+  /// to given email.
   void addTasksToCalendar(
       {required List<Task> tasks, required String email}) async {
     if (!await _checkPermissions()) return;
@@ -46,6 +55,9 @@ class CalendarService {
     );
   }
 
+  /// Attemps to add given task to the device calendar.
+  /// If no solveit calendar exists, first creates and attaches it
+  /// to given email.
   Future<void> addTaskToCalendar(
       {required Task task, required String email}) async {
     if (!await _checkPermissions()) return;
@@ -56,6 +68,7 @@ class CalendarService {
     });
   }
 
+  /// Removes given task from the calendar, if it exists.
   void removeTaskFromCalendar(String email, Task task) async {
     if (!await _checkPermissions()) return;
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -66,6 +79,7 @@ class CalendarService {
     );
   }
 
+  /// Attempts to add or update the given task to the calendar with given id.
   Future<void> _addTaskEvent(String calendarId, Task task) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     // only add if it has a deadline.
@@ -73,19 +87,17 @@ class CalendarService {
 
     Event? eventToAdd;
     await _fetchEvents(calendarId).then((value) async {
+      // See if the tasks already is in the calendar, and if so, update it
+      // instead of creating a new entry.
       for (Event event in value) {
         if (kDebugMode) print("existing event id: ${event.eventId}");
         if (event.eventId == prefs.getString(task.taskId)) {
           eventToAdd = event;
-          // await _deviceCalendarPlugin
-          //     .deleteEvent(calendarId, event.eventId)
-          //     .then((value) => print(
-          //         "old event with id ${event.eventId} deleted: ${value.data}"));
           break;
         }
       }
     });
-    // create event
+    // create a new event if it did not exist in the calendar
     eventToAdd ??= Event(calendarId);
     TZDateTime startTime =
         TZDateTime.from(task.deadline!, await _fetchLocation());
@@ -109,6 +121,9 @@ class CalendarService {
     }
   }
 
+  /// Retrieve the solveit calendar from the device,
+  /// or create it if it did not exist.
+  /// Returns the solveit calendar.
   Future<String> _getCalendar(String email) async {
     String calendarId = "";
     await _deviceCalendarPlugin.retrieveCalendars().then((value) async {
@@ -132,6 +147,7 @@ class CalendarService {
     return calendarId;
   }
 
+  /// returns the user's location.
   Future<Location> _fetchLocation() async {
     String timezone = 'Etc/UTC';
     try {
@@ -142,6 +158,7 @@ class CalendarService {
     return getLocation(timezone);
   }
 
+  /// Retrieves all events from the device calendar with the given id.
   Future<List<Event>> _fetchEvents(String calendarId) async {
     List<Event> events = [];
     await _deviceCalendarPlugin
