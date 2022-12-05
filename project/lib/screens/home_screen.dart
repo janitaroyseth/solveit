@@ -1,15 +1,19 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:project/models/alert.dart';
+import 'package:project/providers/alert_provider.dart';
 import 'package:project/screens/explore_screen.dart';
 import 'package:project/screens/notifications_screen.dart';
 import 'package:project/screens/profile_screen.dart';
 import 'package:project/screens/project_overview_screen.dart';
 import 'package:project/styles/theme.dart';
+import 'package:project/widgets/general/notification_mark.dart';
 
 /// Screen/[Scaffold] the user first sees when logging on or finishing signing up.
 /// Displays a bottom tab bar for navigating to other screens.
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends ConsumerStatefulWidget {
   /// Creates an instance of home screen. A [Scaffold] displaying a
   /// bottom tab bar for other screens.
   const HomeScreen({super.key});
@@ -18,10 +22,11 @@ class HomeScreen extends StatefulWidget {
   static const routeName = "/index";
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
+class _HomeScreenState extends ConsumerState<HomeScreen>
+    with TickerProviderStateMixin {
   /// Controller for the tab bar.
   late TabController tabBarController;
 
@@ -85,20 +90,40 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 width: 3,
               ),
             ),
-            tabs: const <Widget>[
-              _BottomTab(
+            tabs: <Widget>[
+              const _BottomTab(
                 icon: PhosphorIcons.diamondsFour,
                 label: "projects",
               ),
-              _BottomTab(
+              const _BottomTab(
                 icon: PhosphorIcons.compass,
                 label: "explore",
               ),
-              _BottomTab(
-                icon: PhosphorIcons.tray,
-                label: "inbox",
-              ),
-              _BottomTab(
+              StreamBuilder<Alert?>(
+                  stream: ref.watch(alertProvider.notifier).getAlert(),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData && snapshot.data != null) {
+                      Alert alert = snapshot.data!;
+
+                      return Stack(
+                        children: [
+                          const _BottomTab(
+                            icon: PhosphorIcons.tray,
+                            label: "inbox",
+                          ),
+                          NotificationMark(
+                            visible:
+                                alert.unseenMessage || alert.unseenNotification,
+                          ),
+                        ],
+                      );
+                    }
+                    return const _BottomTab(
+                      icon: PhosphorIcons.tray,
+                      label: "inbox",
+                    );
+                  }),
+              const _BottomTab(
                 icon: PhosphorIcons.user,
                 label: "profile",
               ),

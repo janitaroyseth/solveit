@@ -23,6 +23,63 @@ function saveNotifications(userId: string, message: string) {
 }
 
 /**
+ * Saves a new alert or updates an existing alert that contains if the
+ * user has seen their notification or not.
+ *
+ * @param userId the id of the user up update the alert for.
+ */
+async function saveAlert(userId: string) {
+  const collection = await db
+    .collection("alerts")
+    .doc(userId)
+    .collection("alert")
+    .get();
+
+  if (collection.empty) {
+    const alertId = (
+      await db
+        .collection("alerts")
+        .doc(userId)
+        .collection("alert")
+        .add({ unseenNotification: true, groupIds: [] })
+    ).id;
+
+    const alert = (
+      await db
+        .collection("alerts")
+        .doc(userId)
+        .collection("alert")
+        .doc(alertId)
+        .get()
+    ).data();
+
+    if (alert != undefined) {
+      db.collection("alerts").doc(userId).collection("alert").doc(alertId).set({
+        alertId: alertId,
+        unseenNotification: true,
+        groupIds: alert.groupIds,
+      });
+    }
+  } else {
+    const alert = (
+      await db.collection("alerts").doc(userId).collection("alert").get()
+    ).docs[0].data();
+
+    if (alert != undefined) {
+      db.collection("alerts")
+        .doc(userId)
+        .collection("alert")
+        .doc(alert.id)
+        .set({
+          alertId: alert.id,
+          unseenNotification: true,
+          groupIds: alert.groupIds,
+        });
+    }
+  }
+}
+
+/**
  * Sends notifications to the given list of users with the given payload.
  *
  * @param users the users to send notifications to.
@@ -39,6 +96,7 @@ function notifyUsers(users: string[], payload: MessagingPayload) {
         fcm.sendToDevice(tokens, payload);
         if (payload.notification?.body != undefined) {
           saveNotifications(user, payload.notification.body);
+          saveAlert(user);
         }
       });
   });
@@ -90,7 +148,7 @@ async function getProject(projectId: string) {
 }
 
 /**
- * Notities the added or/and removed assignee that they
+ * Notifies the added or/and removed assignee that they
  * got added or removed from a task.
  */
 export const notifyUserGotAssigned = functions.firestore
@@ -120,7 +178,7 @@ export const notifyUserGotAssigned = functions.firestore
         body: `You got assigned to the task \"${newTask.title}\"`,
         sound: "default",
         badge: "1",
-        icon: "https://solveit.works/images/Icon.png",
+        icon: "lc_launcher",
         clickAction: "FLUTTER_NOTIFICATION_CLICK",
       },
     });
@@ -131,7 +189,7 @@ export const notifyUserGotAssigned = functions.firestore
         body: `You got removed from the task \"${newTask.title}\"`,
         sound: "default",
         badge: "1",
-        icon: "https://solveit.works/images/Icon.png",
+        icon: "lc_launcher",
         clickAction: "FLUTTER_NOTIFICATION_CLICK",
       },
     });
@@ -150,7 +208,7 @@ export const notifyNewTaskToAssignees = functions.firestore
         body: `You got assigned to the new task \"${task.title}\"`,
         sound: "default",
         badge: "1",
-        icon: "https://solveit.works/images/Icon.png",
+        icon: "lc_launcher",
         clickAction: "FLUTTER_NOTIFICATION_CLICK",
       },
     });
@@ -193,7 +251,7 @@ export const notifyAssigneesAndOwnerAboutNewComment = functions.firestore
                 body: `${user.username} commented on a task of a project you're the owner to`,
                 sound: "default",
                 badge: "1",
-                icon: "https://solveit.works/images/Icon.png",
+                icon: "lc_launcher",
                 clickAction: "FLUTTER_NOTIFICATION_CLICK",
               },
             });
@@ -204,7 +262,7 @@ export const notifyAssigneesAndOwnerAboutNewComment = functions.firestore
                 body: `${user.username} commented on a task you're assigned to`,
                 sound: "default",
                 badge: "1",
-                icon: "https://solveit.works/images/Icon.png",
+                icon: "lc_launcher",
                 clickAction: "FLUTTER_NOTIFICATION_CLICK",
               },
             });
@@ -233,7 +291,7 @@ export const notifyNewProjectToCollaborators = functions.firestore
         body: `You got added to the project \"${project.title}\"`,
         sound: "default",
         badge: "1",
-        icon: "https://solveit.works/images/Icon.png",
+        icon: "lc_launcher",
         clickAction: "FLUTTER_NOTIFICATION_CLICK",
       },
     });
@@ -270,7 +328,7 @@ export const notifyChangesInProjectCollaborators = functions.firestore //// TODO
         body: `You got added as a collaborator to the project \"${project.title}\"!`,
         sound: "default",
         badge: "1",
-        icon: "https://solveit.works/images/Icon.png",
+        icon: "lc_launcher",
         clickAction: "FLUTTER_NOTIFICATION_CLICK",
       },
     });
@@ -281,7 +339,7 @@ export const notifyChangesInProjectCollaborators = functions.firestore //// TODO
         body: `You got removed from the project \"${project.title}\"!`,
         sound: "default",
         badge: "1",
-        icon: "https://solveit.works/images/Icon.png",
+        icon: "lc_launcher",
         clickAction: "FLUTTER_NOTIFICATION_CLICK",
       },
     });
@@ -319,7 +377,7 @@ export const notifyAssigneesAndOwnerTaskStatusToggled = functions.firestore
                 body: `${user.username} solved the task \"${newValue.title}\"!`,
                 sound: "default",
                 badge: "1",
-                icon: "https://solveit.works/images/Icon.png",
+                icon: "lc_launcher",
                 clickAction: "FLUTTER_NOTIFICATION_CLICK",
               },
             });
@@ -330,7 +388,7 @@ export const notifyAssigneesAndOwnerTaskStatusToggled = functions.firestore
                 body: `${user.username} reopened the task \"${newValue.title}\"!`,
                 sound: "default",
                 badge: "1",
-                icon: "https://solveit.works/images/Icon.png",
+                icon: "lc_launcher",
                 clickAction: "FLUTTER_NOTIFICATION_CLICK",
               },
             });
@@ -392,7 +450,7 @@ export const notifyNewMessageToUsers = functions.firestore
                 notification: {
                   title: message,
                   body: message,
-                  icon: "https://solveit.works/images/Icon.png",
+                  icon: "lc_launcher",
                   sound: "default",
                   badge: "1",
                   clickAction: "FLUTTER_NOTIFICATION_CLICK",

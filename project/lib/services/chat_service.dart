@@ -1,7 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:project/models/alert.dart';
 
 import 'package:project/models/message.dart';
 import 'package:project/models/group.dart';
+import 'package:project/services/alert_service.dart';
 import 'package:project/services/auth_service.dart';
 
 /// Business logic for chats.
@@ -21,10 +23,11 @@ abstract class ChatService {
   /// Returns the chat messsages for the given [group id]
   Stream<List<Message>> getChats(String groupId);
 
-  ///Delete's the chat with the given [chat id] in the group for the given
-  ///[group id].
+  /// Delete's the chat with the given [chat id] in the group for the given
+  /// [group id].
   Future<void> deleteChat(String groupId, String chatId);
 
+  /// Delete the group with the given group id.
   Future<void> deleteGroup(String groupId);
 }
 
@@ -41,6 +44,24 @@ class FirebaseChatService implements ChatService {
               .collection("messages")
               .add(Message.toMap(chat))))
           .id;
+      Group? group = await getGroup(groupId).first;
+      Alert? alert = await FirebaseAlertService().getAlert().first ??
+          Alert(
+            unseenNotification: false,
+            unseenMessage: true,
+            groupIds: {groupId},
+          );
+
+      alert.unseenMessage = true;
+      alert.groupIds.add(groupId);
+
+      final unseenBy = [];
+      unseenBy
+          .addAll(group!.members.where((element) => element != chat.author));
+
+      for (var user in unseenBy) {
+        await FirebaseAlertService().saveAlert(alert, user);
+      }
     }
     await chatCollection
         .doc(groupId)
