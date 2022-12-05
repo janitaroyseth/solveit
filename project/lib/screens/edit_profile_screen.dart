@@ -210,6 +210,8 @@ class _EditFieldSceenState extends State<_EditFieldSceen> {
     super.initState();
   }
 
+  final _formKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -229,13 +231,25 @@ class _EditFieldSceenState extends State<_EditFieldSceen> {
       body: Consumer(
         builder: (context, ref, child) => Padding(
           padding: const EdgeInsets.all(12.0),
-          child: TextField(
-            controller: _fieldController,
-            minLines: 1,
-            maxLines: widget.fieldType == _EditFieldType.username ? 1 : 3,
-            maxLength: 200,
-            style: Themes.textTheme(ref).bodyMedium,
-            decoration: Themes.inputDecoration(ref, widget.label, widget.value),
+          child: Form(
+            key: _formKey,
+            child: TextFormField(
+              validator: (value) {
+                if (widget.fieldType == _EditFieldType.username &&
+                    value!.endsWith(" ")) {
+                  return "Username is not a valid format";
+                }
+
+                return null;
+              },
+              controller: _fieldController,
+              minLines: 1,
+              maxLines: widget.fieldType == _EditFieldType.username ? 1 : 3,
+              maxLength: 200,
+              style: Themes.textTheme(ref).bodyMedium,
+              decoration:
+                  Themes.inputDecoration(ref, widget.label, widget.value),
+            ),
           ),
         ),
       ),
@@ -253,13 +267,31 @@ class _EditFieldSceenState extends State<_EditFieldSceen> {
     );
   }
 
+  /// Validates the field and tries to save the field.
+  void _saveField() {
+    bool isValid = _formKey.currentState!.validate();
+    if (isValid) {
+      try {
+        widget.onSave(_fieldController.text.trim());
+        Navigator.of(context).pop();
+      } on ArgumentError catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              e.message,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontFamily: Themes.fontFamily),
+            ),
+          ),
+        );
+      }
+    }
+  }
+
   /// Button for saving the changes and going back to previous screen.
   AppBarButton _saveFieldButton(BuildContext context) {
     return AppBarButton(
-      handler: () {
-        widget.onSave(_fieldController.text.trim());
-        Navigator.of(context).pop();
-      },
+      handler: _saveField,
       tooltip: "Save",
       icon: PhosphorIcons.checkLight,
     );

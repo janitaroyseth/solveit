@@ -161,15 +161,27 @@ class __SignInFormState extends ConsumerState<_SignInForm> {
           value.user != null &&
           value.additionalUserInfo!.isNewUser) {
         String userId = value.user!.uid;
-        ref.read(userProvider).addUser(
-              userId: userId,
-              username: value.user!.displayName!,
-              email: value.user!.email!,
-            );
-        Navigator.of(context).pushNamed(
-          CreateProfileScreen.routeName,
-          arguments: userId,
-        );
+        try {
+          ref.read(userProvider).addUser(
+                userId: userId,
+                username: value.user!.displayName!,
+                email: value.user!.email!,
+              );
+          Navigator.of(context).pushNamed(
+            CreateProfileScreen.routeName,
+            arguments: userId,
+          );
+        } on ArgumentError catch (e) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                e.message,
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontFamily: Themes.fontFamily),
+              ),
+            ),
+          );
+        }
       }
     });
   }

@@ -18,16 +18,19 @@ class User {
   /// Creates an instance of [User].
   User({
     this.userId = "",
-    required String username,
-    required String email,
+    required this.username,
+    required this.email,
     this.imageUrl,
     this.bio = "",
-  })  : username = RegExp(r'^[a-zA-ZæøåÆØÅ\-. 1-12]{3,30}$').hasMatch(username)
-            ? username
-            : "invalid username",
-        email = RegExp(r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$").hasMatch(email)
-            ? email
-            : "invalid email";
+  }) {
+    if (!RegExp(r'^[a-zA-ZæøåÆØÅ\-. 1-12]{3,30}$').hasMatch(username)) {
+      throw ArgumentError("username is not a valid format");
+    }
+
+    if (!RegExp(r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$").hasMatch(email)) {
+      throw ArgumentError("email is not a valid format");
+    }
+  }
 
   /// Converts a [Map] object to a [User]  object.
   static User? fromMap(Map<String, dynamic>? data) {
