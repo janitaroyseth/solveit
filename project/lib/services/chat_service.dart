@@ -44,6 +44,12 @@ class FirebaseChatService implements ChatService {
               .collection("messages")
               .add(Message.toMap(chat))))
           .id;
+
+      await chatCollection
+          .doc(groupId)
+          .collection("messages")
+          .doc(chat.messageId)
+          .set(Message.toMap(chat));
       Group? group = await getGroup(groupId).first;
       Alert? alert = await FirebaseAlertService().getAlert().first ??
           Alert(
@@ -62,12 +68,13 @@ class FirebaseChatService implements ChatService {
       for (var user in unseenBy) {
         await FirebaseAlertService().saveAlert(alert, user);
       }
+    } else {
+      await chatCollection
+          .doc(groupId)
+          .collection("messages")
+          .doc(chat.messageId)
+          .set(Message.toMap(chat));
     }
-    await chatCollection
-        .doc(groupId)
-        .collection("messages")
-        .doc(chat.messageId)
-        .set(Message.toMap(chat));
 
     return chat;
   }

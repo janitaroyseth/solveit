@@ -332,7 +332,7 @@ class NotificationsScreen extends ConsumerWidget {
       CollaboratorsSearchType.collaborators,
       "",
     ]).then((value) {
-      if (members.isNotEmpty) {
+      if (members.isNotEmpty && members.length > 1) {
         // Does group exist
         ref.watch(chatProvider).getGroups().first.then((groups) {
           for (Group group in groups) {
