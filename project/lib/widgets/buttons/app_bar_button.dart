@@ -5,7 +5,7 @@ import 'package:project/providers/settings_provider.dart';
 /// Respresents a widget to be used for appbar.
 class AppBarButton extends ConsumerWidget {
   /// Function to call when button is tapped.
-  final VoidCallback handler;
+  final VoidCallback? handler;
 
   /// Tool tip to display when button is long pressed.
   final String tooltip;

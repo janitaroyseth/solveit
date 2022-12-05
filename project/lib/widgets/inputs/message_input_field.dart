@@ -138,7 +138,7 @@ class _MessageInputFieldState extends State<MessageInputField> {
       icon: Icon(
         PhosphorIcons.plusCircleFill,
         size: 40,
-        color: Themes.primaryColor.withOpacity(0.8),
+        color: Themes.primaryColor.shade100,
       ),
     );
   }
@@ -164,27 +164,27 @@ class _MessageInputFieldState extends State<MessageInputField> {
             contentPadding: const EdgeInsets.all(9.0),
             isDense: true,
             filled: true,
-            fillColor: Themes.primaryColor.withOpacity(0.05),
+            fillColor: Colors.grey.shade600.withOpacity(0.18),
             border: OutlineInputBorder(
-              borderSide: BorderSide(
-                width: 1.0,
-                color: Themes.primaryColor.withOpacity(0.1),
+              borderSide: const BorderSide(
+                width: 0.0,
+                color: Colors.transparent,
                 style: BorderStyle.solid,
               ),
               borderRadius: BorderRadius.circular(20.0),
             ),
             focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                width: 1.0,
-                color: Themes.primaryColor.shade100,
+              borderSide: const BorderSide(
+                width: 0.0,
+                color: Colors.transparent,
                 style: BorderStyle.solid,
               ),
               borderRadius: BorderRadius.circular(20.0),
             ),
             enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                width: 1.0,
-                color: Themes.primaryColor.shade100,
+              borderSide: const BorderSide(
+                width: 0.0,
+                color: Colors.transparent,
                 style: BorderStyle.solid,
               ),
               borderRadius: BorderRadius.circular(20.0),

@@ -3,26 +3,34 @@ import 'package:project/models/tag.dart';
 
 /// Represents a task in a project.
 class Task {
-  // The id of the task.
+  /// The id of the task.
   String taskId;
 
+  /// The id of the project this task belongs to.
   String projectId;
-  // The name of the task.
+
+  /// The name of the task.
   String title;
-  // The description of the task.
+
+  /// The description of the task.
   String description;
-  // The list of tags belonging to the task.
+
+  /// The list of tags belonging to the task.
   List<Tag> tags;
-  // Whether or not the task has been completed.
+
+  /// Whether or not the task has been completed.
   bool done;
-  // The (optional) deadline of the task.
+
+  /// The (optional) deadline of the task.
   DateTime? deadline;
 
   /// List of the users assigned ot this task.
   List<String> assigned;
 
+  /// Who the task was last updated by.
   String? updatedBy;
 
+  /// Creates a new instance of task.
   Task({
     this.taskId = "",
     this.projectId = "",

@@ -52,7 +52,6 @@ class ProjectOverviewScreenState extends ConsumerState<ProjectOverviewScreen> {
   _saveDeviceToken() async {
     String uid = ref.watch(authProvider).currentUser!.uid;
     String? fcmToken = await FirebaseMessaging.instance.getToken();
-    if (kDebugMode) print(fcmToken);
     if (fcmToken != null) {
       final tokenRef = FirebaseFirestore.instance
           .collection("users")

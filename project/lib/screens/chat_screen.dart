@@ -143,17 +143,30 @@ class ChatScreen extends ConsumerWidget {
                         author: currentUserId,
                         imageUrl: value!,
                       ),
-                    ));
+                    ))
+                .then((value) {
+              group!.lastUpdated = DateTime.now();
+              group.recentMessage = "image";
+              return ref.read(chatProvider).saveGroup(group);
+            });
             break;
           case MessageType.gif:
-            ref.read(chatProvider).addChat(
+            ref
+                .read(chatProvider)
+                .addChat(
                   groupId,
                   ImageMessage(
                     otherId: groupId,
                     author: currentUserId,
                     imageUrl: content,
                   ),
-                );
+                )
+                .then((value) {
+              group!.lastUpdated = DateTime.now();
+              group.recentMessage = "gif from Tenor";
+              return ref.read(chatProvider).saveGroup(group);
+            });
+            ;
             break;
           default:
         }

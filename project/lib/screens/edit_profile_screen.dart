@@ -55,6 +55,7 @@ class EditProfileScreen extends ConsumerWidget {
             label: "name",
             value: user.username,
             onSave: (newValue) => saveUsername(userId, ref, user, newValue),
+            fieldType: _EditFieldType.username,
           ),
         ),
       );
@@ -69,6 +70,7 @@ class EditProfileScreen extends ConsumerWidget {
             label: "bio",
             value: user.bio,
             onSave: (newValue) => saveBio(userId, ref, user, newValue),
+            fieldType: _EditFieldType.bio,
           ),
         ),
       );
@@ -168,14 +170,19 @@ class EditProfileScreen extends ConsumerWidget {
   }
 }
 
+enum _EditFieldType {
+  username,
+  bio,
+}
+
 /// Screen/Scaffold for updating fields used for editing profile.
 class _EditFieldSceen extends StatefulWidget {
   /// Creates an instance of [_EditFieldScreen].
-  const _EditFieldSceen({
-    required this.label,
-    required this.value,
-    required this.onSave,
-  });
+  const _EditFieldSceen(
+      {required this.label,
+      required this.value,
+      required this.onSave,
+      required this.fieldType});
 
   /// The [String] label for the field to edit.
   final String label;
@@ -185,6 +192,9 @@ class _EditFieldSceen extends StatefulWidget {
 
   /// Function to call when saving the field.
   final Function onSave;
+
+  /// The type of field to edit on the screen.
+  final _EditFieldType fieldType;
 
   @override
   State<_EditFieldSceen> createState() => _EditFieldSceenState();
@@ -199,6 +209,8 @@ class _EditFieldSceenState extends State<_EditFieldSceen> {
     _fieldController.text = widget.value;
     super.initState();
   }
+
+  final _formKey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -219,13 +231,25 @@ class _EditFieldSceenState extends State<_EditFieldSceen> {
       body: Consumer(
         builder: (context, ref, child) => Padding(
           padding: const EdgeInsets.all(12.0),
-          child: TextField(
-            controller: _fieldController,
-            minLines: 1,
-            maxLines: 4,
-            maxLength: 200,
-            style: Themes.textTheme(ref).bodyMedium,
-            decoration: Themes.inputDecoration(ref, widget.label, widget.value),
+          child: Form(
+            key: _formKey,
+            child: TextFormField(
+              validator: (value) {
+                if (widget.fieldType == _EditFieldType.username &&
+                    value!.endsWith(" ")) {
+                  return "Username is not a valid format";
+                }
+
+                return null;
+              },
+              controller: _fieldController,
+              minLines: 1,
+              maxLines: widget.fieldType == _EditFieldType.username ? 1 : 3,
+              maxLength: 200,
+              style: Themes.textTheme(ref).bodyMedium,
+              decoration:
+                  Themes.inputDecoration(ref, widget.label, widget.value),
+            ),
           ),
         ),
       ),
@@ -243,13 +267,31 @@ class _EditFieldSceenState extends State<_EditFieldSceen> {
     );
   }
 
+  /// Validates the field and tries to save the field.
+  void _saveField() {
+    bool isValid = _formKey.currentState!.validate();
+    if (isValid) {
+      try {
+        widget.onSave(_fieldController.text.trim());
+        Navigator.of(context).pop();
+      } on ArgumentError catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              e.message,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontFamily: Themes.fontFamily),
+            ),
+          ),
+        );
+      }
+    }
+  }
+
   /// Button for saving the changes and going back to previous screen.
   AppBarButton _saveFieldButton(BuildContext context) {
     return AppBarButton(
-      handler: () {
-        widget.onSave(_fieldController.text);
-        Navigator.of(context).pop();
-      },
+      handler: _saveField,
       tooltip: "Save",
       icon: PhosphorIcons.checkLight,
     );

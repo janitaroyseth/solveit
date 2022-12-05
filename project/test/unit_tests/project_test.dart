@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:project/data/project_avatar_options.dart';
 import 'package:project/models/project.dart';
@@ -88,7 +89,7 @@ void main() {
       String imageUrl = "https://aimageurl.com/image";
       String description = "a cool description";
       bool isPublic = false;
-      DateTime lastUpdated = DateTime.now();
+      Timestamp lastUpdated = Timestamp.now();
 
       final project = Project.fromMap({
         "projectId": projectId,
@@ -113,7 +114,7 @@ void main() {
           collaborators: collaborators,
           description: description,
           imageUrl: imageUrl,
-          lastUpdated: lastUpdated,
+          lastUpdated: lastUpdated.toDate(),
           isPublic: isPublic,
         ),
       );
@@ -129,7 +130,7 @@ void main() {
       String owner = "a user id";
       String imageUrl = "https://aimageurl.com/image";
       bool isPublic = false;
-      DateTime lastUpdated = DateTime.now();
+      Timestamp lastUpdated = Timestamp.now();
 
       final project = Project.fromMap({
         "projectId": projectId,
@@ -150,7 +151,7 @@ void main() {
           tags: Tag.fromMaps(tags),
           owner: owner,
           imageUrl: imageUrl,
-          lastUpdated: lastUpdated,
+          lastUpdated: lastUpdated.toDate(),
           isPublic: isPublic,
         ),
       );
