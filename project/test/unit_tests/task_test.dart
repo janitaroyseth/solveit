@@ -131,6 +131,7 @@ void main() {
       "deadline": deadline.toDate(),
       "assigned": assigned,
       "tags": tags,
+      "updatedBy": null,
     });
   });
 }

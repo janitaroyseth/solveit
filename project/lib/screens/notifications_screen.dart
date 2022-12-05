@@ -2,9 +2,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:project/models/alert.dart';
 import 'package:project/models/group.dart';
 import 'package:project/models/notification.dart' as model;
 import 'package:project/models/user.dart';
+import 'package:project/providers/alert_provider.dart';
 import 'package:project/providers/auth_provider.dart';
 import 'package:project/providers/chat_provder.dart';
 import 'package:project/providers/notification_provider.dart';
@@ -15,6 +17,7 @@ import 'package:project/styles/theme.dart';
 import 'package:project/utilities/date_formatting.dart';
 import 'package:project/widgets/buttons/app_bar_button.dart';
 import 'package:project/widgets/general/loading_spinner.dart';
+import 'package:project/widgets/general/notification_mark.dart';
 
 /// Screen/Scaffold for displaying notifications and messages for the current
 /// user.
@@ -22,9 +25,27 @@ class NotificationsScreen extends ConsumerWidget {
   /// Creates an instance of [NotificationsScreen].
   const NotificationsScreen({super.key});
 
+  void _setNotificationsAsSeen(WidgetRef ref, String currentUser) async {
+    Alert alert = await ref.watch(alertProvider.notifier).getAlert().first ??
+        Alert(unseenNotification: false, groupIds: {});
+    alert.unseenNotification = false;
+    ref.read(alertProvider.notifier).saveAlert(alert, currentUser);
+  }
+
+  void _setMessageAsRead(WidgetRef ref, String groupId) async {
+    ref.watch(alertProvider.notifier).getAlert().first.then((alert) {
+      alert ??= Alert(unseenNotification: false, groupIds: {});
+      alert.groupIds.remove(groupId);
+
+      String userId = ref.watch(authProvider).currentUser!.uid;
+      ref.read(alertProvider.notifier).saveAlert(alert, userId);
+    });
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     String currentUser = ref.watch(authProvider).currentUser!.uid;
+    _setNotificationsAsSeen(ref, currentUser);
     return Scaffold(
       appBar: AppBar(
         title: _appBarTitle(),
@@ -89,7 +110,9 @@ class NotificationsScreen extends ConsumerWidget {
             return ListView.builder(
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              itemCount: notifications!.length % maxLength,
+              itemCount: notifications!.length < maxLength
+                  ? notifications.length % maxLength
+                  : maxLength,
               itemBuilder: (context, index) =>
                   _notificationsListItem(context, notifications[index]),
             );
@@ -186,13 +209,29 @@ class NotificationsScreen extends ConsumerWidget {
         if (snapshot.hasData) {
           User user = snapshot.data!;
           return GestureDetector(
-            onTap: () => _openChat(context, group.groupId),
+            onTap: () => _openChat(context, ref, group.groupId),
             child: Padding(
               padding: const EdgeInsets.only(top: 8.0),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
-                  _messageImage(user),
+                  Stack(
+                    children: [
+                      _messageImage(user),
+                      StreamBuilder<Alert?>(
+                          stream: ref.watch(alertProvider),
+                          builder: (context, snapshot) {
+                            if (snapshot.hasData && snapshot.data != null) {
+                              Alert alert = snapshot.data!;
+
+                              return NotificationMark(
+                                  visible:
+                                      alert.groupIds.contains(group.groupId));
+                            }
+                            return const SizedBox();
+                          }),
+                    ],
+                  ),
                   const SizedBox(width: 8.0),
                   Expanded(
                     child: Column(
@@ -299,13 +338,13 @@ class NotificationsScreen extends ConsumerWidget {
           for (Group group in groups) {
             for (String member in members) {
               if (group.members.contains(member) && member != currentUser) {
-                _openChat(context, group.groupId);
+                _openChat(context, ref, group.groupId);
                 return;
               }
             }
           }
           ref.read(chatProvider).saveGroup(Group(members: members)).then(
-                (value) => _openChat(context, value.groupId),
+                (value) => _openChat(context, ref, value.groupId),
               );
           return;
         });
@@ -314,7 +353,9 @@ class NotificationsScreen extends ConsumerWidget {
   }
 
   /// Opens the [ChatScreen] for the chat's of the given [groupId].
-  Future _openChat(BuildContext context, String groupId) {
+  Future _openChat(BuildContext context, WidgetRef ref, String groupId) {
+    _setMessageAsRead(ref, groupId);
+
     return Navigator.of(context).pushNamed(
       ChatScreen.routeName,
       arguments: groupId,

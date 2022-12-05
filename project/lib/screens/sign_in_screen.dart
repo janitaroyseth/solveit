@@ -88,10 +88,8 @@ class __SignInFormState extends ConsumerState<_SignInForm> {
 
     if (isValid != null && isValid && signupMode) {
       formKey.currentState?.save();
-      ref
-          .read(authProvider)
-          .registerWithEmailAndPassword(email, password)
-          .then((user) {
+      ref.read(authProvider).registerWithEmailAndPassword(email, password).then(
+          (user) {
         if (user != null) {
           String userId = user.uid;
           ref.read(userProvider).addUser(
@@ -104,10 +102,50 @@ class __SignInFormState extends ConsumerState<_SignInForm> {
             arguments: userId,
           );
         }
+      }, onError: (e) {
+        String content = "";
+        String error = e.toString();
+        if (error.contains("email-already-in-use")) {
+          content = "A user with this email already exists";
+        }
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              content,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontFamily: Themes.fontFamily,
+              ),
+            ),
+          ),
+        );
       });
     } else if (isValid != null && isValid) {
       formKey.currentState?.save();
-      ref.read(authProvider).signInWithEmailAndPassword(email, password);
+
+      ref
+          .read(authProvider)
+          .signInWithEmailAndPassword(email, password)
+          .catchError((e) {
+        String content = "";
+        String error = e.toString();
+        if (error.contains("user-not-found")) {
+          content = "A user with this email does not exist";
+        } else if (error.contains("wrong-password")) {
+          content = "Wrong password, please try again";
+        }
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              content,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontFamily: Themes.fontFamily,
+              ),
+            ),
+          ),
+        );
+      });
 
       /// Send login request.
     }
@@ -195,13 +233,37 @@ class __SignInFormState extends ConsumerState<_SignInForm> {
           verticalPadding(),
           passwordField(),
           confirmPasswordField(),
+          const SizedBox(height: 42),
+          GestureDetector(
+            onTap: () => ref
+                .watch(authProvider)
+                .resetPassword(email)
+                .onError((error, stackTrace) {
+              String content = "";
+              if (error.toString().contains("missing-email")) {
+                content = "Enter a email first";
+              }
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                    content,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontFamily: Themes.fontFamily,
+                    ),
+                  ),
+                ),
+              );
+            }),
+            child: const Text("forgot password?"),
+          ),
           const SizedBox(height: 24),
           ElevatedButton(
             onPressed: submitEmailRequest,
             style: Themes.primaryElevatedButtonStyle,
             child: Text(signupMode ? "sign up" : "sign in"),
           ),
-          const SizedBox(height: 48),
+          const SizedBox(height: 44),
           signupMode
               ? const Text(
                   "or sign up with",
@@ -407,6 +469,9 @@ class __SignInFormState extends ConsumerState<_SignInForm> {
         "email",
         "email@example.com",
       ),
+      onChanged: (value) {
+        email = value;
+      },
       onSaved: (newValue) {
         email = newValue ?? "";
       },

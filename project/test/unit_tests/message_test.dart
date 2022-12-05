@@ -28,33 +28,6 @@ void main() {
       },
     );
 
-    test("text message valid data", () {
-      String messageId = "some id";
-      String otherId = "some other id";
-      String author = "an author";
-      Timestamp date = Timestamp.fromDate(DateTime.now());
-      String text = "some text conent";
-
-      final message = Message.fromMap({
-        "messageId": messageId,
-        "otherId": otherId,
-        "author": author,
-        "date": date,
-        "text": text,
-      }) as TextMessage;
-
-      expect(message, isNot(null));
-      expect(
-        message,
-        TextMessage(
-          messageId: messageId,
-          otherId: otherId,
-          author: author,
-          text: text,
-        ),
-      );
-    });
-
     test("image message valid data", () {
       String messageId = "some id";
       String otherId = "some other id";
@@ -81,64 +54,11 @@ void main() {
         ),
       );
     });
-
-    test(
-      "from maps",
-      () {
-        final List<Map<String, dynamic>> maps = [
-          {
-            "messageId": "image message id",
-            "otherId": "image other id",
-            "author": "author of image",
-            "date": Timestamp.fromDate(DateTime.now()),
-            "imageUrl": "https://urlofanimage/image",
-          },
-          {
-            "messageId": "text message id",
-            "otherId": "text other id",
-            "author": "author of text",
-            "date": Timestamp.fromDate(DateTime.now()),
-            "text": "some text",
-          }
-        ];
-
-        final messages = Message.fromMaps(maps);
-
-        expect(messages, isNot(null));
-        expect(messages.length, 2);
-        assert(messages[0] is ImageMessage);
-        assert(messages[1] is TextMessage);
-      },
-    );
   });
 
   group(
     "to map",
     () {
-      test("text message", () {
-        String messageId = "some id";
-        String otherId = "some other id";
-        String author = "an author";
-        Timestamp date = Timestamp.fromDate(DateTime.now());
-        String text = "some text content";
-        final message = Message.toMap(TextMessage(
-          messageId: messageId,
-          otherId: otherId,
-          author: author,
-          date: date.toDate(),
-          text: text,
-        ));
-
-        expect(message, isNot(null));
-        expect(message, {
-          "messageId": messageId,
-          "otherId": otherId,
-          "author": author,
-          "date": date.toDate(),
-          "text": text,
-        });
-      });
-
       test("image message", () {
         String messageId = "some id";
         String otherId = "some other id";

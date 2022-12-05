@@ -60,26 +60,4 @@ void main() {
       );
     });
   });
-
-  test("to map", () {
-    String groupId = "some id";
-    List<String> members = ["my user id goes here", "your user id too"];
-    String recentMessage = "recently";
-    DateTime lastUpdated = DateTime.now();
-
-    final group = Group(
-            groupId: groupId,
-            members: members,
-            recentMessage: recentMessage,
-            lastUpdated: lastUpdated)
-        .toMap();
-
-    expect(group, isNot(null));
-    expect(group, {
-      "groupId": groupId,
-      "members": members,
-      "recentMessage": recentMessage,
-      "lastUpdated": lastUpdated
-    });
-  });
 }

@@ -3,14 +3,17 @@ import 'package:project/utilities/color_utility.dart';
 /// The data content of a tag on a task.
 class Tag {
   String tagId;
-  // The text content of the tag.
+
+  /// The text content of the tag.
   String text;
-  // The numeric color value of the tag.
+
+  /// The numeric color value of the tag.
   String color;
 
-  // Set color to default value if no color parameter is given,
-  // or to red if color parameter is of invalid format,
-  // or to color parameter if its format is valid.
+  /// Creates an instance of [Tag]. Set color to default
+  /// value if no color parameter is given,
+  /// or to red if color parameter is of invalid format,
+  /// or to color parameter if its format is valid.
   Tag({
     this.tagId = "",
     String text = "tag",

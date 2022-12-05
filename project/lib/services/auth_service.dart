@@ -14,6 +14,9 @@ abstract class AuthService {
   /// Signing in using facebook.
   Future<UserCredential?> signInWithFacebook();
 
+  ///
+  Future<void> resetPassword(String email);
+
   /// Signing in with email and password.
   Future<User?> signInWithEmailAndPassword(String email, String password);
 
@@ -43,6 +46,7 @@ class Auth implements AuthService {
   @override
   Future<User?> signInAnonymously() async {
     final userCredentials = await _fireBaseAuth.signInAnonymously();
+
     return userCredentials.user;
   }
 
@@ -137,13 +141,16 @@ class Auth implements AuthService {
     final result = await gitHubSignIn.signIn(context);
 
     if (result.token != null) {
-      // Create a credential from the access token
       final githubAuthCredential = GithubAuthProvider.credential(result.token!);
-      // Once signed in, return the UserCredential
+
       return await FirebaseAuth.instance
           .signInWithCredential(githubAuthCredential);
-    } else {
-      return null;
     }
+    return null;
+  }
+
+  @override
+  Future<void> resetPassword(String email) async {
+    return await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
   }
 }

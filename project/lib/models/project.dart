@@ -4,13 +4,13 @@ import 'package:project/models/tag.dart';
 
 /// The data content of a project in the application.
 class Project {
-  // The id of the project.
+  /// The id of the project.
   String projectId;
 
-  // The name of the project.
+  /// The name of the project.
   String title;
 
-  // The list of tags in the project.
+  /// The list of tags in the project.
   List<Tag> tags;
 
   /// User id of the owner of this project.
@@ -60,7 +60,9 @@ class Project {
         : <String>[];
     final bool? isPublic = data["isPublic"] ?? false;
     final String? owner = data["owner"];
-    final DateTime lastUpdated = (data['lastUpdated'] as Timestamp).toDate();
+    final DateTime lastUpdated = data['lastUpdated'] != null
+        ? (data['lastUpdated'] as Timestamp).toDate()
+        : DateTime.now();
     final String? imageUrl = data['imageUrl'];
     final List<Tag> tags =
         data["tags"] != null ? Tag.fromMaps(data["tags"]) : <Tag>[];
